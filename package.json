@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "type": "module",
+    "express": "^4.21.1",
+    "mysql2": "^3.11.3",
+    "main": "index.js"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}
