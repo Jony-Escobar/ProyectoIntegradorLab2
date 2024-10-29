@@ -1,9 +1,9 @@
 {
+  "type": "module",
+  "main": "index.js",
   "dependencies": {
-    "type": "module",
     "express": "^4.21.1",
-    "mysql2": "^3.11.3",
-    "main": "index.js"
+    "mysql2": "^3.11.3"
   },
   "devDependencies": {
     "@types/express": "^5.0.0"

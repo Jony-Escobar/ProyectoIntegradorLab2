@@ -1,10 +1,8 @@
-module.exports={
-    HOST: process.env.HOST,
-    USER: process.env.USER,
-    PASSWORD: process.env.PASSWORD,
-    DATABASE: process.env.DATABASE,
-    PORT: process.env.PORT,
-    waitForConnections:true,
-    connectLimit: 10,
-    queueLimit: 0
-}
+export const HOST=process.env.HOST;
+export const USER=process.env.USER;
+export const PASSWORD=process.env.PASSWORD;
+export const DATABASE=process.env.DATABASE;
+export const PORT=process.env.PORT;
+export const waitForConnections=true;
+export const connectLimit=10;
+export const queueLimit=0;
