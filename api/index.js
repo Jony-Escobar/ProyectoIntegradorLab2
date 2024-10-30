@@ -1,10 +1,11 @@
+import dotenv from 'dotenv';
 import express, { urlencoded } from 'express';
+
+dotenv.config();
 const port = 3000;
 const app = express();
 
-// Middleware
-app.use(express.json()); // Faltaban los paréntesis
-app.use(urlencoded({ extended: true })); // Agregado el objeto de configuración
+app.use(express.json());
 
 app.get('/', (req, res) => {
     res.send('App Funcionando');
