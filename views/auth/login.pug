@@ -1,0 +1,17 @@
+extends ../layout
+
+block contenido
+    div 
+        h1.text-center Agenda
+            span Medica
+        h2.text-center= pagina
+
+        div 
+            form(action='/auth/login', method='POST')
+                .form-group
+                    label(for='user') Usuario
+                    input#user.form-control(type='text', name='user', placeholder='Ingrese su usuario', required)
+                .form-group
+                    label(for='pass') Contraseña
+                    input#pass.form-control(type='password', name='pass', placeholder='Ingrese su contraseña', required)
+                button.btn.btn-primary(type='submit') Iniciar sesión
