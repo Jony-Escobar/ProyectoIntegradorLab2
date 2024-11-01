@@ -2,7 +2,9 @@ import Usuario from '../models/Usuario.js';
 
 class UsuarioController {
     static mostrarFormulario(req,res) {
-        res.render('auth/login')
+        res.render('auth/login', {
+            pagina: 'Iniciar sesión'
+        })
     }
 
     static async autenticar(req, res) {
