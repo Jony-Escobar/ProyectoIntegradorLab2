@@ -1,4 +1,4 @@
-extends ../layout
+extends layout
 
 block contenido
     div 
@@ -7,7 +7,7 @@ block contenido
         h2.text-center=pagina
 
         div 
-            form(action='/auth/login', method='POST')
+            form(action='login', method='POST')
                 .form-group
                     label(for='user') Usuario
                     input#user.form-control(type='text', name='user', placeholder='Ingrese su usuario', required)

@@ -1,8 +1,10 @@
 import Usuario from '../models/Usuario.js';
 
 class UsuarioController {
+    //Metodos estaticos para poder exportar todo
+
     static mostrarFormulario(req,res) {
-        res.render('auth/login', {
+        res.render('login', {
             pagina: 'Iniciar sesión'
         })
     }
@@ -22,4 +24,5 @@ class UsuarioController {
     }
 }
 
+//Exportamos todo
 export default UsuarioController;

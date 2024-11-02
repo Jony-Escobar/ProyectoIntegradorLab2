@@ -2,6 +2,7 @@
 import express, { urlencoded } from 'express';
 import cors from 'cors'
 import usuarioRoutes from '../routes/usuario.routes.js';
+import agendaRoutes from '../routes/agenda.routes.js'
 
 //Variables
 const port = 3000;
@@ -17,10 +18,11 @@ app.set("view engine", "pug")
 app.set("views", "./views")
 
 //Routing
-app.get('/', (req, res) => {
+app.get('/test', (req, res) => {
     res.send('App Funcionando');
 });
 app.use('/', usuarioRoutes)
+app.use('/', agendaRoutes)
 
 //Definir puerto y arrancar el proyecto
 app.listen(port, () => {
