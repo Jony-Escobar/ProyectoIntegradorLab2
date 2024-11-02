@@ -24,6 +24,9 @@ app.get('/test', (req, res) => {
 app.use('/', usuarioRoutes)
 app.use('/', agendaRoutes)
 
+//* Definir la carpeta publica   
+app.use(express.static('public'));
+
 //Definir puerto y arrancar el proyecto
 app.listen(port, () => {
     console.log(`Servidor funcionando en puerto ${port}`);
