@@ -30,4 +30,4 @@ app.listen(port, () => {
 });
 
 //Vercel
-export {app};
+export default app;
