@@ -12,13 +12,19 @@ class UsuarioController {
     static async autenticar(req, res) {
         const { user, pass } = req.body;
         try {
-            const userData = await Usuario.buscarUsuarioPorCredenciales(user, pass);
+            const userData = await Usuario.validarCredenciales(user, pass);
             if (userData) {
-                res.json({ message: 'Sesion iniciada correctamente'});
+                res.render('agenda', {
+                    pagina: 'Agenda'
+                });
             } else {
-                res.status(401).json({ message: 'Credenciales invalidas' });
+                res.render('login', {
+                    pagina: 'Iniciar sesión',
+                    error: 'Credenciales invalidas'
+                });
             }
         } catch (error) {
+            console.error('Error al autenticar:', error);
             res.status(500).json({ error: error.message });
         }
     }

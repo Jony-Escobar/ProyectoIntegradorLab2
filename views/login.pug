@@ -6,6 +6,9 @@ block contenido
             span Medica
         h2.text-center=pagina
 
+        if error
+            .alert.alert-danger=error
+
         div 
             form(action='login', method='POST')
                 .form-group
