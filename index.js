@@ -1,8 +1,8 @@
 //Imports
 import express, { urlencoded } from 'express';
 import cors from 'cors'
-import usuarioRoutes from '../routes/usuario.routes.js';
-import agendaRoutes from '../routes/agenda.routes.js'
+import usuarioRoutes from './routes/usuario.routes.js';
+import agendaRoutes from './routes/agenda.routes.js'
 
 //Variables
 const port = 3000;
@@ -31,6 +31,3 @@ app.use(express.static('public'));
 app.listen(port, () => {
     console.log(`Servidor funcionando en puerto ${port}`);
 });
-
-//Vercel
-export default app;

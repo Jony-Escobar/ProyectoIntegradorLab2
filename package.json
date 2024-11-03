@@ -12,6 +12,6 @@
     "@types/express": "^5.0.0"
   },
   "scripts": {
-    "start": "node --watch api/index.js"
+    "start": "node --watch index.js"
   }
 }
