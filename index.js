@@ -1,8 +1,8 @@
 //Imports
 import express, { urlencoded } from 'express';
-import cors from 'cors'
+import cors from 'cors';
 import usuarioRoutes from './routes/usuario.routes.js';
-import agendaRoutes from './routes/agenda.routes.js'
+import agendaRoutes from './routes/agenda.routes.js';
 
 //Variables
 const port = 3000;
