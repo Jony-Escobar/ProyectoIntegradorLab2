@@ -1,6 +1,7 @@
 //Imports
 import express, { urlencoded } from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import usuarioRoutes from './routes/usuario.routes.js';
 import agendaRoutes from './routes/agenda.routes.js';
 
@@ -12,7 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(cors())
 app.use(express.urlencoded({extended:true}))
-
+app.use(cookieParser());
 //Habilitar Pug
 app.set("view engine", "pug")
 app.set("views", "./views")

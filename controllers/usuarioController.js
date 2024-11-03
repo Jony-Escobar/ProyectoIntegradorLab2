@@ -1,5 +1,5 @@
 import Usuario from '../models/Usuario.js';
-
+import generarJWT from '../helpers/tokens.js';
 class UsuarioController {
     //Metodos estaticos para poder exportar todo
 
@@ -14,6 +14,17 @@ class UsuarioController {
         try {
             const userData = await Usuario.validarCredenciales(user, pass);
             if (userData) {
+                // Generar el JWT
+                const token = generarJWT(userData.id);
+
+                // Guardar en cookie
+                res.cookie('_token', token, {
+                    httpOnly: true,
+                    //secure: process.env.NODE_ENV === 'production',
+                    //sameSite: 'strict',
+                    //maxAge: 1000 * 60 * 60 * 12 // 12 horas en milisegundos
+                });
+
                 res.render('agenda', {
                     pagina: 'Agenda'
                 });
