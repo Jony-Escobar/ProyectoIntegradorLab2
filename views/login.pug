@@ -1,7 +1,43 @@
 extends layout
 
+block estilos
+    link(rel="stylesheet" href="/css/login.css")
+
 block contenido
-    div 
+    .container.min-vh-100.d-flex.align-items-center.justify-content-center
+        .col-md-6
+            h1.text-center.mb-4 
+                | Agenda
+                span.ms-2 Medica
+            .card.shadow
+                .card-body.p-5
+                    h2.text-center.mb-4=pagina
+
+                    if error
+                        .alert.alert-danger.mb-3=error
+
+                    form(action='login', method='POST')
+                        .form-group.mb-3
+                            .input-group
+                                span.input-group-text
+                                    i.fa.fa-user
+                                input#user.form-control(type='text', name='user', placeholder='Usuario', required)
+                        
+                        .form-group.mb-3
+                            .input-group
+                                span.input-group-text
+                                    i.fa.fa-lock
+                                input#pass.form-control(type='password', name='pass', placeholder='Contraseña', required)
+                        
+                        .d-flex.justify-content-between.align-items-center
+                            a.text-muted(href='#') Contactar al administrador
+                            button.btn.btn-primary(type='submit') Iniciar sesión
+    
+    
+    
+    
+    
+    //-div 
         h1.text-center Agenda
             span Medica
         h2.text-center=pagina
