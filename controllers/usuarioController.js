@@ -39,6 +39,11 @@ class UsuarioController {
             res.status(500).json({ error: error.message });
         }
     }
+
+    static cerrarSesion(req, res) {
+        res.clearCookie('_token');
+        res.redirect('/login');
+    }
 }
 
 //Exportamos todo

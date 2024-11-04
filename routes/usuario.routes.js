@@ -7,5 +7,7 @@ const usuarioRoutes = express.Router()
 usuarioRoutes.get('/login', UsuarioController.mostrarFormulario)
 // Ruta para procesar el login
 usuarioRoutes.post('/login', UsuarioController.autenticar)
+// Ruta para cerrar sesión
+usuarioRoutes.get('/logout', UsuarioController.cerrarSesion)
 
 export default usuarioRoutes;
