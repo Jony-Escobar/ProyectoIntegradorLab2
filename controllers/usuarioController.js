@@ -19,7 +19,7 @@ class UsuarioController {
 
                 // Guardar en cookie
                 res.cookie('_token', token, {
-                    //httpOnly: true,
+                    httpOnly: true
                     //secure: process.env.NODE_ENV === 'production',
                     //sameSite: 'strict',
                     //maxAge: 1000 * 60 * 60 * 12 // 12 horas en milisegundos
