@@ -5,7 +5,8 @@ class AgendaController {
     static mostrarAgenda(req,res) {
         res.render('agenda', {
             pagina: 'Agenda diaria',
-            userId: req.userId
+            userId: req.userId,
+            userName: req.userName
         })
     }
 

@@ -4,12 +4,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if(calendarEl) {
         const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'timeGridWeek',
+            initialView: 'timeGridDay',
             locale: 'es',
             headerToolbar: {
                 left: 'prev,next today',
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            buttonText: {
+                today: 'Hoy',
+                month: 'Mes',
+                week: 'Semana',
+                day: 'Día'
             },
             slotMinTime: '08:00:00',
             slotMaxTime: '20:00:00',
@@ -20,28 +26,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     const response = await fetch(`/api/turnos/${userId}`);
                     const data = await response.json();
                     
-                    const events = data.map(turno => {
-                        const fechaHora = new Date(`${turno.fecha}T${turno.hora}`);
-                        
-                        const event = {
-                            title: turno.nombre_paciente,
-                            start: fechaHora.toISOString(),
-                            end: new Date(fechaHora.getTime() + 30*60000).toISOString(),
-                            description: turno.motivo_consulta,
-                            status: turno.estado_turno,
-                            backgroundColor: turno.estado_turno === 'Pendiente' ? '#3788d8' : '#28a745',
-                            borderColor: turno.estado_turno === 'Pendiente' ? '#3788d8' : '#28a745'
-                        };
-                        return event;
-                    });
+                    const events = data.map(turno => ({
+                        title: `\nPACIENTE: ${turno.nombre_paciente}\nMOTIVO: ${turno.motivo_consulta}\nESTADO: ${turno.estado_turno}\n[Ver Historia Clínica]`,
+                        start: new Date(`${turno.fecha}T${turno.hora}`).toISOString(),
+                        backgroundColor: turno.estado_turno === 'Pendiente' ? '#3788d8' : 
+                                      turno.estado_turno === 'En atencion' ? '#ffc107' :
+                                      turno.estado_turno === 'Finalizado' ? '#28a745' : '#3788d8',
+                        borderColor: turno.estado_turno === 'Pendiente' ? '#3788d8' : 
+                                   turno.estado_turno === 'En atencion' ? '#ffc107' :
+                                   turno.estado_turno === 'Finalizado' ? '#28a745' : '#3788d8'
+                    }));
                     successCallback(events);
                 } catch (error) {
                     console.error('Error al cargar los turnos:', error);
                     failureCallback(error);
                 }
-            },
-            eventDidMount: function(info) {
-                info.el.title = `Paciente: ${info.event.title}\nMotivo: ${info.event.extendedProps.description}\nEstado: ${info.event.extendedProps.status}`;
             },
             editable: false,
             selectable: false,
