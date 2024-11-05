@@ -29,12 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     const events = data.map(turno => ({
                         title: `\nPACIENTE: ${turno.nombre_paciente}\nMOTIVO: ${turno.motivo_consulta}\nESTADO: ${turno.estado_turno}\n[Ver Historia Clínica]`,
                         start: new Date(`${turno.fecha}T${turno.hora}`).toISOString(),
-                        backgroundColor: turno.estado_turno === 'Pendiente' ? '#3788d8' : 
-                                      turno.estado_turno === 'En atencion' ? '#ffc107' :
-                                      turno.estado_turno === 'Finalizado' ? '#28a745' : '#3788d8',
-                        borderColor: turno.estado_turno === 'Pendiente' ? '#3788d8' : 
-                                   turno.estado_turno === 'En atencion' ? '#ffc107' :
-                                   turno.estado_turno === 'Finalizado' ? '#28a745' : '#3788d8'
+                        backgroundColor: turno.estado_turno === 'Pendiente' ? '#ffc107' : 
+                                      turno.estado_turno === 'En atencion' ? '#3788d8' :
+                                      turno.estado_turno === 'Finalizado' ? '#28a745' : '#ffc107',
+                        borderColor: turno.estado_turno === 'Pendiente' ? '#ffc107' : 
+                                   turno.estado_turno === 'En atencion' ? '#3788d8' :
+                                   turno.estado_turno === 'Finalizado' ? '#28a745' : '#ffc107'
                     }));
                     successCallback(events);
                 } catch (error) {
