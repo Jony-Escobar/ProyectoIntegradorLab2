@@ -9,4 +9,7 @@ agendaRoutes.get('/agenda', protegerRuta, AgendaController.mostrarAgenda)
 // Ruta para enviar POST desde agenda
 //agendaRoutes.post('/agenda', AgendaController.filtrar)
 
+// Agregar nueva ruta API para obtener turnos
+agendaRoutes.get('/api/turnos/:id', protegerRuta, AgendaController.obtenerTurnos)
+
 export default agendaRoutes;

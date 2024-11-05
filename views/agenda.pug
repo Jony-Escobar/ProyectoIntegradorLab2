@@ -6,13 +6,18 @@ block estilos
 block contenido
     main
         .container
-          header.d-flex.flex-wrap.justify-content-center.py-3.mb-4.border-bottom
-            a.d-flex.align-items-center.mb-3.mb-md-0.me-md-auto.text-dark.text-decoration-none(href='/')
-              svg.bi.me-2(width='40' height='32')
-                use(xlink:href='#bootstrap')
-              span.fs-4=pagina
-            ul.nav.nav-pills
-                a.nav-link(href='/logout') Cerrar sesión
+            header.d-flex.flex-wrap.justify-content-center.py-3.mb-4.border-bottom
+                a.d-flex.align-items-center.mb-3.mb-md-0.me-md-auto.text-dark.text-decoration-none(href='/')
+                    span.fs-4=pagina
+                ul.nav.nav-pills
+                    a.nav-link(href='/logout') Cerrar sesión
+
+    //- Verificar que el userId existe
+    if userId
+        input(type="hidden" id="userId" value=userId)
+    else
+        script.
+            console.error('No se encontró el userId')
 
     div(class="container" id="calendar")
 

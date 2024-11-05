@@ -17,16 +17,25 @@ class UsuarioController {
                 // Generar el JWT
                 const token = generarJWT(userData.id);
 
-                // Guardar en cookie
+                // Guardar en cookie tanto el token como el ID del usuario
                 res.cookie('_token', token, {
-                    httpOnly: true
-                    //secure: process.env.NODE_ENV === 'production',
-                    //sameSite: 'strict',
-                    //maxAge: 1000 * 60 * 60 * 12 // 12 horas en milisegundos
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'strict',
+                    maxAge: 1000 * 60 * 60 * 12 // 12 horas en milisegundos
+                });
+                
+                // Agregar una cookie para el ID del usuario
+                res.cookie('_userId', userData.id, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'strict',
+                    maxAge: 1000 * 60 * 60 * 12 // 12 horas en milisegundos
                 });
 
                 res.render('agenda', {
-                    pagina: 'Agenda'
+                    pagina: 'Agenda',
+                    userId: userData.id  // Pasar el ID a la vista
                 });
             } else {
                 res.render('login', {
@@ -42,6 +51,7 @@ class UsuarioController {
 
     static cerrarSesion(req, res) {
         res.clearCookie('_token');
+        res.clearCookie('_userId');  // Limpiar también la cookie del userId
         res.redirect('/login');
     }
 }
