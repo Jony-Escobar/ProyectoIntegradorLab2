@@ -7,8 +7,10 @@ block contenido
     main
         .container
             header.d-flex.flex-wrap.justify-content-center.py-3.mb-4.border-bottom
-                a.d-flex.align-items-center.mb-3.mb-md-0.me-md-auto.text-dark.text-decoration-none(href='/agenda')
-                    span.fs-4=pagina
+                div.d-flex.align-items-center.mb-3.mb-md-0.me-md-auto.text-dark.justify-content-center
+                    span.fs-4 #{pagina}
+                    if userName
+                        span.fs-4 - Dr/a. #{userName}
                 ul.nav.nav-pills
                     a.nav-link(href='/logout') Cerrar sesión
 

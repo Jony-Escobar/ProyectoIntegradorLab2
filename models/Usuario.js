@@ -15,7 +15,14 @@ class Usuario {
         return null;
       }
 
-      const [rows] = await pool.query('SELECT * FROM usuarios WHERE user = ?', [user]); 
+      const [rows] = await pool.query(`
+        SELECT u.*, 
+               CONCAT(p.nombre, ' ', p.apellido) as nombre_completo 
+        FROM usuarios u
+        JOIN medicos m ON m.usuario_id = u.id
+        JOIN personas p ON p.id = m.persona_id
+        WHERE u.user = ?`, [user]);
+      
       const usuario = rows[0];
       
       if (!usuario) {
@@ -24,7 +31,14 @@ class Usuario {
 
       const passwordValida = await bcrypt.compare(pass, usuario.pass);
       
-      return passwordValida ? new Usuario(usuario.id, usuario.user, usuario.pass) : null;
+      if (passwordValida) {
+        return {
+          id: usuario.id,
+          user: usuario.user,
+          nombre_completo: usuario.nombre_completo
+        };
+      }
+      return null;
 
     } catch (error) {
       console.error('Error al validar credenciales:', error);
