@@ -1,61 +1,65 @@
-// Espera a que el DOM esté completamente cargado
+// Espera a que el DOM este completamente cargado antes de ejecutar el codigo
 document.addEventListener('DOMContentLoaded', function() {
-    // Obtiene los elementos del DOM necesarios
+    // Obtiene el elemento del calendario y el valor del userId
     const calendarEl = document.getElementById('calendar');
-    const userId = document.getElementById('userId').value;
+    const userId = document.getElementById('userId')?.value;
 
-    // Verifica si existe el elemento del calendario
-    if(calendarEl) {
-        // Inicializa el calendario con FullCalendar
+    // Verifica que el elemento del calendario y el userId existan
+    if (calendarEl && userId) {
+        // Inicializa el calendario de FullCalendar
         const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'timeGridDay', // Vista inicial: dia con horarios
-            locale: 'es', // Configuración del idioma a español
-            headerToolbar: {
-                left: 'prev,next today', // Botones de navegación a la izquierda
-                center: 'title', // Título en el centro
-                right: 'dayGridMonth,timeGridWeek,timeGridDay' // Botones de vista a la derecha
+            initialView: 'timeGridDay', // Vista inicial del calendario
+            locale: 'es', // Idioma del calendario
+            headerToolbar: { // Configuración de la barra de herramientas del encabezado
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
-            buttonText: {
+            buttonText: { // Texto de los botones
                 today: 'Hoy',
                 month: 'Mes',
                 week: 'Semana',
                 day: 'Día'
             },
-            slotMinTime: '08:00:00', // Hora de inicio del dia
-            slotMaxTime: '20:00:00', // Hora de fin del dia
-            allDaySlot: false, // Deshabilita la fila de "todo el dia"
-            slotDuration: '00:30:00', // Duración de cada slot: 30 minutos
-            // Funcion para cargar los eventos (turnos) desde la API
+            slotMinTime: '08:00:00', // Hora minima de los slots
+            slotMaxTime: '20:00:00', // Hora maxima de los slots
+            allDaySlot: false, // Desactiva el slot de todo el día
+            slotDuration: '00:30:00', // Duración de cada slot
             events: async function(info, successCallback, failureCallback) {
-                try {                    
-                    // Realiza la peticion a la API para obtener los turnos
-                    const response = await fetch(`/api/turnos/${userId}`);
-                    const data = await response.json();
+                try {
+                    // Obtiene el valor del select de especialidades
+                    const especialidadSelect = document.getElementById('especialidadSelect');
+                    const especialidadId = especialidadSelect ? especialidadSelect.value : '';
                     
-                    // Transforma los datos de la API al formato requerido por FullCalendar
+                    // Realiza una petición para obtener los turnos
+                    const response = await fetch(`/api/turnos/${userId}/${especialidadId}`);
+                    const data = await response.json();
+
+                    // Mapea los datos de los turnos a eventos del calendario
                     const events = data.map(turno => ({
                         title: `\nPACIENTE: ${turno.nombre_paciente}\nMOTIVO: ${turno.motivo_consulta}\nESTADO: ${turno.estado_turno}\n[Ver Historia Clínica]`,
                         start: new Date(`${turno.fecha}T${turno.hora}`).toISOString(),
-                        // Define el color de fondo segun el estado del turno
                         backgroundColor: turno.estado_turno === 'Pendiente' ? '#ffc107' : 
                                       turno.estado_turno === 'En atencion' ? '#3788d8' :
                                       turno.estado_turno === 'Finalizado' ? '#28a745' : '#ffc107',
-                        // Define el color del borde segun el estado del turno
                         borderColor: turno.estado_turno === 'Pendiente' ? '#ffc107' : 
                                    turno.estado_turno === 'En atencion' ? '#3788d8' :
                                    turno.estado_turno === 'Finalizado' ? '#28a745' : '#ffc107'
                     }));
+                    
+                    // Llama al callback de exito con los eventos
                     successCallback(events);
                 } catch (error) {
+                    // Maneja errores en la carga de turnos
                     console.error('Error al cargar los turnos:', error);
                     failureCallback(error);
                 }
             },
-            editable: false, // Deshabilita la edición de eventos
-            selectable: false, // Deshabilita la selección de fechas
-            nowIndicator: true, // Muestra indicador de hora actual
-            businessHours: {
-                daysOfWeek: [ 1, 2, 3, 4, 5 ], // Días laborables: lunes a viernes
+            editable: false, // Desactiva la edicion de eventos
+            selectable: false, // Desactiva la selección de eventos
+            nowIndicator: true, // Muestra un indicador de la hora actual
+            businessHours: { // Configura las horas laborales
+                daysOfWeek: [ 1, 2, 3, 4, 5 ], // Dias laborales (lunes a viernes)
                 startTime: '08:00', // Hora de inicio
                 endTime: '20:00', // Hora de fin
             }
@@ -63,5 +67,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Renderiza el calendario
         calendar.render();
+
+        // Obtiene el select de especialidades y agrega un evento de cambio
+        const especialidadSelect = document.getElementById('especialidadSelect');
+        if (especialidadSelect) {
+            especialidadSelect.addEventListener('change', function() {
+                // Refresca los eventos del calendario al cambiar la especialidad
+                calendar.refetchEvents();
+            });
+        }
     }
 });

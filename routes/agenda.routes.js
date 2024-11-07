@@ -10,6 +10,6 @@ agendaRoutes.get('/agenda', protegerRuta, AgendaController.mostrarAgenda)
 //agendaRoutes.post('/agenda', AgendaController.filtrar)
 
 // Agregar nueva ruta API para obtener turnos
-agendaRoutes.get('/api/turnos/:id', protegerRuta, AgendaController.obtenerTurnos)
+agendaRoutes.get('/api/turnos/:id/:especialidadId', protegerRuta, AgendaController.obtenerTurnos)
 
 export default agendaRoutes;

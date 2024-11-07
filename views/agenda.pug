@@ -1,27 +1,49 @@
+//- Extiende el diseño base
 extends layout
 
+//- Bloque de estilos
 block estilos
+    //- Enlace al archivo CSS de la agenda
     link(rel="stylesheet" href="/css/agenda.css")
 
+//- Bloque de contenido principal
 block contenido
     main
         .container
+            //- Encabezado con flexbox para centrar el contenido
             header.d-flex.flex-wrap.justify-content-center.py-3.mb-4.border-bottom
+                //- Div para mostrar el título de la pagina y el nombre del usuario
                 div.d-flex.align-items-center.mb-3.mb-md-0.me-md-auto.text-dark.justify-content-center
+                    //- Muestra el titulo de la pagina
                     span.fs-4 #{pagina}
+                    //- Si el nombre de usuario está disponible, lo muestra
                     if userName
-                        span.fs-4 - Dr/a. #{userName}
+                        //- Muestra el nombre del usuario con el prefijo Dr/a.
+                        span.fs-4.mx-2 - Dr/a. #{userName}
+                        //- Si hay especialidades disponibles, muestra un select
+                        if especialidades && especialidades.length
+                            //- Select para elegir la especialidad
+                            select#especialidadSelect.form-select.ms-2(style="width: auto;")
+                                //- Itera sobre las especialidades para crear opciones
+                                each especialidad, index in especialidades
+                                    //- Opcion del select con el nombre de la especialidad y matricula
+                                    option(value=especialidad.id selected=index === 0) #{especialidad.especialidad} - Mat: #{especialidad.matricula}
+                //- Lista de navegacion con un enlace para cerrar sesion
                 ul.nav.nav-pills
                     a.nav-link(href='/logout') Cerrar sesión
 
     //- Verificar que el userId existe
     if userId
+        //- Input oculto para almacenar el userId
         input(type="hidden" id="userId" value=userId)
     else
+        //- Script para mostrar un error si no se encuentra el userId
         script.
             console.error('No se encontró el userId')
 
+    //- Contenedor para el calendario
     div(class="container" id="calendar")
 
+    //- Bloque de pie de pagina
     block footer
             
