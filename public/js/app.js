@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendar');
     const userId = document.getElementById('userId')?.value;
 
+    // Llamados de tablas
+    contenidoTablaConsultas(datosConsultas);
+
     // Verifica que el elemento del calendario y el userId existan
     if (calendarEl && userId) {
         // Inicializa el calendario de FullCalendar
@@ -77,4 +80,96 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+
+    
+
 });
+
+/* Datos de pruebna para la tabla consutlas previas */
+let datosConsultas = [
+    { id: 1, fecha: '2024-11-10', motivo: 'Gordo', acciones: '' },
+    { id: 2, fecha: '2024-11-11', motivo: 'Gordo', acciones: '' },
+    { id: 3, fecha: '2024-11-12', motivo: 'Gordo', acciones: '' },
+    { id: 4, fecha: '2024-11-13', motivo: 'Gordo', acciones: '' },
+    { id: 5, fecha: '2024-11-14', motivo: 'Gripe', acciones: '' },
+    { id: 6, fecha: '2024-11-15', motivo: 'Gripe', acciones: '' },
+    { id: 7, fecha: '2024-11-16', motivo: 'Resfriado', acciones: '' },
+    { id: 8, fecha: '2024-11-17', motivo: 'Flaco', acciones: '' }
+];
+
+//* Creacion de tabla consultas anteriores
+function tablaConsultas(){
+    let tabla = `
+        <table class='table table-striped table-sm compact' id='tablaSitios'>
+            <thead>
+                <tr class='table-dark text-uppercase mt-2'>
+                    <th scope='col'>id</th>
+                    <th scope='col'>Fecha</th>
+                    <th scope='col'>Motivo consulta</th>
+                    <th scope='col'>Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    `;
+
+    document.getElementById('tablaConsultas').innerHTML = tabla;
+}
+
+//* imeplementando DataTable a la tabla
+function contenidoTablaConsultas(dataConsultas){
+    // Elimina el contenido existente de la tabla
+    $('#tablaSitios').empty();
+    
+    tablaConsultas();
+    var contenedor = document.getElementById('tablaConsultas');
+
+    // Inicializa DataTable
+    $('#tablaSitios').DataTable({
+        data: dataConsultas,
+        columns: [
+            { data: 'id' },
+            { data: 'fecha' },
+            { data: 'motivo' },
+            { data: null,
+                defaultContent: `
+                    <button type="button" class="btn btn-primary" style="margin-right: 5px" data-bs-toggle="modal" data-bs-target="#modalEditSitio">
+                        <i class="bi bi-pencil-fill"></i> Tomar Turno
+                    </button>
+
+                    <button type="button" class="btn btn-primary" style="margin-right: 5px" data-bs-toggle="modal" data-bs-target="#modalEditSitio">
+                        <i class="bi bi-pencil-fill"></i> HC
+                    </button>
+                `,
+            },
+        ],
+
+        language: {
+            "decimal": "",
+            "emptyTable": "No hay informacion",
+            "info": "Mostrando _START_ a _END_ de _TOTAL_ Registros",
+            "infoEmpty": "Mostrando 0 de 0 registros",
+            "infoFiltered": "(Filtrado de _MAX_ total Registros)",
+            "infoPostFix": "",
+            "thousands": ",",
+            "lengthMenu": "Mostrar _MENU_ Registros",
+            "loadingRecords": "Cargando...",
+            "processing": "Procesando...",
+            "search": "Buscar:",
+            "zeroRecords": "Sin resultados encontrados",
+            "paginate": {
+                "first": "Primero",
+                "last": "Ultimo",
+                "next": "Siguiente",
+                "previous": "Anterior"
+            }
+        },
+
+        dom: 'Bfrtip',
+
+        lengthMenu: [
+            [5, 10, 50, 100, 500, -1],
+            ['5 Filas', '10 Filas', '50 Filas', '100 Filas', '500 Filas', 'Ver Todo']
+        ]
+    });
+}
+    

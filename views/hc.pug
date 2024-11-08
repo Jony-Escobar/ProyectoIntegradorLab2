@@ -1,0 +1,76 @@
+//- Extiende el diseño base
+extends layout
+
+//- Bloque de estilos
+block estilos
+    //- Enlace al archivo CSS de la agenda
+    link(rel="stylesheet" href="/css/agenda.css")
+
+//- Bloque de contenido principal
+block contenido
+    main
+        .container
+            // Button trigger modal
+            button.btn.btn-primary(type='button' data-bs-toggle='modal' data-bs-target='#modalPrincipal') | Launch demo modal
+
+            // Modal
+            div(class="modal fade modal-xl" id="modalPrincipal" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1" data-bs-backdrop="static")
+                div(class="modal-dialog modal-dialog-centered")
+                    div(class="modal-content")
+                        div(class="modal-header")
+                            h5(class="modal-title" id="exampleModalToggleLabel") Historia Clinica
+
+                        div(class="modal-body")
+                    
+                            //Formulario
+                            form()
+                                fieldset
+                                    legend(class="fs-6") Informacion Personal
+                                        div(class="row g-3 mt-2")
+                                            div(class="col-md-6")
+                                                input(type="email" class="form-control" id="inputEmail4" placeholder="DNI")
+                                            div(class="col-md-6")
+                                                input(type="hidden" class="form-control" id="inputEmail4" )
+                                
+                                        div(class="row g-3 mt-2")
+                                            div(class="col-md-6")
+                                                input(type="email" class="form-control" id="inputEmail4" placeholder="Apellido")
+                                            div(class="col-md-6")
+                                                input(type="text" class="form-control" id="inputEmail4" placeholder="Nombre")
+                            
+                                fieldset
+                                    legend(class="fs-6 mt-3") Datos de contacto
+                                        div(class="row g-3 mt-2")
+                                            div(class="col-md-6")
+                                                input(type="text" class="form-control" id="inputEmail4" placeholder="Telefono")
+                                            div(class="col-md-6")
+                                                input(type="email" class="form-control" id="inputEmail4" placeholder="Email")
+
+                                div(class="modal-footer mt-4")
+                                    button(class="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal" data-bs-dismiss="modal") Consulta 1
+                                
+                                fieldset
+                                    legend(class="fs-6 mb-4") Historial de Atencion
+
+                                        div(class="container-sm mt-3" id="tablaConsultas")
+
+
+                                        div(class="modal-footer")
+                                            button(type="button" class="btn btn-secondary" data-bs-dismiss="modal") Cerrar
+                                            button(type="button" class="btn btn-primary") Guardar Cambios
+            
+            
+
+            // Modal consulta previa
+            div(class="modal fade modal-xl" id="exampleModalToggle2" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1" data-bs-backdrop="static")
+                div(class="modal-dialog modal-dialog-centered")
+                    div(class="modal-content")
+                        div(class="modal-header")
+                            h5(class="modal-title" id="exampleModalToggleLabel2") Consulta 1
+                            
+                        div(class="modal-body")
+
+                        
+
+                        div(class="modal-footer")
+                            button(class="btn btn-primary" data-bs-target="#modalPrincipal" data-bs-toggle="modal" data-bs-dismiss="modal") Historia Clinica
