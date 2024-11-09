@@ -62,6 +62,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 daysOfWeek: [ 1, 2, 3, 4, 5 ], // Dias laborales (lunes a viernes)
                 startTime: '08:00', // Hora de inicio
                 endTime: '20:00', // Hora de fin
+            },
+            // Funcion que define el contenido personalizado de los eventos del calendario
+            eventContent: function(arg) {
+                // Crea un nuevo elemento div para el contenido
+                let div = document.createElement('div');
+                // Obtiene el tipo de vista actual del calendario
+                let currentView = calendar.view.type;
+                
+                // Si la vista es diaria, muestra informacion detallada
+                if (currentView === 'timeGridDay') {
+                    div.innerHTML = `
+                        <b>${arg.event.title}</b><br>
+                        <a href="${arg.event.extendedProps.historiaClinicaUrl}" class="btn btn-link">Ver Historia Clínica</a>
+                        <a href="${arg.event.extendedProps.iniciarAtencionUrl}" class="btn btn-link">Iniciar Atencion</a>
+                    `;
+                } else {
+                    // Para otras vistas, solo muestra el titulo
+                    div.innerHTML = `<b>${arg.event.title}</b>`;
+                }
+                // Retorna un objeto con el elemento DOM creado
+                return { domNodes: [div] };
             }
         });
 
