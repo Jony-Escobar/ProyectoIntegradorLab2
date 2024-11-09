@@ -20,9 +20,8 @@ app.set("views", "./views")
 
 //Routing
 app.get('/test', (req, res) => {
-    res.render('hc')
+    res.send('App Funcionando');
 });
-
 app.use('/', usuarioRoutes)
 app.use('/', agendaRoutes)
 
