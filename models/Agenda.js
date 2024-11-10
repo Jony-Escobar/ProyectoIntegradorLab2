@@ -48,6 +48,30 @@ class Agenda {
         
         return especialidades;
     }
+
+    static async mostrarAtencionesPrevias(id){
+        const query = `
+            SELECT 
+	            personas.apellido AS 'Apellido',
+	            personas.nombre AS 'Nombre',
+	            turnos.motivo_consulta AS 'Motivo Consulta',
+	            DATE_FORMAT(atencion .fecha_inicio, '%Y-%m-%d') as "Fecha inicio",
+	            DATE_FORMAT(atencion .fecha_fin, '%Y-%m-%d') as "Fecha Fin"
+	
+            FROM turnos
+            	JOIN atencion  ON  turnos.id = atencion .turno_id
+            	JOIN pacientes ON turnos.id = pacientes.id
+            	JOIN personas ON pacientes.id = personas.id
+            WHERE personas.id = ?;
+        `;
+
+        try {
+            const [atenciones] = await pool.query(query, [id]);
+            return atenciones;
+        } catch (error) {
+            throw error;
+        }
+    }
 }
 
 //Exportamos todo

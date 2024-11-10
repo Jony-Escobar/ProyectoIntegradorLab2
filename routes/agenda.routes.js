@@ -12,4 +12,7 @@ agendaRoutes.get('/agenda', protegerRuta, AgendaController.mostrarAgenda)
 // Agregar nueva ruta API para obtener turnos
 agendaRoutes.get('/api/turnos/:id/:especialidadId', protegerRuta, AgendaController.obtenerTurnos)
 
+// Agregar nueva ruta API - Consultar atenciones previas
+agendaRoutes.get('/api/atenciones/:id', protegerRuta, AgendaController.atencionesPrevias)
+
 export default agendaRoutes;
