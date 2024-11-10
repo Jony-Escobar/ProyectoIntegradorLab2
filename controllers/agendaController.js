@@ -4,20 +4,20 @@ class AgendaController {
     //Metodos estaticas para poder exportar todo
     static async mostrarAgenda(req, res) {
         try {
-            const especialidades = await Agenda.obtenerEspecialidadesMedico(req.cookies._userId);
+            const especialidades = await Agenda.obtenerEspecialidadesMedico(req.usuario.id);
             
             res.render('agenda', {
                 pagina: 'Agenda diaria',
-                userId: req.cookies._userId,
-                userName: req.cookies._userName,
+                userId: req.usuario.id,
+                userName: req.usuario.nombre,
                 especialidades
             });
         } catch (error) {
             console.error('Error al obtener especialidades:', error);
             res.render('agenda', {
                 pagina: 'Agenda diaria',
-                userId: req.cookies._userId,
-                userName: req.cookies._userName,
+                userId: req.usuario.id,
+                userName: req.usuario.nombre,
                 error: 'Error al cargar especialidades'
             });
         }

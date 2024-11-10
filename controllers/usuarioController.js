@@ -34,36 +34,19 @@ class UsuarioController {
         try {
             const userData = await Usuario.validarCredenciales(user, pass);
             if (userData) {
-                // Generar el JWT
-                const token = generarJWT(userData.id);
+                // Generar el JWT con toda la información necesaria
+                const token = generarJWT(userData);
 
-                // Guardar en cookie tanto el token como el ID del usuario
+                // Guardar SOLO el token en cookie
                 res.cookie('_token', token, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
-                    maxAge: 1000 * 60 * 60 * 12 // 12 horas en milisegundos
-                });
-                
-                // Agregar una cookie para el ID del usuario
-                res.cookie('_userId', userData.id, {
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'strict',
-                    maxAge: 1000 * 60 * 60 * 12 // 12 horas en milisegundos
-                });
-
-                // Agregar cookie para el nombre del medico
-                res.cookie('_userName', userData.nombre_completo, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'production',
                     sameSite: 'strict',
                     maxAge: 1000 * 60 * 60 * 12
                 });
-                // Redireccionar al agenda
+
                 res.redirect('/agenda');
             } else {
-                // Si las credenciales son invalidas, renderizar el formulario de login con un mensaje de error
                 res.render('login', {
                     pagina: 'Iniciar sesión',
                     error: 'Credenciales invalidas'
@@ -75,12 +58,8 @@ class UsuarioController {
         }
     }
 
-    static cerrarSesion(req, res) {
-        // Limpiar las cookies
+    static async cerrarSesion(req, res) {
         res.clearCookie('_token');
-        res.clearCookie('_userId');
-        res.clearCookie('_userName');
-        // Redireccionar al login
         res.redirect('/login');
     }
 
