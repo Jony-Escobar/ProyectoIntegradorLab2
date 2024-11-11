@@ -38,12 +38,17 @@ class AgendaController {
         try {
             const { id } = req.params;
             const atenciones = await Agenda.mostrarAtencionesPrevias(id);
-            res.json(atenciones);
+
+            res.json( atenciones );
+
         } catch (error) {
             console.error('Error al obtener atenciones:', error);
             res.status(500).json({ error: 'Error al obtener las atenciones' });
         }
     }
+
+
+
 }
 
 //Exportamos todo

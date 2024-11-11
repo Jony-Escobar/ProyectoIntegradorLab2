@@ -19,8 +19,13 @@ app.set("view engine", "pug")
 app.set("views", "./views")
 
 //Routing
-app.get('/test', (req, res) => {
+app.get('/hc', (req, res) => {
     res.render('hc')
+});
+
+//Routing
+app.get('/nueva', (req, res) => {
+    res.render('nueva_atencion')
 });
 app.use('/', usuarioRoutes)
 app.use('/', agendaRoutes)

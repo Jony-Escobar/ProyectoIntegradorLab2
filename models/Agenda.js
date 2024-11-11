@@ -72,6 +72,18 @@ class Agenda {
             throw error;
         }
     }
+
+    static async obtenerAlergias(){
+        const query = `SELECT * FROM alergias;`
+
+        try {
+            const [alergias] = await pool.query(query);
+            return alergias;
+        } catch (error) {
+            console.error('Error obteniendo alergias:', error);
+            throw new Error('Error obteniendo alergias');
+        }
+    }
 }
 
 //Exportamos todo
