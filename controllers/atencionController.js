@@ -6,6 +6,9 @@ const formularioNuevaAtencion = async (req, res) => {
         // Obtiene el ID del turno desde los parametros
         const { id } = req.params; // turno_id
 
+        // Actualizar estado del turno a "En atención" (ID 2)
+        await Atencion.actualizarEstadoTurno(id, 2);
+
         // Obtiene los datos necesarios para el formulario de forma paralela
         const [alergias, importancias, tipos] = await Promise.all([
             Atencion.obtenerAlergias(),
@@ -59,7 +62,7 @@ const guardarAtencion = async (req, res) => {
 
         // Envia respuesta exitosa
         res.json({ 
-            mensaje: 'Atención guardada correctamente',
+            mensaje: 'Atención guardada y finalizada correctamente',
             atencionId 
         });
     } catch (error) {

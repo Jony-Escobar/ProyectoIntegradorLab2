@@ -76,11 +76,6 @@ function createEventContent(arg, calendar) {
     let div = document.createElement('div');
     let currentView = calendar.view.type;
     
-    console.log('Creando contenido del evento:', {
-        title: arg.event.title,
-        extendedProps: arg.event.extendedProps
-    });
-    
     if (currentView === 'timeGridDay') {
         div.innerHTML = `
             <b>${arg.event.title}</b><br>
@@ -94,7 +89,7 @@ function createEventContent(arg, calendar) {
             <a 
                 href="/atencion/${arg.event.extendedProps.turnoId}" 
                 class="btn btn-link"
-                onclick="console.log('Click en Iniciar Atención, turnoId:', '${arg.event.extendedProps.turnoId}')"
+                onclick="return confirm('¿Desea iniciar la atención?')"
             >Iniciar Atención</a>
         `;
     } else {

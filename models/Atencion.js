@@ -48,6 +48,12 @@ class Atencion {
             );
             const atencionId = resultadoAtencion.insertId;
 
+            // 2. Actualizar estado del turno a "Finalizado" (ID 3)
+            await connection.query(
+                `UPDATE turnos SET estado_id = 3 WHERE id = ?`,
+                [datos.turnoId]
+            );
+
             // 2. Guardar alergia si existe
             if (datos.alergia && datos.importancia) {
                 await connection.query(
@@ -116,6 +122,17 @@ class Atencion {
             throw error;
         } finally {
             connection.release();
+        }
+    }
+
+    static async actualizarEstadoTurno(turnoId, estadoId) {
+        const query = `UPDATE turnos SET estado_id = ? WHERE id = ?`;
+        try {
+            await pool.query(query, [estadoId, turnoId]);
+            return true;
+        } catch (error) {
+            console.error('Error actualizando estado del turno:', error);
+            throw new Error('Error actualizando estado del turno');
         }
     }
 }

@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Previene el comportamiento por defecto del formulario
         e.preventDefault();
         
+        if (!confirm('¿Está seguro de finalizar la atención? El turno se marcará como finalizado.')) {
+            return;
+        }
+
         // Crea objeto con los datos del formulario
         const formData = {
             turnoId: document.getElementById('turnoId').value,
@@ -36,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Si la peticion fue exitosa
             if (response.ok) {
-                alert('Atención guardada correctamente');
+                alert('Atención finalizada correctamente');
                 window.location.href = '/agenda';
             } else {
                 // Si hubo error muestra mensaje
