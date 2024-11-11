@@ -34,7 +34,7 @@ export function initializeCalendar(calendarEl, userId) {
                     borderColor: getEventColor(turno.estado_turno),
                     extendedProps: {
                         historiaClinicaUrl: `/historia-clinica/${turno.idPaciente}`,
-                        iniciarAtencionUrl: `/iniciar-atencion/${turno.idPaciente}`
+                        iniciarAtencionUrl: `/atencion/${turno.idPaciente}`
                     }
                 }));
 

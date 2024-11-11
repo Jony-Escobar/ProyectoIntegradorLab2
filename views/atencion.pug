@@ -9,7 +9,10 @@ block estilos
 block contenido
     main
         .container
-            form()
+            form#formAtencion(method="POST")
+                input(type="hidden" name="pacienteId" id="pacienteId")
+                input(type="hidden" name="turnoId" id="turnoId")
+                
                 //- Alergias
                 fieldset
                     legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Alergias
@@ -66,4 +69,6 @@ block contenido
                         div(class="form-floating")
                             textarea(class="form-control rich-text" id="notasClinicas") 
 
+                .d-grid.gap-2.d-md-flex.justify-content-md-end.mt-4
+                    button(type="submit" class="btn btn-primary") Guardar Atención
                 
