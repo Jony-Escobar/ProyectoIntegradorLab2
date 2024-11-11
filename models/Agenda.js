@@ -6,11 +6,13 @@ class Agenda {
     static async mostrarTurnosPorUsuario(id, especialidadId) {        
         const query = `
             SELECT
+                turnos.id as id_turno,
                 DATE_FORMAT(turnos.hora, '%H:%i:%s') as hora,
                 DATE_FORMAT(turnos.fecha, '%Y-%m-%d') as fecha,
                 CONCAT(personas.nombre, ' ', personas.apellido) AS nombre_paciente,
                 turnos.motivo_consulta,
-                estados.estado AS estado_turno
+                estados.estado AS estado_turno,
+                pacientes.id as idPaciente
             FROM
                 turnos
             JOIN pacientes ON turnos.paciente_id = pacientes.id

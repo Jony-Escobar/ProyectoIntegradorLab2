@@ -28,13 +28,15 @@ export function initializeCalendar(calendarEl, userId) {
                 const data = await response.json();
 
                 const events = data.map(turno => ({
-                    title: `\nPACIENTE: ${turno.nombre_paciente}\nMOTIVO: ${turno.motivo_consulta}\nESTADO: ${turno.estado_turno}\n[Ver Historia Clínica]`,
+                    title: `\nPACIENTE: ${turno.nombre_paciente}\nMOTIVO: ${turno.motivo_consulta}\nESTADO: ${turno.estado_turno}`,
                     start: new Date(`${turno.fecha}T${turno.hora}`).toISOString(),
                     backgroundColor: getEventColor(turno.estado_turno),
                     borderColor: getEventColor(turno.estado_turno),
                     extendedProps: {
                         historiaClinicaUrl: `/historia-clinica/${turno.idPaciente}`,
-                        iniciarAtencionUrl: `/atencion/${turno.idPaciente}`
+                        iniciarAtencionUrl: `/atencion/${turno.id_turno}`,
+                        estadoId: turno.estado_turno,
+                        turnoId: turno.id_turno
                     }
                 }));
 
@@ -74,6 +76,11 @@ function createEventContent(arg, calendar) {
     let div = document.createElement('div');
     let currentView = calendar.view.type;
     
+    console.log('Creando contenido del evento:', {
+        title: arg.event.title,
+        extendedProps: arg.event.extendedProps
+    });
+    
     if (currentView === 'timeGridDay') {
         div.innerHTML = `
             <b>${arg.event.title}</b><br>
@@ -85,9 +92,10 @@ function createEventContent(arg, calendar) {
                 data-id="${arg.event.extendedProps.idPaciente}" 
             >Ver Historia Clínica</a>
             <a 
-                href="${arg.event.extendedProps.iniciarAtencionUrl}" 
+                href="/atencion/${arg.event.extendedProps.turnoId}" 
                 class="btn btn-link"
-            >Iniciar Atencion</a>
+                onclick="console.log('Click en Iniciar Atención, turnoId:', '${arg.event.extendedProps.turnoId}')"
+            >Iniciar Atención</a>
         `;
     } else {
         div.innerHTML = `<b>${arg.event.title}</b>`;
