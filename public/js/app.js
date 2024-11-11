@@ -184,7 +184,7 @@ async function tablaConsultas(idUsuario) {
 
 function textoEnriquecido(){
     tinymce.init({
-        selector: 'textarea',
+        selector: '#notasClinicas',
         plugins: [
           // * Funciones principales de edición
           'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',

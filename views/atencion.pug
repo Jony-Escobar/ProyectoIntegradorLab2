@@ -1,0 +1,69 @@
+//- Extiende el diseño base
+extends layout
+
+//- Bloque de estilos
+block estilos
+    //- Enlace al archivo CSS de la agenda
+    link(rel="stylesheet" href="/css/atencion.css")
+
+block contenido
+    main
+        .container
+            form()
+                //- Alergias
+                fieldset
+                    legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Alergias
+                    div(class="row g-3 mt-2")
+                        div(class="d-flex flex-nowrap bd-highlight gap-3")
+                            div(class="order-1 p-2 bd-highlight flex-grow-1")
+                                label(for="selectAlergia" class="form-label") Alergia
+                                select(class="form-select" id="selectAlergia" name="alergia")
+                                    option(value="") Seleccione una alergia
+                                    if alergias && alergias.length
+                                        each alergia in alergias
+                                            option(value=alergia.id)= alergia.alergia
+                            
+                            div(class="order-2 p-2 bd-highlight flex-grow-1")
+                                label(for="selectImportancia" class="form-label") Importancia
+                                select(class="form-select" id="selectImportancia" name="importancia")
+                                    option(value="") Seleccione la importancia
+                                    if importancias && importancias.length
+                                        each importancia in importancias
+                                            option(value=importancia.id)= importancia.importancia
+
+                //- Antecedentes Patologicos
+                fieldset
+                    legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Antecedentes Patológicos
+                    div(class="row g-3 mt-2")
+                        div(class="form-floating")
+                            textarea(class="form-control" id="antecedentesPatologicos") 
+
+                //- Habitos
+                fieldset
+                    legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Hábitos
+                    div(class="row g-3 mt-2")
+                        div(class="form-floating")
+                            textarea(class="form-control" id="habitos") 
+
+                //- Medicamentos en Uso
+                fieldset
+                    legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Medicamentos en Uso
+                    div(class="row g-3 mt-2")
+                        div(class="form-floating")
+                            textarea(class="form-control" id="medicamentosUso") 
+
+                //- Diagnostico
+                fieldset
+                    legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Diagnóstico
+                    div(class="row g-3 mt-2")
+                        div(class="form-floating")
+                            textarea(class="form-control" id="diagnostico") 
+
+                //- Notas Clinicas (con texto enriquecido)
+                fieldset
+                    legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Notas Clínicas - Evoluciones
+                    div(class="row g-3 mt-2")
+                        div(class="form-floating")
+                            textarea(class="form-control rich-text" id="notasClinicas") 
+
+                

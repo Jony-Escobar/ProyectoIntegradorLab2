@@ -1,0 +1,15 @@
+.container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+fieldset {
+    margin-bottom: 2rem;
+    border: none;
+}
+
+textarea {
+    min-height: 120px;
+    width: 100%;
+}
