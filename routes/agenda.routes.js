@@ -10,6 +10,9 @@ agendaRoutes.get('/agenda', AgendaController.mostrarAgenda)
 agendaRoutes.get('/api/turnos/:id/:especialidadId', AgendaController.obtenerTurnos)
 
 // Agregar nueva ruta API - Consultar atenciones previas
-agendaRoutes.get('/api/atenciones/:id', AgendaController.atencionesPrevias)
+agendaRoutes.get('/api/atenciones/:id/:medicoId', AgendaController.atencionesPrevias)
+
+// Agregar nueva ruta API - Obteniendo informacion del paciente
+agendaRoutes.get('/api/informacionPaciente/:id', AgendaController.atencionesPrevias)
 
 export default agendaRoutes;

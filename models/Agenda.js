@@ -73,6 +73,18 @@ class Agenda {
         }
     }
 
+    static async informacionPaciente(id){
+        const query = `SELECT * FROM personas WHERE id = ?;`
+
+        try {
+            const [persona] = await pool.query(query, [id]);
+            return persona;
+        } catch (error) {
+            console.error('Error obteniendo datos del paciente:', error);
+            throw new Error('Error obteniendo datos del paciente');
+        }
+    }
+
     static async obtenerAlergias(){
         const query = `SELECT * FROM alergias;`
 

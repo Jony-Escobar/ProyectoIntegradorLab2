@@ -44,7 +44,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                       turno.estado_turno === 'Finalizado' ? '#28a745' : '#ffc107',
                         borderColor: turno.estado_turno === 'Pendiente' ? '#ffc107' : 
                                    turno.estado_turno === 'En atencion' ? '#3788d8' :
-                                   turno.estado_turno === 'Finalizado' ? '#28a745' : '#ffc107'
+                                   turno.estado_turno === 'Finalizado' ? '#28a745' : '#ffc107',
+                        extendedProps: {
+                            historiaClinicaUrl: `/historia-clinica/${turno.idPaciente}`, // Agrega la URL aquí
+                            iniciarAtencionUrl: `/iniciar-atencion/${turno.idPaciente}` // Agrega la URL aquí
+                        }
                     }));
                     
                     // Llama al callback de exito con los eventos
@@ -74,8 +78,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (currentView === 'timeGridDay') {
                     div.innerHTML = `
                         <b>${arg.event.title}</b><br>
-                        <a href="${arg.event.extendedProps.historiaClinicaUrl}" class="btn btn-link">Ver Historia Clínica</a>
-                        <a href="${arg.event.extendedProps.iniciarAtencionUrl}" class="btn btn-link">Iniciar Atencion</a>
+                        <a 
+                            href="${arg.event.extendedProps.historiaClinicaUrl}" 
+                            class="btn btn-link"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalPrincipal" 
+                            data-id="${arg.event.extendedProps.idPaciente}" 
+
+                        >Ver Historia Clínica</a>
+                        <a 
+                            href="${arg.event.extendedProps.iniciarAtencionUrl}" 
+                            class="btn btn-link"
+
+                        >Iniciar Atencion</a>
                     `;
                 } else {
                     // Para otras vistas, solo muestra el titulo
@@ -104,9 +119,56 @@ document.addEventListener('DOMContentLoaded', function() {
 
     textoEnriquecido();
 
+    //* Obteniendo HD del paciente seleccionado 
+    const modalAtencionesPrevias = document.getElementById('modalPrincipal');
+
+    modalAtencionesPrevias.addEventListener('show.bs.modal', function(event){
+        //* Obtener el boton que activo el modal
+        const button = event.relatedTarget;
+
+        //* Obteniendo el id de paciente
+        const idPaciente = button.getAttribute('data-id');
+
+        async function infoPaciente(idPaciente) {
+            //- Selectores
+            const dniPacienteInput = document.getElementById('dniPaciente');
+            const apellidoPacienteInput = document.getElementById('apellidoPaciente');
+            const nombrePacienteInput = document.getElementById('nombrePaciente');
+            const telefonoPacienteInput = document.getElementById('telefonoPaciente');
+            const emailPacienteInput = document.getElementById('emailPaciente');
+
+
+            //- Realiza una petición para obtener informacion del paciente
+            const response = await fetch(`/api/informacionPaciente/${idPaciente}`);
+            const data = await response.json();
+
+
+            console.log("Desde dentro de la funcion");
+            console.log(data);
+
+            // Asignar valores a los campos
+            dniPacienteInput.value = "432432";
+            apellidoPacienteInput.value = "Apellido ejemplo";
+            nombrePacienteInput.value = "Nombre ejemplo";
+            telefonoPacienteInput.value = "123456789";
+            emailPacienteInput.value = "ejemplo@email.com";
+
+        }
+
+
+
+       // Llama a la función con el idPaciente
+        infoPaciente(idPaciente);
+
+        //TablaConsultas
+        tablaConsultas(1, 1);
+
+
+    });
+
 });
 
-async function tablaConsultas(idUsuario) {
+async function tablaConsultas(idUsuario, idAgenda) {
 
     let tabla = `
         <table class='table table-striped table-sm' id='tablaConsultas'>
@@ -126,7 +188,7 @@ async function tablaConsultas(idUsuario) {
     document.getElementById('contenedorTablaConsultas').innerHTML = tabla;
 
     //- Consulta a la base de datos
-    const response = await fetch(`/api/atenciones/${idUsuario}`);
+    const response = await fetch(`/api/atenciones/${idUsuario}/${idAgenda}`);
     const data = await response.json();
     console.log(data)
 

@@ -47,6 +47,16 @@ class AgendaController {
         }
     }
 
+    static async informacionPaciente(req, res) {
+        try {
+            const { id } = req.params;
+            const paciente = await Agenda.informacionPaciente(id);
+            res.json(paciente);
+        } catch (error) {
+            console.error('Error al obtener informacion Paciente:', error);
+            res.status(500).json({ error: 'Error al obtener los informacion Paciente' });
+        }
+    }
 
 
 }
