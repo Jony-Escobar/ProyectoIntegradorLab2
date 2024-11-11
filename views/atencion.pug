@@ -10,65 +10,64 @@ block contenido
     main
         .container
             form#formAtencion(method="POST")
-                input(type="hidden" name="pacienteId" id="pacienteId")
-                input(type="hidden" name="turnoId" id="turnoId")
+                input(type="hidden" name="turnoId" id="turnoId" value=turnoId)
                 
                 //- Alergias
                 fieldset
                     legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Alergias
                     div(class="row g-3 mt-2")
-                        div(class="d-flex flex-nowrap bd-highlight gap-3")
-                            div(class="order-1 p-2 bd-highlight flex-grow-1")
-                                label(for="selectAlergia" class="form-label") Alergia
-                                select(class="form-select" id="selectAlergia" name="alergia")
-                                    option(value="") Seleccione una alergia
-                                    if alergias && alergias.length
-                                        each alergia in alergias
-                                            option(value=alergia.id)= alergia.alergia
-                            
-                            div(class="order-2 p-2 bd-highlight flex-grow-1")
-                                label(for="selectImportancia" class="form-label") Importancia
-                                select(class="form-select" id="selectImportancia" name="importancia")
-                                    option(value="") Seleccione la importancia
-                                    if importancias && importancias.length
-                                        each importancia in importancias
-                                            option(value=importancia.id)= importancia.importancia
+                        div(class="col-md-6")
+                            label(for="selectAlergia" class="form-label") Alergia
+                            select(class="form-select" id="selectAlergia" name="alergia")
+                                option(value="") Seleccione una alergia
+                                if alergias && alergias.length
+                                    each alergia in alergias
+                                        option(value=alergia.id)= alergia.alergia
+                        
+                        div(class="col-md-6")
+                            label(for="selectImportancia" class="form-label") Importancia
+                            select(class="form-select" id="selectImportancia" name="importancia")
+                                option(value="") Seleccione importancia
+                                if importancias && importancias.length
+                                    each importancia in importancias
+                                        option(value=importancia.id)= importancia.importancia
 
                 //- Antecedentes Patologicos
-                fieldset
+                fieldset(class="mt-4")
                     legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Antecedentes Patológicos
-                    div(class="row g-3 mt-2")
-                        div(class="form-floating")
-                            textarea(class="form-control" id="antecedentesPatologicos") 
+                    textarea(class="form-control" id="antecedentesPatologicos" name="antecedentesPatologicos" rows="3")
 
                 //- Habitos
-                fieldset
+                fieldset(class="mt-4")
                     legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Hábitos
-                    div(class="row g-3 mt-2")
-                        div(class="form-floating")
-                            textarea(class="form-control" id="habitos") 
+                    textarea(class="form-control" id="habitos" name="habitos" rows="3")
 
                 //- Medicamentos en Uso
-                fieldset
+                fieldset(class="mt-4")
                     legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Medicamentos en Uso
-                    div(class="row g-3 mt-2")
-                        div(class="form-floating")
-                            textarea(class="form-control" id="medicamentosUso") 
+                    textarea(class="form-control" id="medicamentosUso" name="medicamentosUso" rows="3")
 
                 //- Diagnostico
-                fieldset
+                fieldset(class="mt-4")
                     legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Diagnóstico
-                    div(class="row g-3 mt-2")
-                        div(class="form-floating")
-                            textarea(class="form-control" id="diagnostico") 
+                    div(class="row g-3")
+                        div(class="col-md-6")
+                            label(for="selectTipo" class="form-label") Tipo
+                            select(class="form-select" id="selectTipo" name="tipoId")
+                                option(value="") Seleccione tipo
+                                if tipos && tipos.length
+                                    each tipo in tipos
+                                        option(value=tipo.id)= tipo.tipo
+                        div(class="col-md-12")
+                            textarea(class="form-control" id="diagnostico" name="diagnostico" rows="3")
 
-                //- Notas Clinicas (con texto enriquecido)
-                fieldset
-                    legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Notas Clínicas - Evoluciones
-                    div(class="row g-3 mt-2")
-                        div(class="form-floating")
-                            textarea(class="form-control rich-text" id="notasClinicas") 
+                //- Notas Clinicas
+                fieldset(class="mt-4")
+                    legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Notas Clínicas
+                    textarea(class="form-control" id="notasClinicas" name="notasClinicas" rows="5")
 
                 .d-grid.gap-2.d-md-flex.justify-content-md-end.mt-4
                     button(type="submit" class="btn btn-primary") Guardar Atención
+
+    script(src="/js/atencion.js")
                 

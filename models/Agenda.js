@@ -51,17 +51,15 @@ class Agenda {
 
     static async mostrarAtencionesPrevias(id){
         const query = `
-            SELECT 
-	            personas.apellido AS 'Apellido',
-	            personas.nombre AS 'Nombre',
-	            turnos.motivo_consulta AS 'Motivo Consulta',
-	            DATE_FORMAT(atencion .fecha_inicio, '%Y-%m-%d') as "Fecha inicio",
-	            DATE_FORMAT(atencion .fecha_fin, '%Y-%m-%d') as "Fecha Fin"
-	
+            SELECT
+                personas.apellido AS 'Apellido',
+                personas.nombre AS 'Nombre',
+                turnos.motivo_consulta AS 'Motivo Consulta',
+                DATE_FORMAT(atenciones.fecha_atencion, '%Y-%m-%d') as "Fecha"
             FROM turnos
-            	JOIN atencion  ON  turnos.id = atencion .turno_id
-            	JOIN pacientes ON turnos.id = pacientes.id
-            	JOIN personas ON pacientes.id = personas.id
+                JOIN atenciones ON turnos.id = atenciones.turno_id
+                JOIN pacientes ON turnos.paciente_id = pacientes.id
+                JOIN personas ON pacientes.persona_id = personas.id
             WHERE personas.id = ?;
         `;
 

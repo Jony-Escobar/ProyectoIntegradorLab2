@@ -5,9 +5,8 @@ export async function initializeDataTable(idUsuario, idAgenda = null) {
                 <tr class='text-uppercase table-primary mt-2'>
                     <th scope='col'>Apellido</th>
                     <th scope='col'>Nombre</th>
-                    <th scope='col'>Motivo consulta</th>
-                    <th scope='col'>Fecha Incio</th>
-                    <th scope='col'>Fecha Fin</th>
+                    <th scope='col'>Motivo Consulta</th>
+                    <th scope='col'>Fecha</th>
                     <th scope='col'>Acciones</th>
                 </tr>
             </thead>
@@ -25,8 +24,7 @@ export async function initializeDataTable(idUsuario, idAgenda = null) {
             { data: 'Apellido' },
             { data: 'Nombre' },
             { data: 'Motivo Consulta' },
-            { data: 'Fecha inicio' },
-            { data: 'Fecha Fin' },
+            { data: 'Fecha' },
             { 
                 data: null,
                 defaultContent: getTableActions()
