@@ -1,3 +1,44 @@
+/* Establece la altura mínima del contenido principal para ocupar toda la pantalla */
 .contenidoPrincipal {
     min-height: 100vh;
+}
+
+/* Estilo para los encabezados h6 dentro del cuerpo del modal */
+.modal-body h6 {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+/* Estilo para los divs dentro del cuerpo del modal */
+.modal-body > div {
+    padding: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Elimina el borde inferior del último div en el cuerpo del modal */
+.modal-body > div:last-child {
+    border-bottom: none;
+}
+
+/* Establece el ancho completo para la tabla de historia clinica */
+#tablaHistoriaClinica {
+    width: 100%;
+}
+
+/* Contenedor de DataTables con scroll horizontal */
+.dataTables_wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Estilo para las celdas de la tabla de historia clinica */
+#tablaHistoriaClinica td {
+    max-width: 200px;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+/* Oculta el segundo encabezado de scroll de DataTables */
+.dataTables_scrollHead:nth-child(2) {
+    display: none;
 }

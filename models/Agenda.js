@@ -96,6 +96,47 @@ class Agenda {
             throw new Error('Error obteniendo alergias');
         }
     }
+
+    static async obtenerHistorialMedico(pacienteId, medicoId) {
+        const query = `
+            SELECT 
+                a.id as atencion_id,
+                DATE_FORMAT(a.fecha_atencion, '%Y-%m-%d') as fecha,
+                CONCAT(pm.nombre, ' ', pm.apellido) as medico,
+                t.motivo_consulta as motivo,
+                d.descripcion as diagnosticos,
+                nc.nota as evolucion,
+                al.alergia as alergias,
+                i.importancia as importancia_alergia,
+                ap.descripcion as antecedentes,
+                h.descripcion as habitos,
+                mu.descripcion as medicamentos
+            FROM atenciones a
+            JOIN turnos t ON t.id = a.turno_id
+            JOIN agendas ag ON ag.id = t.agenda_id
+            JOIN especialidad_medico em ON em.id = ag.especialidad_medico_id
+            JOIN medicos m ON m.id = em.medico_id
+            JOIN personas pm ON pm.id = m.persona_id
+            LEFT JOIN diagnosticos d ON d.atencion_id = a.id
+            LEFT JOIN notas_clinicas nc ON nc.atencion_id = a.id
+            LEFT JOIN atencion_alergia aa ON aa.atencion_id = a.id
+            LEFT JOIN alergias al ON al.id = aa.alergia_id
+            LEFT JOIN importancias i ON i.id = aa.importancia_id
+            LEFT JOIN antecedentes_patologicos ap ON ap.atencion_id = a.id
+            LEFT JOIN habitos h ON h.atencion_id = a.id
+            LEFT JOIN medicamentos_en_uso mu ON mu.atencion_id = a.id
+            WHERE t.paciente_id = ?
+            ORDER BY a.fecha_atencion DESC;
+        `;
+
+        try {
+            const [historial] = await pool.query(query, [pacienteId]);
+            return historial;
+        } catch (error) {
+            console.error('Error al obtener historial médico:', error);
+            throw new Error('Error al obtener historial médico');
+        }
+    }
 }
 
 //Exportamos todo

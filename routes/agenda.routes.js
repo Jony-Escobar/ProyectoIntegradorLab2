@@ -15,4 +15,7 @@ agendaRoutes.get('/api/atenciones/:id/:medicoId', AgendaController.atencionesPre
 // Agregar nueva ruta API - Obteniendo informacion del paciente
 agendaRoutes.get('/api/informacionPaciente/:id', AgendaController.informacionPaciente)
 
+// Agregar nueva ruta API - Obteniendo historial médico
+agendaRoutes.get('/api/historial-medico/:pacienteId', AgendaController.obtenerHistorialMedico);
+
 export default agendaRoutes;

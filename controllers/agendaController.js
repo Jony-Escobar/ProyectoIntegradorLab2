@@ -58,6 +58,18 @@ class AgendaController {
         }
     }
 
+    static async obtenerHistorialMedico(req, res) {
+        try {
+            const { pacienteId } = req.params;
+            const medicoId = req.usuario.id;
+            
+            const historial = await Agenda.obtenerHistorialMedico(pacienteId, medicoId);
+            res.json(historial);
+        } catch (error) {
+            console.error('Error al obtener historial médico:', error);
+            res.status(500).json({ error: 'Error al obtener el historial médico' });
+        }
+    }
 
 }
 
