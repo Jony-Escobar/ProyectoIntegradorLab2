@@ -11,6 +11,15 @@ const protegerRuta = (req, res, next) => {
             id: decoded.id,
             nombre: decoded.nombre
         };
+
+        // Validar acceso directo a la ruta /atencion
+        if (req.path.startsWith('/atencion/')) {
+            const referer = req.headers.referer;
+            if (!referer || !referer.includes('/agenda')) {
+                return res.redirect('/agenda');
+            }
+        }
+
         next();
     } catch (error) {
         return res.clearCookie('_token').redirect('/login');

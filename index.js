@@ -33,9 +33,6 @@ app.use('/', atencionRoutes)
 app.get('/hc', (req, res) => {
     res.render('hc')
 });
-app.get('/atencion', (req, res) => {
-    res.render('atencion')
-});
 
 //* Definir la carpeta publica   
 app.use(express.static('public'));
