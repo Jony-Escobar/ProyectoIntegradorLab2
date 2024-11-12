@@ -94,14 +94,20 @@ class Atencion {
                 );
             }
 
-            // 6. Guardar diagnostico
-            if (datos.diagnostico && datos.tipoId) {
-                await connection.query(
-                    `INSERT INTO diagnosticos 
-                     (descripcion, tipo_id, atencion_id) 
-                     VALUES (?, ?, ?)`,
-                    [datos.diagnostico, datos.tipoId, atencionId]
-                );
+            // 6. Guardar diagnósticos (múltiples)
+            if (datos.diagnosticos && datos.diagnosticos.length > 0) {
+                const insertDiagnostico = `
+                    INSERT INTO diagnosticos 
+                    (descripcion, tipo_id, atencion_id) 
+                    VALUES (?, ?, ?)
+                `;
+
+                for (const diagnostico of datos.diagnosticos) {
+                    await connection.query(
+                        insertDiagnostico,
+                        [diagnostico.descripcion, diagnostico.tipoId, atencionId]
+                    );
+                }
             }
 
             // 7. Guardar notas clinicas

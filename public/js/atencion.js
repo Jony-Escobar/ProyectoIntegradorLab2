@@ -13,26 +13,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            // Crea objeto con los datos del formulario
-            const formData = {};
-            const elements = {
-                turnoId: document.getElementById('turnoId'),
-                selectAlergia: document.getElementById('selectAlergia'),
-                selectImportancia: document.getElementById('selectImportancia'),
-                antecedentesPatologicos: document.getElementById('antecedentesPatologicos'),
-                habitos: document.getElementById('habitos'),
-                medicamentosUso: document.getElementById('medicamentosUso'),
-                diagnostico: document.getElementById('diagnostico'),
-                selectTipo: document.getElementById('selectTipo'),
-                notasClinicas: document.getElementById('notasClinicas')
-            };
-
-            // Agregar solo los valores de elementos que existen
-            for (const [key, element] of Object.entries(elements)) {
-                if (element) {
-                    formData[key] = element.value;
+            // Recolectar todos los diagnósticos
+            const diagnosticos = [];
+            const gruposDiagnosticos = document.querySelectorAll('.diagnostico-grupo');
+            
+            gruposDiagnosticos.forEach(grupo => {
+                const tipo = grupo.querySelector('.tipo-diagnostico').value;
+                const descripcion = grupo.querySelector('.diagnostico-texto').value;
+                
+                if (tipo && descripcion) {
+                    diagnosticos.push({
+                        tipoId: tipo,
+                        descripcion: descripcion
+                    });
                 }
-            }
+            });
+
+            const formData = {
+                turnoId: document.getElementById('turnoId').value,
+                selectAlergia: document.getElementById('selectAlergia')?.value,
+                selectImportancia: document.getElementById('selectImportancia')?.value,
+                antecedentesPatologicos: document.getElementById('antecedentesPatologicos')?.value,
+                habitos: document.getElementById('habitos')?.value,
+                medicamentosUso: document.getElementById('medicamentosUso')?.value,
+                diagnosticos: diagnosticos,
+                notasClinicas: document.getElementById('notasClinicas')?.value
+            };
 
             try {
                 // Realiza peticion POST al endpoint de atencion
