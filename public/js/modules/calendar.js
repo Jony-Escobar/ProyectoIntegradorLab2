@@ -78,7 +78,7 @@ function createEventContent(arg, calendar) {
     let currentView = calendar.view.type;
     
     if (currentView === 'timeGridDay') {
-        div.innerHTML = `
+        let html = `
             <b>${arg.event.title}</b><br>
             <a 
                 href="${arg.event.extendedProps.historiaClinicaUrl}" 
@@ -86,13 +86,18 @@ function createEventContent(arg, calendar) {
                 data-bs-toggle="modal"
                 data-bs-target="#modalPrincipal" 
                 data-id="${arg.event.extendedProps.idPaciente}" 
-            >Ver Historia Clínica</a>
-            <a 
-                href="/atencion/${arg.event.extendedProps.turnoId}" 
-                class="btn btn-link"
-                onclick="return confirm('¿Desea iniciar la atención?')"
-            >Iniciar Atención</a>
-        `;
+            >Ver Historia Clínica</a>`;
+
+        if (arg.event.extendedProps.estadoId !== 'Finalizado') {
+            html += `
+                <a 
+                    href="/atencion/${arg.event.extendedProps.turnoId}" 
+                    class="btn btn-link"
+                    onclick="return confirm('¿Desea iniciar la atención?')"
+                >Iniciar Atención</a>`;
+        }
+        
+        div.innerHTML = html;
     } else {
         div.innerHTML = `<b>${arg.event.title}</b>`;
     }
