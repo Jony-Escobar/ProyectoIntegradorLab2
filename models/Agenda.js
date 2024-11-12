@@ -12,7 +12,7 @@ class Agenda {
                 CONCAT(personas.nombre, ' ', personas.apellido) AS nombre_paciente,
                 turnos.motivo_consulta,
                 estados.estado AS estado_turno,
-                pacientes.id as idPaciente
+                personas.id as idPaciente
             FROM
                 turnos
             JOIN pacientes ON turnos.paciente_id = pacientes.id

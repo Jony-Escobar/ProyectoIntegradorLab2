@@ -36,7 +36,8 @@ export function initializeCalendar(calendarEl, userId) {
                         historiaClinicaUrl: `/historia-clinica/${turno.idPaciente}`,
                         iniciarAtencionUrl: `/atencion/${turno.id_turno}`,
                         estadoId: turno.estado_turno,
-                        turnoId: turno.id_turno
+                        turnoId: turno.id_turno,
+                        idPaciente: turno.idPaciente
                     }
                 }));
 

@@ -49,17 +49,42 @@ async function handleModalShow(event) {
 
 // Carga la informacion del paciente (datos de ejemplo)
 async function infoPaciente(idPaciente) {
+
+    // Haciendo la peticion del id del persona
+    const response = await fetch(`/api/informacionPaciente/${idPaciente}`);
+    const data = await response.json();
+
+    // Convierte un arreglo de objetos a un objeto 
+    const paciente = await arregloAObjeto(data, "id");
+
+    // Destructurando el objeto
+    const { dni, apellido, nombre, telefono, email, sexo } = paciente[idPaciente];
+
     // Objeto con datos de ejemplo del paciente
     const fields = {
-        dniPaciente: "432432",
-        apellidoPaciente: "Apellido ejemplo",
-        nombrePaciente: "Nombre ejemplo",
-        telefonoPaciente: "123456789",
-        emailPaciente: "ejemplo@email.com"
+        dniPaciente: dni,
+        apellidoPaciente: apellido,
+        nombrePaciente: nombre,
+        telefonoPaciente: telefono,
+        emailPaciente: email,
+        sexoPaciente: sexo
     };
+
+    // Reinicia el objeto
+    ({} = fields);
+
+    console.log('nuevo click')
+    console.log(fields);
 
     // Actualiza los campos del formulario con los datos del paciente
     for (const [id, value] of Object.entries(fields)) {
         document.getElementById(id).value = value;
     }
 }
+
+async function arregloAObjeto(arreglo, clave) {
+    return arreglo.reduce((objeto, elemento) => {
+      objeto[elemento[clave]] = elemento;
+      return objeto;
+    }, {});
+  }
