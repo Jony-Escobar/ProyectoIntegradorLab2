@@ -9,6 +9,15 @@ document.addEventListener('DOMContentLoaded', function() {
             // Previene el comportamiento por defecto del formulario
             e.preventDefault();
             
+            // Obtener el contenido del editor
+            const notasClinicas = tinymce.get('notasClinicas').getContent();
+            
+            if (!notasClinicas || notasClinicas.trim() === '<p></p>' || notasClinicas.trim() === '') {
+                alert('La nota clínica es obligatoria');
+                tinymce.get('notasClinicas').focus();
+                return;
+            }
+
             if (!confirm('¿Está seguro de finalizar la atención? El turno se marcará como finalizado.')) {
                 return;
             }
@@ -37,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 habitos: document.getElementById('habitos')?.value,
                 medicamentosUso: document.getElementById('medicamentosUso')?.value,
                 diagnosticos: diagnosticos,
-                notasClinicas: document.getElementById('notasClinicas')?.value
+                notasClinicas: notasClinicas
             };
 
             try {

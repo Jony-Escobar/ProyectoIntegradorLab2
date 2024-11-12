@@ -47,6 +47,13 @@ const guardarAtencion = async (req, res) => {
             notasClinicas
         } = req.body;
 
+        // Validación de notas clínicas
+        if (!notasClinicas || notasClinicas.trim() === '' || notasClinicas.trim() === '<p></p>') {
+            return res.status(400).json({ 
+                mensaje: 'La nota clínica es obligatoria' 
+            });
+        }
+
         // Guarda la atencion en la base de datos
         const atencionId = await Atencion.guardarAtencion({
             turnoId,
