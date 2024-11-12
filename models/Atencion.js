@@ -56,31 +56,50 @@ class Atencion {
 
             // 2. Guardar alergia si existe
             if (datos.alergia && datos.importancia) {
+                const fechaDesde = datos.alergiaFechaDesde || new Date().toISOString().split('T')[0];
                 await connection.query(
                     `INSERT INTO atencion_alergia 
                      (importancia_id, fecha_desde, fecha_hasta, atencion_id, alergia_id) 
-                     VALUES (?, CURDATE(), NULL, ?, ?)`,
-                    [datos.importancia, atencionId, datos.alergia]
+                     VALUES (?, ?, ?, ?, ?)`,
+                    [
+                        datos.importancia, 
+                        fechaDesde,
+                        datos.alergiaFechaHasta || null, 
+                        atencionId, 
+                        datos.alergia
+                    ]
                 );
             }
 
             // 3. Guardar antecedentes patologicos
             if (datos.antecedentesPatologicos) {
+                const fechaDesde = datos.antecedenteFechaDesde || new Date().toISOString().split('T')[0];
                 await connection.query(
                     `INSERT INTO antecedentes_patologicos 
-                     (descripcion, fecha_desde, atencion_id) 
-                     VALUES (?, CURDATE(), ?)`,
-                    [datos.antecedentesPatologicos, atencionId]
+                     (descripcion, fecha_desde, fecha_hasta, atencion_id) 
+                     VALUES (?, ?, ?, ?)`,
+                    [
+                        datos.antecedentesPatologicos, 
+                        fechaDesde,
+                        datos.antecedenteFechaHasta || null, 
+                        atencionId
+                    ]
                 );
             }
 
             // 4. Guardar habitos
             if (datos.habitos) {
+                const fechaDesde = datos.habitosFechaDesde || new Date().toISOString().split('T')[0];
                 await connection.query(
                     `INSERT INTO habitos 
-                     (descripcion, fecha_desde, atencion_id) 
-                     VALUES (?, NOW(), ?)`,
-                    [datos.habitos, atencionId]
+                     (descripcion, fecha_desde, fecha_hasta, atencion_id) 
+                     VALUES (?, ?, ?, ?)`,
+                    [
+                        datos.habitos, 
+                        fechaDesde,
+                        datos.habitosFechaHasta || null, 
+                        atencionId
+                    ]
                 );
             }
 

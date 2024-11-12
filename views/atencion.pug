@@ -16,7 +16,7 @@ block contenido
                 fieldset
                     legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Alergias
                     div(class="row g-3 mt-2")
-                        div(class="col-md-6")
+                        div(class="col-md-4")
                             label(for="selectAlergia" class="form-label") Alergia
                             select(class="form-select" id="selectAlergia" name="alergia")
                                 option(value="") Seleccione una alergia
@@ -24,23 +24,50 @@ block contenido
                                     each alergia in alergias
                                         option(value=alergia.id)= alergia.alergia
                         
-                        div(class="col-md-6")
+                        div(class="col-md-4")
                             label(for="selectImportancia" class="form-label") Importancia
                             select(class="form-select" id="selectImportancia" name="importancia")
                                 option(value="") Seleccione importancia
                                 if importancias && importancias.length
                                     each importancia in importancias
                                         option(value=importancia.id)= importancia.importancia
+                        
+                        div(class="col-md-2")
+                            label(for="alergiaFechaDesde" class="form-label") Fecha Desde
+                            input(type="date" class="form-control" id="alergiaFechaDesde" name="alergiaFechaDesde" 
+                                  value=new Date().toISOString().split('T')[0])
+                        
+                        div(class="col-md-2")
+                            label(for="alergiaFechaHasta" class="form-label") Fecha Hasta
+                            input(type="date" class="form-control" id="alergiaFechaHasta" name="alergiaFechaHasta")
 
                 //- Antecedentes Patologicos
                 fieldset(class="mt-4")
                     legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Antecedentes Patológicos
-                    textarea(class="form-control" id="antecedentesPatologicos" name="antecedentesPatologicos" rows="3")
+                    div(class="row g-3")
+                        div(class="col-md-8")
+                            textarea(class="form-control" id="antecedentesPatologicos" name="antecedentesPatologicos" rows="3")
+                        div(class="col-md-2")
+                            label(for="antecedenteFechaDesde" class="form-label") Fecha Desde
+                            input(type="date" class="form-control" id="antecedenteFechaDesde" name="antecedenteFechaDesde"
+                                  value=new Date().toISOString().split('T')[0])
+                        div(class="col-md-2")
+                            label(for="antecedenteFechaHasta" class="form-label") Fecha Hasta
+                            input(type="date" class="form-control" id="antecedenteFechaHasta" name="antecedenteFechaHasta")
 
                 //- Habitos
                 fieldset(class="mt-4")
                     legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Hábitos
-                    textarea(class="form-control" id="habitos" name="habitos" rows="3")
+                    div(class="row g-3")
+                        div(class="col-md-8")
+                            textarea(class="form-control" id="habitos" name="habitos" rows="3")
+                        div(class="col-md-2")
+                            label(for="habitosFechaDesde" class="form-label") Fecha Desde
+                            input(type="date" class="form-control" id="habitosFechaDesde" name="habitosFechaDesde"
+                                  value=new Date().toISOString().split('T')[0])
+                        div(class="col-md-2")
+                            label(for="habitosFechaHasta" class="form-label") Fecha Hasta
+                            input(type="date" class="form-control" id="habitosFechaHasta" name="habitosFechaHasta")
 
                 //- Medicamentos en Uso
                 fieldset(class="mt-4")
