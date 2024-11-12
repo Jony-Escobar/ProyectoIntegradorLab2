@@ -42,8 +42,8 @@ const guardarAtencion = async (req, res) => {
             antecedentesPatologicos,
             habitos,
             medicamentosUso,
-            diagnostico,
-            tipoId,
+            diagnosticos,
+            tipos,
             notasClinicas
         } = req.body;
 
@@ -55,8 +55,8 @@ const guardarAtencion = async (req, res) => {
             antecedentesPatologicos,
             habitos,
             medicamentosUso,
-            diagnostico,
-            tipoId,
+            diagnosticos,
+            tipos,
             notasClinicas
         });
 
