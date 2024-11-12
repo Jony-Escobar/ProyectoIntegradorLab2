@@ -40,8 +40,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const formData = {
                 turnoId: document.getElementById('turnoId').value,
-                selectAlergia: document.getElementById('selectAlergia')?.value,
-                selectImportancia: document.getElementById('selectImportancia')?.value,
+                alergia: document.getElementById('selectAlergia')?.value,
+                importancia: document.getElementById('selectImportancia')?.value,
                 antecedentesPatologicos: document.getElementById('antecedentesPatologicos')?.value,
                 habitos: document.getElementById('habitos')?.value,
                 medicamentosUso: document.getElementById('medicamentosUso')?.value,

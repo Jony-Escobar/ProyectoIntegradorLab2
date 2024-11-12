@@ -58,8 +58,8 @@ class Atencion {
             if (datos.alergia && datos.importancia) {
                 await connection.query(
                     `INSERT INTO atencion_alergia 
-                     (importancia_id, fecha_desde, atencion_id, alergia_id) 
-                     VALUES (?, CURDATE(), ?, ?)`,
+                     (importancia_id, fecha_desde, fecha_hasta, atencion_id, alergia_id) 
+                     VALUES (?, CURDATE(), NULL, ?, ?)`,
                     [datos.importancia, atencionId, datos.alergia]
                 );
             }
