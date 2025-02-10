@@ -16,7 +16,7 @@ export function initializeCalendar(calendarEl, userId) {
             day: 'Día'
         },
         slotMinTime: '08:00:00',
-        slotMaxTime: '20:00:01',
+        slotMaxTime: '20:59:00',
         allDaySlot: false,
         slotDuration: '00:30:00',
         events: async function(info, successCallback, failureCallback) {
@@ -87,7 +87,9 @@ function createEventContent(arg, calendar) {
                 data-id="${arg.event.extendedProps.idPaciente}" 
             >Ver Historia Clínica</button>`;
 
-        if (arg.event.extendedProps.estadoId !== 'Finalizado') {
+        const esHoy = new Date().toISOString().split('T')[0] === arg.event.start.toISOString().split('T')[0];
+        
+        if (esHoy && arg.event.extendedProps.estadoId !== 'Finalizado') {
             html += `
                 <button 
                     class="btn btn-sm btn-success"

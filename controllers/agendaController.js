@@ -4,6 +4,9 @@ class AgendaController {
     //Metodos estaticas para poder exportar todo
     static async mostrarAgenda(req, res) {
         try {
+            // Primero actualizamos los turnos antiguos
+            await Agenda.actualizarTurnosAntiguos();
+            
             const especialidades = await Agenda.obtenerEspecialidadesMedico(req.usuario.id);
             
             res.render('agenda', {
@@ -13,7 +16,7 @@ class AgendaController {
                 especialidades
             });
         } catch (error) {
-            console.error('Error al obtener especialidades:', error);
+            console.error('Error al cargar agenda:', error);
             res.render('agenda', {
                 pagina: 'Agenda diaria',
                 userId: req.usuario.id,

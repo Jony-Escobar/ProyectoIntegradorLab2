@@ -137,6 +137,23 @@ class Agenda {
             throw new Error('Error al obtener historial médico');
         }
     }
+
+    static async actualizarTurnosAntiguos() {
+        const query = `
+            UPDATE turnos 
+            SET estado_id = 3 
+            WHERE fecha < CURDATE() 
+            AND estado_id != 3
+        `;
+
+        try {
+            const [resultado] = await pool.query(query);
+            return resultado;
+        } catch (error) {
+            console.error('Error actualizando turnos antiguos:', error);
+            throw new Error('Error actualizando turnos antiguos');
+        }
+    }
 }
 
 //Exportamos todo
