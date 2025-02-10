@@ -1,14 +1,14 @@
 extends layout
 
 block estilos
-    link(rel="stylesheet" href="/css/login.css")
+    link(rel="stylesheet", href="css/login.css")
 
 block contenido
     .container.d-flex.align-items-center.justify-content-center(style="min-height: calc(100vh - 100px)")
         .col-11.col-sm-8.col-md-6.col-lg-5.col-xl-4
             h1.text-center.mb-3
                 | Agenda
-                span.ms-2 Medica
+                span.ms-2 Médica
             .card.shadow
                 .card-body.p-3.p-sm-4
                     h2.text-center.mb-3=pagina
@@ -29,8 +29,8 @@ block contenido
                                     i.fa.fa-lock
                                 input#pass.form-control(type='password', name='pass', placeholder='Contraseña', required)
                         
-                        .d-flex.flex-column.flex-sm-row.justify-content-between.align-items-center.gap-2
-                            a.text-muted(href='#') Contactar al administrador
-                            button.btn.btn-primary(type='submit') Iniciar sesión
+                        .d-flex.flex-column.flex-sm-row.justify-content-center.align-items-center.gap-2
+                            //-a.text-muted(href='#') Contactar al administrador
+                            button.btn.btn-primary(type='submit') Ingresar
     
     block footer

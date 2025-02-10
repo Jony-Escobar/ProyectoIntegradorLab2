@@ -16,7 +16,7 @@ export function initializeCalendar(calendarEl, userId) {
             day: 'Día'
         },
         slotMinTime: '08:00:00',
-        slotMaxTime: '20:00:00',
+        slotMaxTime: '20:00:01',
         allDaySlot: false,
         slotDuration: '00:30:00',
         events: async function(info, successCallback, failureCallback) {
@@ -53,7 +53,7 @@ export function initializeCalendar(calendarEl, userId) {
         businessHours: {
             daysOfWeek: [ 1, 2, 3, 4, 5 ],
             startTime: '08:00',
-            endTime: '20:00',
+            endTime: '20:00'
         },
         eventContent: function(arg) {
             return createEventContent(arg, calendar);
@@ -67,7 +67,7 @@ export function initializeCalendar(calendarEl, userId) {
 function getEventColor(estado) {
     const colors = {
         'Pendiente': '#ffc107',
-        'En atencion': '#3788d8',
+        'En atencion': '#dc3545',
         'Finalizado': '#28a745'
     };
     return colors[estado] || '#ffc107';
@@ -80,21 +80,19 @@ function createEventContent(arg, calendar) {
     if (currentView === 'timeGridDay') {
         let html = `
             <b>${arg.event.title}</b><br>
-            <a 
-                href="${arg.event.extendedProps.historiaClinicaUrl}" 
-                class="btn btn-link"
+            <button 
+                class="btn btn-sm btn-primary mt-1 mb-1"
                 data-bs-toggle="modal"
                 data-bs-target="#modalPrincipal" 
                 data-id="${arg.event.extendedProps.idPaciente}" 
-            >Ver Historia Clínica</a>`;
+            >Ver Historia Clínica</button>`;
 
         if (arg.event.extendedProps.estadoId !== 'Finalizado') {
             html += `
-                <a 
-                    href="/atencion/${arg.event.extendedProps.turnoId}" 
-                    class="btn btn-link"
-                    onclick="return confirm('¿Desea iniciar la atención?')"
-                >Iniciar Atención</a>`;
+                <button 
+                    class="btn btn-sm btn-success"
+                    onclick="if(confirm('¿Desea iniciar la atención?')) window.location.href='/atencion/${arg.event.extendedProps.turnoId}'"
+                >Iniciar Atención</button>`;
         }
         
         div.innerHTML = html;

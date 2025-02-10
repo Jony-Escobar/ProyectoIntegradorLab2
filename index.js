@@ -6,22 +6,34 @@ import protegerRuta from './middleware/protegerRuta.js';
 import usuarioRoutes from './routes/usuario.routes.js';
 import agendaRoutes from './routes/agenda.routes.js';
 import atencionRoutes from './routes/atencion.routes.js';
+import path from 'path';
 
 //Variables
 const port = 3000;
 const app = express();
 
-//Middlewares
+// 1. Primero configurar los archivos estáticos
+// Solo necesitamos una configuración de archivos estáticos
+app.use(express.static('public', {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        }
+    }
+}));
+
+// 2. Luego configurar el resto de middlewares
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors())
-app.use(express.urlencoded({extended:true}))
 app.use(cookieParser());
 
 //Habilitar Pug
 app.set("view engine", "pug")
 app.set("views", "./views")
 
-// Rutas publicas (sin autenticacion)
+// 3. Finalmente configurar las rutas
+// Asegúrate que las rutas de usuario estén después de la configuración de archivos estáticos
 app.use('/', usuarioRoutes)
 
 // Aplicar middleware de proteccion a todas las rutas privadas
@@ -34,8 +46,8 @@ app.get('/hc', (req, res) => {
     res.render('hc')
 });
 
-//* Definir la carpeta publica   
-app.use(express.static('public'));
+// Asegurarse que esta línea esté antes de las rutas
+app.use(express.static(path.join(process.cwd(), 'public')));
 
 //Definir puerto y arrancar el proyecto
 app.listen(port, () => {

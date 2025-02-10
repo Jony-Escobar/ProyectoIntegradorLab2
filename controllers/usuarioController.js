@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 class UsuarioController {
     //Metodos estaticos para poder exportar todo
 
-    static mostrarFormulario(req, res) {
+    static async mostrarFormulario(req, res) {
         // Verificar si existe un token
         const token = req.cookies._token;
         

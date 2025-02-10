@@ -1,3 +1,13 @@
+body {
+    background-image: url("../images/imagenMedicina.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
 /* Establece la altura mínima del contenido principal para ocupar toda la pantalla */
 .contenidoPrincipal {
     min-height: 100vh;
@@ -41,4 +51,33 @@
 /* Oculta el segundo encabezado de scroll de DataTables */
 .dataTables_scrollHead:nth-child(2) {
     display: none;
+}
+
+/* Ajustes para FullCalendar */
+.fc-timegrid-slot {
+    height: 40px !important; /* Altura fija para cada slot de tiempo */
+}
+
+.fc-timegrid-slot-lane {
+    height: 100% !important;
+}
+
+.fc .fc-timegrid-slot-minor {
+    border-top-style: none !important;
+}
+
+.fc .fc-timegrid-now-indicator-line {
+    border-color: red !important;
+    border-style: solid !important;
+}
+
+/* Asegura que el último slot no se estire */
+.fc .fc-timegrid-slot:last-child {
+    border-bottom: 1px solid var(--fc-border-color) !important;
+    height: 40px !important;
+}
+
+/* Contenedor principal del calendario */
+.fc-timegrid-container {
+    overflow: hidden !important;
 }
