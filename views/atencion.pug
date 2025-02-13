@@ -7,99 +7,100 @@ block estilos
     link(rel="stylesheet" href="/css/atencion.css")
 
 block contenido
-    main
-        .container
-            form#formAtencion(method="POST")
-                input(type="hidden" name="turnoId" id="turnoId" value=turnoId)
-                
-                //- Alergias
-                fieldset
-                    legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Alergias
-                    div(class="row g-3 mt-2")
-                        div(class="col-md-4")
-                            label(for="selectAlergia" class="form-label") Alergia
-                            select(class="form-select" id="selectAlergia" name="alergia")
-                                option(value="") Seleccione una alergia
-                                if alergias && alergias.length
-                                    each alergia in alergias
-                                        option(value=alergia.id)= alergia.alergia
-                        
-                        div(class="col-md-4")
-                            label(for="selectImportancia" class="form-label") Importancia
-                            select(class="form-select" id="selectImportancia" name="importancia")
-                                option(value="") Seleccione importancia
-                                if importancias && importancias.length
-                                    each importancia in importancias
-                                        option(value=importancia.id)= importancia.importancia
-                        
-                        div(class="col-md-2")
-                            label(for="alergiaFechaDesde" class="form-label") Fecha Desde
-                            input(type="date" class="form-control" id="alergiaFechaDesde" name="alergiaFechaDesde" 
-                                  value=new Date().toISOString().split('T')[0])
-                        
-                        div(class="col-md-2")
-                            label(for="alergiaFechaHasta" class="form-label") Fecha Hasta
-                            input(type="date" class="form-control" id="alergiaFechaHasta" name="alergiaFechaHasta")
-
-                //- Antecedentes Patologicos
-                fieldset(class="mt-4")
-                    legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Antecedentes Patológicos
-                    div(class="row g-3")
-                        div(class="col-md-8")
-                            textarea(class="form-control" id="antecedentesPatologicos" name="antecedentesPatologicos" rows="3")
-                        div(class="col-md-2")
-                            label(for="antecedenteFechaDesde" class="form-label") Fecha Desde
-                            input(type="date" class="form-control" id="antecedenteFechaDesde" name="antecedenteFechaDesde"
-                                  value=new Date().toISOString().split('T')[0])
-                        div(class="col-md-2")
-                            label(for="antecedenteFechaHasta" class="form-label") Fecha Hasta
-                            input(type="date" class="form-control" id="antecedenteFechaHasta" name="antecedenteFechaHasta")
-
-                //- Habitos
-                fieldset(class="mt-4")
-                    legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Hábitos
-                    div(class="row g-3")
-                        div(class="col-md-8")
-                            textarea(class="form-control" id="habitos" name="habitos" rows="3")
-                        div(class="col-md-2")
-                            label(for="habitosFechaDesde" class="form-label") Fecha Desde
-                            input(type="date" class="form-control" id="habitosFechaDesde" name="habitosFechaDesde"
-                                  value=new Date().toISOString().split('T')[0])
-                        div(class="col-md-2")
-                            label(for="habitosFechaHasta" class="form-label") Fecha Hasta
-                            input(type="date" class="form-control" id="habitosFechaHasta" name="habitosFechaHasta")
-
-                //- Medicamentos en Uso
-                fieldset(class="mt-4")
-                    legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Medicamentos en Uso
-                    textarea(class="form-control" id="medicamentosUso" name="medicamentosUso" rows="3")
-
-                //- Diagnósticos
-                fieldset(class="mt-4")
-                    legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Diagnósticos
-                    div#diagnosticosContainer
-                        div(class="row g-3 diagnostico-grupo mb-2")
-                            div(class="col-md-6")
-                                label(for="selectTipo_0" class="form-label") Tipo
-                                select(class="form-select tipo-diagnostico" id="selectTipo_0" name="tipos[]" required)
-                                    option(value="") Seleccione tipo
-                                    if tipos && tipos.length
-                                        each tipo in tipos
-                                            option(value=tipo.id)= tipo.tipo
-                            div(class="col-md-11")
-                                textarea(class="form-control diagnostico-texto" id="diagnostico_0" name="diagnosticos[]" rows="3" required)
-                            div(class="col-md-1 d-flex align-items-center")
-                                button(type="button" class="btn btn-danger btn-eliminar-diagnostico" disabled) X
+    .container.py-4
+        .row.justify-content-center
+            .col-12.col-lg-10
+                form#formAtencion(method="POST").needs-validation
+                    input(type="hidden" name="turnoId" id="turnoId" value=turnoId)
                     
-                    div(class="text-end mt-2")
-                        button(type="button" class="btn btn-primary" id="btnAgregarDiagnostico") + Agregar Diagnóstico
+                    //- Alergias
+                    fieldset
+                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Alergias
+                        div(class="row g-3 mt-2")
+                            div(class="col-md-4")
+                                label(for="selectAlergia" class="form-label") Alergia
+                                select(class="form-select" id="selectAlergia" name="alergia")
+                                    option(value="") Seleccione una alergia
+                                    if alergias && alergias.length
+                                        each alergia in alergias
+                                            option(value=alergia.id)= alergia.alergia
+                            
+                            div(class="col-md-4")
+                                label(for="selectImportancia" class="form-label") Importancia
+                                select(class="form-select" id="selectImportancia" name="importancia")
+                                    option(value="") Seleccione importancia
+                                    if importancias && importancias.length
+                                        each importancia in importancias
+                                            option(value=importancia.id)= importancia.importancia
+                            
+                            div(class="col-md-2")
+                                label(for="alergiaFechaDesde" class="form-label") Fecha Desde
+                                input(type="date" class="form-control" id="alergiaFechaDesde" name="alergiaFechaDesde" 
+                                      value=new Date().toISOString().split('T')[0])
+                            
+                            div(class="col-md-2")
+                                label(for="alergiaFechaHasta" class="form-label") Fecha Hasta
+                                input(type="date" class="form-control" id="alergiaFechaHasta" name="alergiaFechaHasta")
 
-                //- Notas Clinicas
-                fieldset(class="mt-4")
-                    legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Notas Clínicas
-                    textarea(class="form-control" id="notasClinicas" name="notasClinicas" rows="5")
+                    //- Antecedentes Patologicos
+                    fieldset(class="mt-4")
+                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Antecedentes Patológicos
+                        div(class="row g-3")
+                            div(class="col-md-8")
+                                textarea(class="form-control" id="antecedentesPatologicos" name="antecedentesPatologicos" rows="3")
+                            div(class="col-md-2")
+                                label(for="antecedenteFechaDesde" class="form-label") Fecha Desde
+                                input(type="date" class="form-control" id="antecedenteFechaDesde" name="antecedenteFechaDesde"
+                                      value=new Date().toISOString().split('T')[0])
+                            div(class="col-md-2")
+                                label(for="antecedenteFechaHasta" class="form-label") Fecha Hasta
+                                input(type="date" class="form-control" id="antecedenteFechaHasta" name="antecedenteFechaHasta")
 
-                .d-grid.gap-2.d-md-flex.justify-content-md-end.mt-4
-                    button(type="submit" class="btn btn-primary") Guardar Atención
+                    //- Habitos
+                    fieldset(class="mt-4")
+                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Hábitos
+                        div(class="row g-3")
+                            div(class="col-md-8")
+                                textarea(class="form-control" id="habitos" name="habitos" rows="3")
+                            div(class="col-md-2")
+                                label(for="habitosFechaDesde" class="form-label") Fecha Desde
+                                input(type="date" class="form-control" id="habitosFechaDesde" name="habitosFechaDesde"
+                                      value=new Date().toISOString().split('T')[0])
+                            div(class="col-md-2")
+                                label(for="habitosFechaHasta" class="form-label") Fecha Hasta
+                                input(type="date" class="form-control" id="habitosFechaHasta" name="habitosFechaHasta")
+
+                    //- Medicamentos en Uso
+                    fieldset(class="mt-4")
+                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Medicamentos en Uso
+                        textarea(class="form-control" id="medicamentosUso" name="medicamentosUso" rows="3")
+
+                    //- Diagnósticos
+                    fieldset(class="mt-4")
+                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Diagnósticos
+                        div#diagnosticosContainer
+                            div(class="row g-3 diagnostico-grupo mb-2")
+                                div(class="col-md-6")
+                                    label(for="selectTipo_0" class="form-label") Tipo
+                                    select(class="form-select tipo-diagnostico" id="selectTipo_0" name="tipos[]" required)
+                                        option(value="") Seleccione tipo
+                                        if tipos && tipos.length
+                                            each tipo in tipos
+                                                option(value=tipo.id)= tipo.tipo
+                                div(class="col-md-11")
+                                    textarea(class="form-control diagnostico-texto" id="diagnostico_0" name="diagnosticos[]" rows="3" required)
+                                div(class="col-md-1 d-flex align-items-center")
+                                    button(type="button" class="btn btn-danger btn-eliminar-diagnostico" disabled) X
+                        
+                        div(class="text-end mt-2")
+                            button(type="button" class="btn btn-primary" id="btnAgregarDiagnostico") + Agregar Diagnóstico
+
+                    //- Notas Clinicas
+                    fieldset(class="mt-4")
+                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Notas Clínicas
+                        textarea(class="form-control" id="notasClinicas" name="notasClinicas" rows="5")
+
+                    .d-flex.flex-column.flex-md-row.justify-content-end.gap-2.mt-4
+                        button(type="submit").btn.btn-primary.px-4 Guardar Atención
 
     script(src="/js/atencion.js")

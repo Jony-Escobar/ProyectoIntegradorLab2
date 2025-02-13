@@ -81,3 +81,27 @@ body {
 .fc-timegrid-container {
     overflow: hidden !important;
 }
+
+/* Ajustes para FullCalendar */
+.fc-event {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100% !important; /* Asegura que el evento ocupe todo el slot */
+    width: 100% !important; /* Asegura que el evento ocupe todo el ancho disponible */
+    white-space: normal; /* Permite que el texto se ajuste al tamaño del evento */
+    overflow: hidden; /* Evita que el contenido se desborde */
+    text-align: center; /* Centra el texto dentro del evento */
+}
+
+.fc-timegrid-event {
+    overflow: hidden !important;
+}
+
+.fc-timegrid-event .fc-event-main {
+    padding: 0 !important;
+}
+
+.fc-v-event {
+    min-height: unset !important;
+}
