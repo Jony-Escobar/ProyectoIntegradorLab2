@@ -69,19 +69,19 @@ export function initializeCalendar(calendarEl, userId) {
                     html: `
                         <div style="font-size: 15px; padding: 4px; height: 100%; width: 100%;">
                             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; height: 100%; align-items: stretch;">
-                                <div class="text-start" style="padding-left: 8px; width: 100px;">
+                                <div class="text-start fc-event-content-cell" style="padding-left: 8px;">
                                     <b>Paciente:</b><br>
                                     ${paciente}
                                 </div>
-                                <div class="text-start" style="width: 100px;">
+                                <div class="text-start fc-event-content-cell">
                                     <b>Motivo:</b><br>
                                     ${motivo}
                                 </div>
-                                <div class="text-start" style="width: 100px;">
+                                <div class="text-start fc-event-content-cell">
                                     <b>Estado:</b><br>
                                     ${estado}
                                 </div>
-                                <div style="display: flex; flex-direction: column; justify-content: center; gap: 4px; width: 100px;">
+                                <div style="display: flex; flex-direction: column; justify-content: center; gap: 4px;">
                                     <button 
                                         class="btn btn-sm btn-secondary"
                                         data-bs-toggle="modal"
