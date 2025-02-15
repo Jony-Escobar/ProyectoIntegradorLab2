@@ -30,29 +30,6 @@ body {
     border-bottom: none;
 }
 
-/* Establece el ancho completo para la tabla de historia clinica */
-#tablaHistoriaClinica {
-    width: 100%;
-}
-
-/* Contenedor de DataTables con scroll horizontal */
-.dataTables_wrapper {
-    width: 100%;
-    overflow-x: auto;
-}
-
-/* Estilo para las celdas de la tabla de historia clinica */
-#tablaHistoriaClinica td {
-    max-width: 200px;
-    white-space: normal;
-    word-wrap: break-word;
-}
-
-/* Oculta el segundo encabezado de scroll de DataTables */
-.dataTables_scrollHead:nth-child(2) {
-    display: none;
-}
-
 /* Ajustes para FullCalendar */
 .fc-timegrid-slot {
     height: 40px !important; /* Altura fija para cada slot de tiempo */

@@ -1,6 +1,5 @@
 // Importa los modulos necesarios
 import { initializeCalendar } from './modules/calendar.js';
-import { dataTableConfig, generarTablaHTML } from './modules/dataTable.js';
 import { initializeRichText } from './modules/richText.js';
 
 // Inicialización de la aplicación

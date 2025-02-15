@@ -1,0 +1,97 @@
+div.modal.fade#historiaClinicaModal(tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true")
+  div.modal-dialog.modal-lg
+    div.modal-content
+      div.modal-header
+        h5.modal-title#modalLabel Historia Clínica
+        button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+      div.modal-body
+        h6 Información Personal
+        p
+          strong DNI: 
+          | 12345678
+        p
+          strong Género: 
+          | Masculino
+        p
+          strong Nombre: 
+          | Juan Pérez
+
+        h6 Datos de Contacto
+        p
+          strong Teléfono: 
+          | 1234-567890
+        p
+          strong Email: 
+          | juan@email.com
+
+        h6 Historial de Atención
+        table.table
+          thead
+            tr
+              th Fecha
+              th Médico
+              th Motivo
+              th Diagnóstico
+              th Más datos
+          tbody
+            tr
+              td 10/02/2025
+              td Dr. López
+              td Dolor de cabeza
+              td Migraña
+              td 
+                button.btn.btn-primary(type="button") Ver más
+
+
+
+
+
+
+
+//- div(class="modal fade modal-xl" id="modalPrincipal" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1" data-bs-backdrop="static")
+//-     div(class="modal-dialog modal-dialog-centered")
+//-         div(class="modal-content")
+//-             div(class="modal-header")
+//-                 h5(class="modal-title" id="exampleModalToggleLabel") Historia Clinica
+//-             div(class="modal-body")
+        
+//-                 //Formulario
+//-                 form()
+//-                     fieldset
+//-                         div(class="d-flex bd-highlight")
+//-                             div(class="p-2 flex-grow-1 bd-highlight")
+//-                                 legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Informacion Personal
+
+//-                         div(class="row g-3 mt-2")
+//-                             div(class="col-md-6")
+//-                                 label(for="dniPaciente" class="form-label") DNI
+//-                                 input(type="text" class="form-control" id="dniPaciente" name="dniPaciente" placeholder="DNI" disabled)
+
+//-                             div(class="col-md-6")
+//-                                 label(for="sexoPaciente" class="form-label") GENERO
+//-                                 input(type="text" class="form-control" id="sexoPaciente" name="sexoPaciente" placeholder="DNI" disabled)
+                    
+//-                         div(class="row g-3 mt-2")
+//-                             div(class="col-md-6")
+//-                                 label(for="apellidoPaciente" class="form-label") APELLIDO
+//-                                 input(type="email" class="form-control" id="apellidoPaciente" name="apellidoPaciente" placeholder="Apellido" disabled)
+//-                             div(class="col-md-6")
+//-                                 label(for="nombrePaciente" class="form-label") NOMBRE
+//-                                 input(type="text" class="form-control" id="nombrePaciente" name="nombrePaciente" placeholder="Nombre" disabled)
+                
+//-                     fieldset
+//-                         legend(class="fs-6 mt-3") Datos de contacto
+//-                         div(class="row g-3 mt-2")
+//-                             div(class="col-md-6")
+//-                                 label(for="telefonoPaciente" class="form-label") TELEFONO
+//-                                 input(type="text" class="form-control" id="telefonoPaciente" name="telefonoPaciente" placeholder="Telefono" disabled)
+//-                             div(class="col-md-6")
+//-                                 label(for="emailPaciente" class="form-label") EMAIL
+//-                                 input(type="email" class="form-control" id="emailPaciente" name="emailPaciente" placeholder="Email" disabled)
+                    
+//-                     fieldset
+//-                         legend(class="fs-6 mb-4 text-primary text-wrap fs-4 mt-4") Historial de Atencion
+//-                         div(class="container-sm mt-3" id="contenedorTablaConsultas")
+//-             div(class="modal-footer")
+//-                 button(type="button" class="btn btn-secondary" data-bs-dismiss="modal") Cerrar
+//-                 button(type="button" class="btn btn-primary") Guardar Cambios
