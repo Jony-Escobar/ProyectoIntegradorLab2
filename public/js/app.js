@@ -45,28 +45,40 @@ async function handleModalShow(event) {
 async function cargarInfoPaciente(idPaciente) {
     const response = await fetch(`/api/informacionPaciente/${idPaciente}`);
     const data = await response.json();
-    const paciente = data[0]; // Asumimos que viene un solo paciente
+    const paciente = data[0];
 
-    const campos = {
-        dniPaciente: paciente.dni,
-        apellidoPaciente: paciente.apellido,
-        nombrePaciente: paciente.nombre,
-        telefonoPaciente: paciente.telefono,
-        emailPaciente: paciente.email,
-        sexoPaciente: paciente.sexo
-    };
-
-    Object.entries(campos).forEach(([id, valor]) => {
-        const elemento = document.getElementById(id);
-        if (elemento) elemento.value = valor || '';
-    });
+    // Actualizar los elementos del modal con la información del paciente
+    document.getElementById('dniPaciente').textContent = paciente.dni;
+    document.getElementById('sexoPaciente').textContent = paciente.sexo;
+    document.getElementById('nombreCompletoPaciente').textContent = 
+        `${paciente.nombre} ${paciente.apellido}`;
+    document.getElementById('telefonoPaciente').textContent = paciente.telefono || '-';
+    document.getElementById('emailPaciente').textContent = paciente.email || '-';
 }
 
 // Carga y muestra el historial médico
 async function cargarHistorialMedico(idPaciente) {
-    const response = await fetch(`/api/historial-medico/${idPaciente}`);
-    const historial = await response.json();
-    actualizarTablaHistorial(historial);
+    try {
+        const response = await fetch(`/api/historial-medico/${idPaciente}`);
+        const historial = await response.json();
+        
+        const tbody = document.getElementById('tablaHistorialBody');
+        tbody.innerHTML = '';
+
+        historial.forEach(consulta => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${consulta.fecha}</td>
+                <td>${consulta.medico}</td>
+                <td>${consulta.motivo}</td>
+                <td>${consulta.diagnosticos || '-'}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error al cargar historial médico:', error);
+        alert('Error al cargar el historial médico');
+    }
 }
 
 // Actualiza la tabla de historial médico

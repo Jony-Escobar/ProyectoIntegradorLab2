@@ -85,7 +85,8 @@ export function initializeCalendar(calendarEl, userId) {
                                     <button 
                                         class="btn btn-sm btn-secondary"
                                         data-bs-toggle="modal" 
-                                        data-bs-target="#historiaClinicaModal"
+                                        data-bs-target="#modalPrincipal"
+                                        data-id="${arg.event.extendedProps.idPaciente}"
                                         style="white-space: nowrap;"
                                     >Ver HC</button>
                                     ${new Date().toISOString().split('T')[0] === arg.event.start.toISOString().split('T')[0] && estado !== 'Finalizado' ? `

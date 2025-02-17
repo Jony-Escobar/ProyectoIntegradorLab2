@@ -1,46 +1,49 @@
-div.modal.fade#historiaClinicaModal(tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true")
+div.modal.fade#modalPrincipal(tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true")
   div.modal-dialog.modal-lg
     div.modal-content
-      div.modal-header
-        h5.modal-title#modalLabel Historia Clínica
+      div.modal-header.text-center
+        h3.modal-title.w-100#modalLabel Historia Clínica
         button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
       div.modal-body
-        h6 Información Personal
-        p
-          strong DNI: 
-          | 12345678
-        p
-          strong Género: 
-          | Masculino
-        p
-          strong Nombre: 
-          | Juan Pérez
+        h5.modal-title.text-primary Información Personal
+        div.row
+          div.col-md-4
+            p
+              strong Nombre: 
+              span#nombreCompletoPaciente
+          div.col-md-4
+            p
+              strong DNI: 
+              span#dniPaciente
+          div.col-md-4
+            p
+              strong Género: 
+              span#sexoPaciente
+        h5.modal-title.text-primary Datos de Contacto
+        div.row
+          div.col-md-6
+            p
+              strong Teléfono: 
+              span#telefonoPaciente
+          div.col-md-6
+            p
+              strong Email: 
+              span#emailPaciente
 
-        h6 Datos de Contacto
-        p
-          strong Teléfono: 
-          | 1234-567890
-        p
-          strong Email: 
-          | juan@email.com
+        h5.modal-title.text-primary Historial de Atención
+        div#contenedorTablaConsultas
+          table.table
+            thead
+              tr
+                th Fecha
+                th Médico
+                th Motivo
+                th Diagnóstico
+                th Más datos
+            tbody#tablaHistorialBody
 
-        h6 Historial de Atención
-        table.table
-          thead
-            tr
-              th Fecha
-              th Médico
-              th Motivo
-              th Diagnóstico
-              th Más datos
-          tbody
-            tr
-              td 10/02/2025
-              td Dr. López
-              td Dolor de cabeza
-              td Migraña
-              td 
-                button.btn.btn-primary(type="button") Ver más
+      div.modal-footer
+        button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Cerrar
 
 
 
