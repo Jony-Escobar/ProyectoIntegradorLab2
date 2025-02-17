@@ -72,13 +72,96 @@ async function cargarHistorialMedico(idPaciente) {
                 <td>${consulta.medico}</td>
                 <td>${consulta.motivo}</td>
                 <td>${consulta.diagnosticos || '-'}</td>
+                <td>
+                    <button 
+                        class="btn btn-sm btn-info ver-detalle-atencion"
+                        data-atencion='${JSON.stringify(consulta)}'
+                    >
+                        Ver Más
+                    </button>
+                </td>
             `;
             tbody.appendChild(row);
+        });
+
+        // Agregar event listeners a los botones
+        document.querySelectorAll('.ver-detalle-atencion').forEach(btn => {
+            btn.addEventListener('click', mostrarDetalleAtencion);
         });
     } catch (error) {
         console.error('Error al cargar historial médico:', error);
         alert('Error al cargar el historial médico');
     }
+}
+
+function mostrarDetalleAtencion(e) {
+    const atencion = JSON.parse(e.currentTarget.dataset.atencion);
+    
+    const modalContent = `
+        <div class="modal fade" id="modalDetalleAtencion" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Detalle de Atención - ${atencion.fecha}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <h6 class="text-primary">Información General</h6>
+                            <p><strong>Médico:</strong> ${atencion.medico}</p>
+                            <p><strong>Motivo:</strong> ${atencion.motivo}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-primary">Diagnósticos</h6>
+                            <p>${atencion.diagnosticos || 'No registrado'}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-primary">Evolución</h6>
+                            <p>${atencion.evolucion || 'No registrado'}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-primary">Alergias</h6>
+                            <p>${atencion.alergias ? `${atencion.alergias} (${atencion.importancia_alergia})` : 'No registrado'}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-primary">Antecedentes</h6>
+                            <p>${atencion.antecedentes || 'No registrado'}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-primary">Hábitos</h6>
+                            <p>${atencion.habitos || 'No registrado'}</p>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6 class="text-primary">Medicamentos</h6>
+                            <p>${atencion.medicamentos || 'No registrado'}</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Eliminar modal anterior si existe
+    const modalAnterior = document.getElementById('modalDetalleAtencion');
+    if (modalAnterior) {
+        modalAnterior.remove();
+    }
+
+    // Agregar nuevo modal al DOM
+    document.body.insertAdjacentHTML('beforeend', modalContent);
+
+    // Mostrar el modal
+    const modal = new bootstrap.Modal(document.getElementById('modalDetalleAtencion'));
+    modal.show();
 }
 
 // Actualiza la tabla de historial médico
