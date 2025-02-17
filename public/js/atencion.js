@@ -9,12 +9,13 @@ document.addEventListener('DOMContentLoaded', function() {
             // Previene el comportamiento por defecto del formulario
             e.preventDefault();
             
-            // Obtener el contenido del editor
-            const notasClinicas = tinymce.get('notasClinicas').getContent();
+            // Obtener el contenido del editor Quill
+            const quillEditor = document.querySelector('#editor-container .ql-editor');
+            const notasClinicas = quillEditor.innerHTML;
             
-            if (!notasClinicas || notasClinicas.trim() === '<p></p>' || notasClinicas.trim() === '') {
+            if (!notasClinicas || notasClinicas.trim() === '<p><br></p>' || notasClinicas.trim() === '') {
                 alert('La nota clínica es obligatoria');
-                tinymce.get('notasClinicas').focus();
+                quillEditor.focus();
                 return;
             }
 

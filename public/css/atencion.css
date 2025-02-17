@@ -72,3 +72,24 @@ textarea {
         margin-bottom: 0.5rem;
     }
 }
+
+#editor-container {
+    height: 300px;
+    margin-bottom: 1rem;
+}
+
+.ql-editor {
+    min-height: 250px;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.ql-toolbar.ql-snow {
+    border-radius: 5px 5px 0 0;
+    border-color: #ced4da;
+}
+
+.ql-container.ql-snow {
+    border-radius: 0 0 5px 5px;
+    border-color: #ced4da;
+}
