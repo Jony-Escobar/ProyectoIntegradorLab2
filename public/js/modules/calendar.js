@@ -36,11 +36,11 @@ export function initializeCalendar(calendarEl, userId) {
                         nombre_paciente: turno.nombre_paciente,
                         motivo_consulta: turno.motivo_consulta,
                         estado_turno: turno.estado_turno,
-                        historiaClinicaUrl: `/historia-clinica/${turno.idPaciente}`,
+                        historiaClinicaUrl: `/historia-clinica/${turno.id_paciente}`,
                         iniciarAtencionUrl: `/atencion/${turno.id_turno}`,
                         estadoId: turno.estado_turno,
                         turnoId: turno.id_turno,
-                        idPaciente: turno.idPaciente
+                        idPaciente: turno.id_paciente
                     }
                 }));
 
@@ -112,6 +112,9 @@ export function initializeCalendar(calendarEl, userId) {
                             </div>
                             <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 <b>M:</b> ${motivo}
+                            </div>
+                            <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                <b>E:</b> ${estado}
                             </div>
                         </div>
                     `

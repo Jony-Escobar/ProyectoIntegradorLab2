@@ -12,7 +12,7 @@ class Agenda {
                 CONCAT(personas.nombre, ' ', personas.apellido) AS nombre_paciente,
                 turnos.motivo_consulta,
                 estados.estado AS estado_turno,
-                personas.id as idPaciente
+                pacientes.id as id_paciente
             FROM
                 turnos
             JOIN pacientes ON turnos.paciente_id = pacientes.id
@@ -74,11 +74,15 @@ class Agenda {
     }
 
     static async informacionPaciente(id){
-        const query = `SELECT * FROM personas WHERE id = ?;`
+        const query = `
+            SELECT personas.*, pacientes.id as paciente_id 
+            FROM personas 
+            INNER JOIN pacientes ON pacientes.persona_id = personas.id 
+            WHERE pacientes.id = ?;`
 
         try {
-            const [persona] = await pool.query(query, [id]);
-            return persona;
+            const [paciente] = await pool.query(query, [id]);
+            return paciente;
         } catch (error) {
             console.error('Error obteniendo datos del paciente:', error);
             throw new Error('Error obteniendo datos del paciente');
@@ -97,17 +101,16 @@ class Agenda {
         }
     }
 
-    static async obtenerHistorialMedico(pacienteId, medicoId) {
+    static async obtenerHistorialMedico(pacienteId) {
         const query = `
             SELECT 
-                a.id as atencion_id,
                 DATE_FORMAT(a.fecha_atencion, '%Y-%m-%d') as fecha,
                 CONCAT(pm.nombre, ' ', pm.apellido) as medico,
                 t.motivo_consulta as motivo,
-                d.descripcion as diagnosticos,
+                GROUP_CONCAT(DISTINCT d.descripcion SEPARATOR '; ') as diagnosticos,
                 nc.nota as evolucion,
-                al.alergia as alergias,
-                i.importancia as importancia_alergia,
+                GROUP_CONCAT(DISTINCT al.alergia) as alergias,
+                GROUP_CONCAT(DISTINCT i.importancia) as importancia_alergia,
                 ap.descripcion as antecedentes,
                 h.descripcion as habitos,
                 mu.descripcion as medicamentos
@@ -126,7 +129,8 @@ class Agenda {
             LEFT JOIN habitos h ON h.atencion_id = a.id
             LEFT JOIN medicamentos_en_uso mu ON mu.atencion_id = a.id
             WHERE t.paciente_id = ?
-            ORDER BY a.fecha_atencion DESC;
+            GROUP BY a.id, fecha, medico, motivo, evolucion, antecedentes, habitos, medicamentos
+            ORDER BY a.fecha_atencion DESC
         `;
 
         try {
