@@ -199,6 +199,21 @@ class Atencion {
             throw new Error('Error actualizando estado del turno');
         }
     }
+
+    static async obtenerMedicoIdPorUsuario(usuarioId) {
+        const query = `
+            SELECT m.id as medico_id 
+            FROM medicos m 
+            WHERE m.usuario_id = ?
+        `;
+        try {
+            const [resultado] = await pool.query(query, [usuarioId]);
+            return resultado[0]?.medico_id;
+        } catch (error) {
+            console.error('Error obteniendo ID del médico:', error);
+            throw new Error('Error obteniendo ID del médico');
+        }
+    }
 }
 
 export default Atencion;

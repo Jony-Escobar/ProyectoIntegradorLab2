@@ -124,10 +124,21 @@ block contenido
 
                     //- Notas Clinicas
                     fieldset(class="mt-4")
-                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Notas Clínicas
+                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4") 
+                            div(class="d-flex justify-content-between align-items-center")
+                                span Notas Clínicas
+                                button(type="button" class="btn btn-outline-primary btn-sm" id="btnGestionPlantillas")
+                                    i(class="fas fa-cog me-1")
+                                    span Gestionar Plantillas
                         div#notasClinicasContainer
                             div(class="row g-3 nota-grupo mb-2")
                                 div(class="col-md-11")
+                                    if plantillas && plantillas.length
+                                        div(class="mb-3")
+                                            select(class="form-select plantilla-select")
+                                                option(value="") Seleccionar plantilla...
+                                                each plantilla in plantillas
+                                                    option(value=plantilla.id data-contenido=plantilla.contenido)= plantilla.titulo
                                     div(class="editor-container")
                                         div(class="quill-editor" required)
                                 div(class="col-md-1 d-flex align-items-center")
@@ -139,4 +150,6 @@ block contenido
                     .d-flex.flex-column.flex-md-row.justify-content-end.gap-2.mt-4
                         button(type="submit").btn.btn-primary.px-4 Guardar Atención
 
-    script(src="/js/atencion.js")
+    script(src="/js/atencion.js" type="module")
+    //- Modal Plantillas
+    include plantillasModal.pug

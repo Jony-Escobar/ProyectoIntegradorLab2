@@ -1,33 +1,43 @@
 import Atencion from '../models/Atencion.js';
+import Plantilla from '../models/Plantilla.js';
 
 // Controlador para mostrar el formulario de nueva atencion
 const formularioNuevaAtencion = async (req, res) => {
     try {
-        // Obtiene el ID del turno desde los parametros
-        const { id } = req.params; // turno_id
+        const { id } = req.params;
+        
+        // Obtener el ID del médico usando el ID del usuario en sesión
+        const medicoId = await Atencion.obtenerMedicoIdPorUsuario(req.usuario.id);
+        console.log('ID del usuario en sesión:', req.usuario.id);
+        console.log('ID del médico encontrado:', medicoId);
 
-        // Actualizar estado del turno a "En atención" (ID 2)
+        if (!medicoId) {
+            throw new Error('No se encontró el médico asociado al usuario');
+        }
+
         await Atencion.actualizarEstadoTurno(id, 2);
 
-        // Obtiene los datos necesarios para el formulario de forma paralela
-        const [alergias, importancias, tipos] = await Promise.all([
+        const [alergias, importancias, tipos, plantillas] = await Promise.all([
             Atencion.obtenerAlergias(),
             Atencion.obtenerImportancias(), 
-            Atencion.obtenerTipos()
+            Atencion.obtenerTipos(),
+            Plantilla.obtenerPlantillas(medicoId)
         ]);
         
-        // Renderiza la vista con los datos obtenidos
         res.render('atencion', {
             pagina: 'Nueva Atención',
             alergias,
             importancias,
             tipos,
+            plantillas,
             turnoId: id
         });
     } catch (error) {
-        // Si hay error, lo registra y envia respuesta de error
-        console.log(error);
-        res.status(500).json({ mensaje: 'Hubo un error al cargar el formulario' });
+        console.error('Error completo:', error);
+        res.status(500).json({ 
+            mensaje: 'Hubo un error al cargar el formulario',
+            error: error.message 
+        });
     }
 };
 

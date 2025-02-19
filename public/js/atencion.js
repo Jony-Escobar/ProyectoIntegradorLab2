@@ -1,5 +1,8 @@
+import { initGestionPlantillas } from './modules/gestionPlantillas.js';
+
 // Espera a que el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', function() {
+    initGestionPlantillas();
     // Obtiene referencia al formulario de atención
     const formAtencion = document.getElementById('formAtencion');
     

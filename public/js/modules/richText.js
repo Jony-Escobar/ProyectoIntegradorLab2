@@ -15,6 +15,12 @@ export function initializeRichText() {
         [{ 'align': [] }]
     ];
 
+    // Función para obtener el HTML de la plantilla
+    function obtenerPlantillaHTML() {
+        const plantillasSelect = document.querySelector('.plantilla-select');
+        return plantillasSelect ? plantillasSelect.outerHTML : '';
+    }
+
     function inicializarQuill(container) {
         const quill = new Quill(container.querySelector('.quill-editor'), {
             modules: {
@@ -22,6 +28,17 @@ export function initializeRichText() {
             },
             theme: 'snow'
         });
+
+        const plantillaSelect = container.querySelector('.plantilla-select');
+        if (plantillaSelect) {
+            plantillaSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                if (selectedOption.dataset.contenido) {
+                    quill.root.innerHTML = selectedOption.dataset.contenido;
+                }
+            });
+        }
+
         return quill;
     }
 
@@ -33,10 +50,13 @@ export function initializeRichText() {
     if (btnAgregarNota) {
         btnAgregarNota.addEventListener('click', function() {
             contadorNotas++;
+            const plantillaHTML = obtenerPlantillaHTML();
+            
             const nuevoGrupo = document.createElement('div');
             nuevoGrupo.className = 'row g-3 nota-grupo mb-2';
             nuevoGrupo.innerHTML = `
                 <div class="col-md-11">
+                    ${plantillaHTML}
                     <div class="editor-container">
                         <div class="quill-editor"></div>
                     </div>
@@ -45,25 +65,27 @@ export function initializeRichText() {
                     <button type="button" class="btn btn-danger btn-eliminar-nota">X</button>
                 </div>
             `;
+            
             notasContainer.appendChild(nuevoGrupo);
             inicializarQuill(nuevoGrupo);
             actualizarBotonesEliminar();
         });
     }
 
-    // Eliminar nota
+    // Función para actualizar botones de eliminar
+    function actualizarBotonesEliminar() {
+        const grupos = notasContainer.querySelectorAll('.nota-grupo');
+        grupos.forEach((grupo, index) => {
+            const btnEliminar = grupo.querySelector('.btn-eliminar-nota');
+            btnEliminar.disabled = grupos.length === 1;
+        });
+    }
+
+    // Manejar eliminación de notas
     notasContainer.addEventListener('click', function(e) {
         if (e.target.classList.contains('btn-eliminar-nota')) {
             e.target.closest('.nota-grupo').remove();
             actualizarBotonesEliminar();
         }
     });
-
-    function actualizarBotonesEliminar() {
-        const grupos = notasContainer.querySelectorAll('.nota-grupo');
-        grupos.forEach(grupo => {
-            const btnEliminar = grupo.querySelector('.btn-eliminar-nota');
-            btnEliminar.disabled = grupos.length === 1;
-        });
-    }
 }

@@ -1,0 +1,42 @@
+//- Al final del archivo, antes de los scripts
+div(class="modal fade" id="modalGestionPlantillas" tabindex="-1")
+    div(class="modal-dialog modal-lg")
+        div(class="modal-content")
+            div(class="modal-header")
+                h5(class="modal-title") Gestión de Plantillas
+                button(type="button" class="btn-close" data-bs-dismiss="modal")
+            div(class="modal-body")
+                div(class="mb-3 text-end")
+                    button(type="button" class="btn btn-primary" id="btnNuevaPlantilla")
+                        i(class="fas fa-plus me-1")
+                        span Nueva Plantilla
+                div(class="table-responsive")
+                    table(class="table")
+                        thead
+                            tr
+                                th Título
+                                th Acciones
+                        tbody#tablePlantillas
+            div(class="modal-footer")
+                button(type="button" class="btn btn-secondary" data-bs-dismiss="modal") Cerrar
+
+//- Modal para crear/editar plantilla
+div(class="modal fade" id="modalPlantilla" tabindex="-1")
+    div(class="modal-dialog")
+        div(class="modal-content")
+            div(class="modal-header")
+                h5(class="modal-title") Nueva Plantilla
+                button(type="button" class="btn-close" data-bs-dismiss="modal")
+            div(class="modal-body")
+                form#formPlantilla
+                    input(type="hidden" name="id")
+                    div(class="mb-3")
+                        label(for="titulo" class="form-label") Título
+                        input(type="text" class="form-control" id="titulo" name="titulo" required)
+                    div(class="mb-3")
+                        label(for="contenido" class="form-label") Contenido
+                        div(class="editor-container")
+                            div(id="editorPlantilla")
+            div(class="modal-footer")
+                button(type="button" class="btn btn-secondary" data-bs-dismiss="modal") Cancelar
+                button(type="submit" class="btn btn-primary" form="formPlantilla") Guardar

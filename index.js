@@ -7,6 +7,7 @@ import usuarioRoutes from './routes/usuario.routes.js';
 import agendaRoutes from './routes/agenda.routes.js';
 import atencionRoutes from './routes/atencion.routes.js';
 import path from 'path';
+import plantillasRoutes from './routes/plantillas.routes.js';
 
 //Variables
 const port = 3000;
@@ -45,6 +46,9 @@ app.use('/', atencionRoutes)
 app.get('/hc', (req, res) => {
     res.render('hc')
 });
+
+// Rutas API
+app.use('/api/plantillas', plantillasRoutes);
 
 // Asegurarse que esta línea esté antes de las rutas
 app.use(express.static(path.join(process.cwd(), 'public')));
