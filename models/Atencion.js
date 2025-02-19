@@ -54,63 +54,97 @@ class Atencion {
                 [datos.turnoId]
             );
 
-            // 2. Guardar alergia si existe
-            if (datos.alergia && datos.importancia) {
-                const fechaDesde = datos.alergiaFechaDesde || new Date().toISOString().split('T')[0];
-                await connection.query(
-                    `INSERT INTO atencion_alergia 
-                     (importancia_id, fecha_desde, fecha_hasta, atencion_id, alergia_id) 
-                     VALUES (?, ?, ?, ?, ?)`,
-                    [
-                        datos.importancia, 
-                        fechaDesde,
-                        datos.alergiaFechaHasta || null, 
-                        atencionId, 
-                        datos.alergia
-                    ]
-                );
+            // 2. Guardar alergias (múltiples)
+            if (datos.alergias && datos.alergias.length > 0) {
+                const insertAlergia = `
+                    INSERT INTO atencion_alergia 
+                    (importancia_id, fecha_desde, fecha_hasta, atencion_id, alergia_id) 
+                    VALUES (?, ?, ?, ?, ?)
+                `;
+
+                for (let i = 0; i < datos.alergias.length; i++) {
+                    if (datos.alergias[i] && datos.importancias[i]) {
+                        await connection.query(
+                            insertAlergia,
+                            [
+                                datos.importancias[i],
+                                datos.alergiasFechaDesde[i] || new Date().toISOString().split('T')[0],
+                                datos.alergiasFechaHasta[i] || null,
+                                atencionId,
+                                datos.alergias[i]
+                            ]
+                        );
+                    }
+                }
             }
 
-            // 3. Guardar antecedentes patologicos
-            if (datos.antecedentesPatologicos) {
-                const fechaDesde = datos.antecedenteFechaDesde || new Date().toISOString().split('T')[0];
-                await connection.query(
-                    `INSERT INTO antecedentes_patologicos 
-                     (descripcion, fecha_desde, fecha_hasta, atencion_id) 
-                     VALUES (?, ?, ?, ?)`,
-                    [
-                        datos.antecedentesPatologicos, 
-                        fechaDesde,
-                        datos.antecedenteFechaHasta || null, 
-                        atencionId
-                    ]
-                );
+            // 3. Guardar antecedentes patológicos (múltiples)
+            if (datos.antecedentes && datos.antecedentes.length > 0) {
+                const insertAntecedente = `
+                    INSERT INTO antecedentes_patologicos 
+                    (descripcion, fecha_desde, fecha_hasta, atencion_id) 
+                    VALUES (?, ?, ?, ?)
+                `;
+
+                for (const antecedente of datos.antecedentes) {
+                    if (antecedente.descripcion.trim() !== '') {
+                        await connection.query(
+                            insertAntecedente,
+                            [
+                                antecedente.descripcion,
+                                antecedente.fechaDesde,
+                                antecedente.fechaHasta,
+                                atencionId
+                            ]
+                        );
+                    }
+                }
             }
 
-            // 4. Guardar habitos
-            if (datos.habitos) {
-                const fechaDesde = datos.habitosFechaDesde || new Date().toISOString().split('T')[0];
-                await connection.query(
-                    `INSERT INTO habitos 
-                     (descripcion, fecha_desde, fecha_hasta, atencion_id) 
-                     VALUES (?, ?, ?, ?)`,
-                    [
-                        datos.habitos, 
-                        fechaDesde,
-                        datos.habitosFechaHasta || null, 
-                        atencionId
-                    ]
-                );
+            // 4. Guardar hábitos (múltiples)
+            if (datos.habitos && datos.habitos.length > 0) {
+                const insertHabito = `
+                    INSERT INTO habitos 
+                    (descripcion, fecha_desde, fecha_hasta, atencion_id) 
+                    VALUES (?, ?, ?, ?)
+                `;
+
+                for (const habito of datos.habitos) {
+                    if (habito.descripcion.trim() !== '') {
+                        await connection.query(
+                            insertHabito,
+                            [
+                                habito.descripcion,
+                                habito.fechaDesde,
+                                habito.fechaHasta,
+                                atencionId
+                            ]
+                        );
+                    }
+                }
             }
 
-            // 5. Guardar medicamentos en uso
-            if (datos.medicamentosUso) {
-                await connection.query(
-                    `INSERT INTO medicamentos_en_uso 
-                     (descripcion, atencion_id) 
-                     VALUES (?, ?)`,
-                    [datos.medicamentosUso, atencionId]
-                );
+            // 5. Guardar medicamentos en uso (múltiples)
+            if (datos.medicamentos && datos.medicamentos.length > 0) {
+                const insertMedicamento = `
+                    INSERT INTO medicamentos_en_uso 
+                    (descripcion, fecha_desde, fecha_hasta, atencion_id) 
+                    VALUES (?, ?, ?, ?)
+                `;
+
+                for (const medicamento of datos.medicamentos) {
+                    if (medicamento.descripcion.trim() !== '') {
+                        await connection.query(
+                            insertMedicamento,
+                            [
+                                medicamento.descripcion,
+                                medicamento.fechaDesde,
+                                medicamento.fechaHasta,
+                                atencionId
+                            ]
+                        );
+                    }
+                }
             }
 
             // 6. Guardar diagnósticos (múltiples)
@@ -129,14 +163,19 @@ class Atencion {
                 }
             }
 
-            // 7. Guardar notas clinicas
-            if (datos.notasClinicas) {
-                await connection.query(
-                    `INSERT INTO notas_clinicas 
-                     (nota, atencion_id) 
-                     VALUES (?, ?)`,
-                    [datos.notasClinicas, atencionId]
-                );
+            // 7. Guardar notas clinicas (múltiples)
+            if (datos.notasClinicas && datos.notasClinicas.length > 0) {
+                const insertNotaClinica = `
+                    INSERT INTO notas_clinicas 
+                    (nota, atencion_id) 
+                    VALUES (?, ?)
+                `;
+
+                for (const nota of datos.notasClinicas) {
+                    if (nota.trim() !== '' && nota.trim() !== '<p></p>') {
+                        await connection.query(insertNotaClinica, [nota, atencionId]);
+                    }
+                }
             }
 
             await connection.commit();

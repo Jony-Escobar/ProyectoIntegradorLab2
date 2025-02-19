@@ -16,64 +16,91 @@ block contenido
                     //- Alergias
                     fieldset
                         legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Alergias
-                        div(class="row g-3 mt-2")
-                            div(class="col-md-4")
-                                label(for="selectAlergia" class="form-label") Alergia
-                                select(class="form-select" id="selectAlergia" name="alergia")
-                                    option(value="") Seleccione una alergia
-                                    if alergias && alergias.length
+                        div#alergiasContainer
+                            div(class="row g-3 alergia-grupo mb-2")
+                                div(class="col-md-3")
+                                    label(for="selectAlergia_0" class="form-label") Alergia
+                                    select(class="form-select alergia-select" id="selectAlergia_0" name="alergias[]")
+                                        option(value="") Seleccionar Alergia
                                         each alergia in alergias
                                             option(value=alergia.id)= alergia.alergia
-                            
-                            div(class="col-md-4")
-                                label(for="selectImportancia" class="form-label") Importancia
-                                select(class="form-select" id="selectImportancia" name="importancia")
-                                    option(value="") Seleccione importancia
-                                    if importancias && importancias.length
+                                div(class="col-md-3")
+                                    label(for="selectImportancia_0" class="form-label") Importancia
+                                    select(class="form-select importancia-select" id="selectImportancia_0" name="importancias[]")
+                                        option(value="") Seleccionar Importancia
                                         each importancia in importancias
                                             option(value=importancia.id)= importancia.importancia
-                            
-                            div(class="col-md-2")
-                                label(for="alergiaFechaDesde" class="form-label") Fecha Desde
-                                input(type="date" class="form-control" id="alergiaFechaDesde" name="alergiaFechaDesde" 
-                                      value=new Date().toISOString().split('T')[0])
-                            
-                            div(class="col-md-2")
-                                label(for="alergiaFechaHasta" class="form-label") Fecha Hasta
-                                input(type="date" class="form-control" id="alergiaFechaHasta" name="alergiaFechaHasta")
+                                div(class="col-md-2")
+                                    label(for="alergiaFechaDesde_0" class="form-label") Fecha Desde
+                                    input(type="date" class="form-control alergia-fecha-desde" id="alergiaFechaDesde_0" name="alergiasFechaDesde[]" value=new Date().toISOString().split('T')[0])
+                                div(class="col-md-2")
+                                    label(for="alergiaFechaHasta_0" class="form-label") Fecha Hasta
+                                    input(type="date" class="form-control alergia-fecha-hasta" id="alergiaFechaHasta_0" name="alergiasFechaHasta[]")
+                                div(class="col-md-1 d-flex align-items-end")
+                                    button(type="button" class="btn btn-danger btn-eliminar-alergia" disabled) X
+                        
+                        div(class="text-end mt-2")
+                            button(type="button" class="btn btn-primary" id="btnAgregarAlergia") + Agregar Alergia
 
-                    //- Antecedentes Patologicos
+                    //- Antecedentes Patológicos
                     fieldset(class="mt-4")
                         legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Antecedentes Patológicos
-                        div(class="row g-3")
-                            div(class="col-md-8")
-                                textarea(class="form-control" id="antecedentesPatologicos" name="antecedentesPatologicos" rows="3")
-                            div(class="col-md-2")
-                                label(for="antecedenteFechaDesde" class="form-label") Fecha Desde
-                                input(type="date" class="form-control" id="antecedenteFechaDesde" name="antecedenteFechaDesde"
-                                      value=new Date().toISOString().split('T')[0])
-                            div(class="col-md-2")
-                                label(for="antecedenteFechaHasta" class="form-label") Fecha Hasta
-                                input(type="date" class="form-control" id="antecedenteFechaHasta" name="antecedenteFechaHasta")
+                        div#antecedentesContainer
+                            div(class="row g-3 antecedente-grupo mb-2")
+                                div(class="col-md-6")
+                                    label(for="antecedente_0" class="form-label") Descripción
+                                    textarea(class="form-control antecedente-texto" id="antecedente_0" name="antecedentes[]" rows="3")
+                                div(class="col-md-2")
+                                    label(for="antecedenteFechaDesde_0" class="form-label") Fecha Desde
+                                    input(type="date" class="form-control antecedente-fecha-desde" id="antecedenteFechaDesde_0" name="antecedentesFechaDesde[]" value=new Date().toISOString().split('T')[0])
+                                div(class="col-md-2")
+                                    label(for="antecedenteFechaHasta_0" class="form-label") Fecha Hasta
+                                    input(type="date" class="form-control antecedente-fecha-hasta" id="antecedenteFechaHasta_0" name="antecedentesFechaHasta[]")
+                                div(class="col-md-1 d-flex align-items-end")
+                                    button(type="button" class="btn btn-danger btn-eliminar-antecedente" disabled) X
+                        
+                        div(class="text-end mt-2")
+                            button(type="button" class="btn btn-primary" id="btnAgregarAntecedente") + Agregar Antecedente
 
                     //- Habitos
                     fieldset(class="mt-4")
                         legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Hábitos
-                        div(class="row g-3")
-                            div(class="col-md-8")
-                                textarea(class="form-control" id="habitos" name="habitos" rows="3")
-                            div(class="col-md-2")
-                                label(for="habitosFechaDesde" class="form-label") Fecha Desde
-                                input(type="date" class="form-control" id="habitosFechaDesde" name="habitosFechaDesde"
-                                      value=new Date().toISOString().split('T')[0])
-                            div(class="col-md-2")
-                                label(for="habitosFechaHasta" class="form-label") Fecha Hasta
-                                input(type="date" class="form-control" id="habitosFechaHasta" name="habitosFechaHasta")
+                        div#habitosContainer
+                            div(class="row g-3 habito-grupo mb-2")
+                                div(class="col-md-6")
+                                    label(for="habito_0" class="form-label") Descripción
+                                    textarea(class="form-control habito-texto" id="habito_0" name="habitos[]" rows="3")
+                                div(class="col-md-2")
+                                    label(for="habitoFechaDesde_0" class="form-label") Fecha Desde
+                                    input(type="date" class="form-control habito-fecha-desde" id="habitoFechaDesde_0" name="habitosFechaDesde[]" value=new Date().toISOString().split('T')[0])
+                                div(class="col-md-2")
+                                    label(for="habitoFechaHasta_0" class="form-label") Fecha Hasta
+                                    input(type="date" class="form-control habito-fecha-hasta" id="habitoFechaHasta_0" name="habitosFechaHasta[]")
+                                div(class="col-md-1 d-flex align-items-end")
+                                    button(type="button" class="btn btn-danger btn-eliminar-habito" disabled) X
+                        
+                        div(class="text-end mt-2")
+                            button(type="button" class="btn btn-primary" id="btnAgregarHabito") + Agregar Hábito
 
                     //- Medicamentos en Uso
                     fieldset(class="mt-4")
                         legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Medicamentos en Uso
-                        textarea(class="form-control" id="medicamentosUso" name="medicamentosUso" rows="3")
+                        div#medicamentosContainer
+                            div(class="row g-3 medicamento-grupo mb-2")
+                                div(class="col-md-6")
+                                    label(for="medicamento_0" class="form-label") Descripción
+                                    textarea(class="form-control medicamento-texto" id="medicamento_0" name="medicamentos[]" rows="3")
+                                div(class="col-md-2")
+                                    label(for="medicamentoFechaDesde_0" class="form-label") Fecha Desde
+                                    input(type="date" class="form-control medicamento-fecha-desde" id="medicamentoFechaDesde_0" name="medicamentosFechaDesde[]" value=new Date().toISOString().split('T')[0])
+                                div(class="col-md-2")
+                                    label(for="medicamentoFechaHasta_0" class="form-label") Fecha Hasta
+                                    input(type="date" class="form-control medicamento-fecha-hasta" id="medicamentoFechaHasta_0" name="medicamentosFechaHasta[]")
+                                div(class="col-md-1 d-flex align-items-end")
+                                    button(type="button" class="btn btn-danger btn-eliminar-medicamento" disabled) X
+                        
+                        div(class="text-end mt-2")
+                            button(type="button" class="btn btn-primary" id="btnAgregarMedicamento") + Agregar Medicamento
 
                     //- Diagnósticos
                     fieldset(class="mt-4")
@@ -98,7 +125,16 @@ block contenido
                     //- Notas Clinicas
                     fieldset(class="mt-4")
                         legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Notas Clínicas
-                        textarea(class="form-control" id="notasClinicas" name="notasClinicas" rows="5")
+                        div#notasClinicasContainer
+                            div(class="row g-3 nota-grupo mb-2")
+                                div(class="col-md-11")
+                                    div(class="editor-container")
+                                        div(class="quill-editor" required)
+                                div(class="col-md-1 d-flex align-items-center")
+                                    button(type="button" class="btn btn-danger btn-eliminar-nota" disabled) X
+                        
+                        div(class="text-end mt-2")
+                            button(type="button" class="btn btn-primary" id="btnAgregarNota") + Agregar Nota
 
                     .d-flex.flex-column.flex-md-row.justify-content-end.gap-2.mt-4
                         button(type="submit").btn.btn-primary.px-4 Guardar Atención

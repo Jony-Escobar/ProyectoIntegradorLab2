@@ -48,9 +48,10 @@ const guardarAtencion = async (req, res) => {
         } = req.body;
 
         // Validación de notas clínicas
-        if (!notasClinicas || notasClinicas.trim() === '' || notasClinicas.trim() === '<p></p>') {
+        if (!notasClinicas || !notasClinicas.length || 
+            notasClinicas.every(nota => nota.trim() === '' || nota.trim() === '<p></p>')) {
             return res.status(400).json({ 
-                mensaje: 'La nota clínica es obligatoria' 
+                mensaje: 'Debe incluir al menos una nota clínica' 
             });
         }
 

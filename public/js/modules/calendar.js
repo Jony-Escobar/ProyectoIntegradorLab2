@@ -65,6 +65,15 @@ export function initializeCalendar(calendarEl, userId) {
             
             // Vista diaria con formato completo
             if (arg.view.type === 'timeGridDay') {
+                const fechaActual = new Date();
+                const fechaTurno = new Date(arg.event.start);
+                
+                // Normalizar las fechas para comparar solo año, mes y día
+                fechaActual.setHours(0, 0, 0, 0);
+                fechaTurno.setHours(0, 0, 0, 0);
+                
+                const esTurnoHoy = fechaActual.getTime() === fechaTurno.getTime();
+                
                 return {
                     html: `
                         <div style="font-size: 15px; padding: 4px; height: 100%; width: 100%;">
@@ -89,12 +98,12 @@ export function initializeCalendar(calendarEl, userId) {
                                         data-id="${arg.event.extendedProps.idPaciente}"
                                         style="white-space: nowrap;"
                                     >Ver HC</button>
-                                    ${new Date().toISOString().split('T')[0] === arg.event.start.toISOString().split('T')[0] && estado !== 'Finalizado' ? `
+                                    ${esTurnoHoy && estado !== 'Finalizado' ? `
                                         <button 
                                             class="btn btn-sm btn-success"
                                             onclick="if(confirm('¿Desea ${estado === 'En atencion' ? 'continuar' : 'iniciar'} la atención?')) window.location.href='/atencion/${arg.event.extendedProps.turnoId}'"
                                             style="white-space: nowrap;"
-                                        >${estado === 'En atencion' ? 'Continuar' : 'Atender'}</button>
+                                        >${estado === 'En atencion' ? 'Continuar atención' : 'Atender'}</button>
                                     ` : ''}
                                 </div>
                             </div>

@@ -93,3 +93,23 @@ textarea {
     border-radius: 0 0 5px 5px;
     border-color: #ced4da;
 }
+
+.editor-container {
+    margin-bottom: 1rem;
+}
+
+.quill-editor {
+    height: 200px;
+    margin-bottom: 1rem;
+}
+
+.ql-toolbar.ql-snow {
+    border-radius: 5px 5px 0 0;
+    border-color: #ced4da;
+}
+
+.ql-container.ql-snow {
+    border-radius: 0 0 5px 5px;
+    border-color: #ced4da;
+    height: calc(100% - 42px);
+}
