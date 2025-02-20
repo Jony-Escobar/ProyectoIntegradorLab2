@@ -21,13 +21,18 @@ export function initializeRichText() {
         return plantillasSelect ? plantillasSelect.outerHTML : '';
     }
 
-    function inicializarQuill(container) {
+    function inicializarQuill(container, contenidoInicial = '') {
         const quill = new Quill(container.querySelector('.quill-editor'), {
             modules: {
                 toolbar: toolbarOptions
             },
             theme: 'snow'
         });
+
+        // Si hay contenido inicial, lo establecemos usando la API de Quill
+        if (contenidoInicial) {
+            quill.root.innerHTML = contenidoInicial;
+        }
 
         const plantillaSelect = container.querySelector('.plantilla-select');
         if (plantillaSelect) {
@@ -42,8 +47,12 @@ export function initializeRichText() {
         return quill;
     }
 
-    // Inicializar el primer editor
-    inicializarQuill(notasContainer.querySelector('.nota-grupo'));
+    // Modificar la inicialización del primer editor
+    document.addEventListener('DOMContentLoaded', function() {
+        const primerEditor = notasContainer.querySelector('.nota-grupo');
+        const contenidoInicial = primerEditor.querySelector('.quill-editor').textContent;
+        inicializarQuill(primerEditor, contenidoInicial);
+    });
 
     // Agregar nueva nota
     const btnAgregarNota = document.getElementById('btnAgregarNota');

@@ -1,6 +1,5 @@
 // Importa los modulos necesarios
 import { initializeCalendar } from './modules/calendar.js';
-import { initializeRichText } from './modules/richText.js';
 
 // Inicialización de la aplicación
 document.addEventListener('DOMContentLoaded', function() {
@@ -16,9 +15,6 @@ document.addEventListener('DOMContentLoaded', function() {
             especialidadSelect.addEventListener('change', () => calendar.refetchEvents());
         }
     }
-
-    // Inicializa el editor de texto enriquecido
-    initializeRichText();
 
     // Configura modal de historia clínica
     const modalPrincipal = document.getElementById('modalPrincipal');
@@ -60,31 +56,52 @@ async function cargarInfoPaciente(idPaciente) {
 async function cargarHistorialMedico(idPaciente) {
     try {
         const response = await fetch(`/api/historial-medico/${idPaciente}`);
-        const historial = await response.json();
+        const data = await response.json();
+        const medicoActualId = data.medicoActualId;
+        const historial = data.historial;
+        const ultimaAtencion = data.ultimaAtencion;
         
         const tbody = document.getElementById('tablaHistorialBody');
         tbody.innerHTML = '';
 
         historial.forEach(consulta => {
             const row = document.createElement('tr');
+            const tieneInformacionDetallada = consulta.evolucion !== null;
+            const esUltimaAtencion = ultimaAtencion && consulta.id === ultimaAtencion.id;
+            
             row.innerHTML = `
                 <td>${consulta.fecha}</td>
                 <td>${consulta.medico}</td>
                 <td>${consulta.motivo}</td>
                 <td>${consulta.diagnosticos || '-'}</td>
                 <td>
-                    <button 
-                        class="btn btn-sm btn-info ver-detalle-atencion"
-                        data-atencion='${JSON.stringify(consulta)}'
-                    >
-                        Ver Más
-                    </button>
+                    ${tieneInformacionDetallada ? `
+                        <div class="btn-group">
+                            <button 
+                                class="btn btn-sm btn-info ver-detalle-atencion"
+                                data-atencion='${JSON.stringify(consulta)}'
+                            >
+                                Ver Más
+                            </button>
+                            ${esUltimaAtencion ? `
+                                <button 
+                                    class="btn btn-sm btn-warning editar-atencion"
+                                    onclick="window.location.href='/atencion/editar/${consulta.id}'"
+                                >
+                                    Editar
+                                </button>
+                            ` : ''}
+                        </div>
+                    ` : `
+                        <span class="text-muted">
+                            <small>No disponible</small>
+                        </span>
+                    `}
                 </td>
             `;
             tbody.appendChild(row);
         });
 
-        // Agregar event listeners a los botones
         document.querySelectorAll('.ver-detalle-atencion').forEach(btn => {
             btn.addEventListener('click', mostrarDetalleAtencion);
         });

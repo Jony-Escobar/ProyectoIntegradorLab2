@@ -1,9 +1,17 @@
 import express from 'express';
-import { formularioNuevaAtencion, guardarAtencion } from '../controllers/atencionController.js';
+import { 
+    formularioNuevaAtencion, 
+    guardarAtencion, 
+    formularioEditarAtencion, 
+    actualizarAtencion 
+} from '../controllers/atencionController.js';
 
 const router = express.Router();
 
-// Rutas para atencion
+// IMPORTANTE: El orden de las rutas es crucial
+// Las rutas más específicas deben ir primero
+router.get('/atencion/editar/:id', formularioEditarAtencion);
+router.patch('/atencion/editar/:id', actualizarAtencion);
 router.get('/atencion/:id', formularioNuevaAtencion);
 router.post('/atencion', guardarAtencion);
 

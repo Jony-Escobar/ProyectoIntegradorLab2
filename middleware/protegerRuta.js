@@ -13,7 +13,7 @@ const protegerRuta = (req, res, next) => {
         };
 
         // Validar acceso directo a la ruta /atencion
-        if (req.path.startsWith('/atencion/')) {
+        if (req.path.startsWith('/atencion/') && !req.xhr) {
             const referer = req.headers.referer;
             if (!referer || !referer.includes('/agenda')) {
                 return res.redirect('/agenda');

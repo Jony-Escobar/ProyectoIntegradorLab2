@@ -101,19 +101,39 @@ class Agenda {
         }
     }
 
-    static async obtenerHistorialMedico(pacienteId) {
+    static async obtenerHistorialMedico(pacienteId, medicoActualId) {
         const query = `
             SELECT 
+                a.id,
                 DATE_FORMAT(a.fecha_atencion, '%Y-%m-%d') as fecha,
                 CONCAT(pm.nombre, ' ', pm.apellido) as medico,
                 t.motivo_consulta as motivo,
                 GROUP_CONCAT(DISTINCT d.descripcion SEPARATOR '; ') as diagnosticos,
-                nc.nota as evolucion,
-                GROUP_CONCAT(DISTINCT al.alergia) as alergias,
-                GROUP_CONCAT(DISTINCT i.importancia) as importancia_alergia,
-                ap.descripcion as antecedentes,
-                h.descripcion as habitos,
-                mu.descripcion as medicamentos
+                CASE 
+                    WHEN m.id = ? THEN nc.nota 
+                    ELSE NULL 
+                END as evolucion,
+                CASE 
+                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT al.alergia)
+                    ELSE NULL 
+                END as alergias,
+                CASE 
+                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT i.importancia)
+                    ELSE NULL 
+                END as importancia_alergia,
+                CASE 
+                    WHEN m.id = ? THEN ap.descripcion
+                    ELSE NULL 
+                END as antecedentes,
+                CASE 
+                    WHEN m.id = ? THEN h.descripcion
+                    ELSE NULL 
+                END as habitos,
+                CASE 
+                    WHEN m.id = ? THEN mu.descripcion
+                    ELSE NULL 
+                END as medicamentos,
+                m.id as medico_id
             FROM atenciones a
             JOIN turnos t ON t.id = a.turno_id
             JOIN agendas ag ON ag.id = t.agenda_id
@@ -129,12 +149,20 @@ class Agenda {
             LEFT JOIN habitos h ON h.atencion_id = a.id
             LEFT JOIN medicamentos_en_uso mu ON mu.atencion_id = a.id
             WHERE t.paciente_id = ?
-            GROUP BY a.id, fecha, medico, motivo, evolucion, antecedentes, habitos, medicamentos
+            GROUP BY a.id, fecha, medico, motivo, evolucion, antecedentes, habitos, medicamentos, medico_id
             ORDER BY a.fecha_atencion DESC
         `;
 
         try {
-            const [historial] = await pool.query(query, [pacienteId]);
+            const [historial] = await pool.query(query, [
+                medicoActualId, 
+                medicoActualId,
+                medicoActualId,
+                medicoActualId,
+                medicoActualId,
+                medicoActualId,
+                pacienteId
+            ]);
             return historial;
         } catch (error) {
             console.error('Error al obtener historial médico:', error);
@@ -156,6 +184,33 @@ class Agenda {
         } catch (error) {
             console.error('Error actualizando turnos antiguos:', error);
             throw new Error('Error actualizando turnos antiguos');
+        }
+    }
+
+    static async obtenerUltimaAtencion(pacienteId, medicoId) {
+        const query = `
+            SELECT 
+                a.id,
+                a.fecha_atencion,
+                t.id as turno_id,
+                m.id as medico_id
+            FROM atenciones a
+            JOIN turnos t ON t.id = a.turno_id
+            JOIN agendas ag ON ag.id = t.agenda_id
+            JOIN especialidad_medico em ON em.id = ag.especialidad_medico_id
+            JOIN medicos m ON m.id = em.medico_id
+            WHERE t.paciente_id = ? 
+            AND m.id = ?
+            ORDER BY a.fecha_atencion DESC
+            LIMIT 1
+        `;
+
+        try {
+            const [atencion] = await pool.query(query, [pacienteId, medicoId]);
+            return atencion[0];
+        } catch (error) {
+            console.error('Error al obtener última atención:', error);
+            throw new Error('Error al obtener última atención');
         }
     }
 }

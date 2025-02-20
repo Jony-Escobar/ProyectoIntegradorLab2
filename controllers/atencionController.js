@@ -90,8 +90,105 @@ const guardarAtencion = async (req, res) => {
     }
 };
 
+const formularioEditarAtencion = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const medicoId = await Atencion.obtenerMedicoIdPorUsuario(req.usuario.id);
+
+        if (!medicoId) {
+            throw new Error('No se encontró el médico asociado al usuario');
+        }
+
+        const [atencion, alergias, importancias, tipos, plantillas] = await Promise.all([
+            Atencion.obtenerAtencionCompleta(id, medicoId),
+            Atencion.obtenerAlergias(),
+            Atencion.obtenerImportancias(),
+            Atencion.obtenerTipos(),
+            Plantilla.obtenerPlantillas(medicoId)
+        ]);
+
+        res.render('editarAtencion', {
+            pagina: 'Editar Atención',
+            atencion,
+            alergias,
+            importancias,
+            tipos,
+            plantillas
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({
+            mensaje: 'Hubo un error al cargar el formulario de edición',
+            error: error.message
+        });
+    }
+};
+
+const actualizarAtencion = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const medicoId = await Atencion.obtenerMedicoIdPorUsuario(req.usuario.id);
+        
+        if (!medicoId) {
+            return res.status(403).json({ 
+                mensaje: 'No tiene permisos para actualizar esta atención' 
+            });
+        }
+
+        const {
+            notasClinicas,
+            diagnosticos,
+            alergias,
+            antecedentes,
+            habitos,
+            medicamentos
+        } = req.body;
+
+        // Validaciones
+        if (!notasClinicas?.length || notasClinicas.every(nota => !nota?.contenido?.trim() || nota.contenido.trim() === '<p></p>')) {
+            return res.status(400).json({ 
+                mensaje: 'Debe incluir al menos una nota clínica' 
+            });
+        }
+
+        if (!diagnosticos?.length || diagnosticos.every(d => !d?.descripcion?.trim())) {
+            return res.status(400).json({ 
+                mensaje: 'Debe incluir al menos un diagnóstico' 
+            });
+        }
+
+        // Validar formato de fechas
+        const validarFecha = (fecha) => {
+            if (!fecha) return true;
+            const fechaRegex = /^\d{4}-\d{2}-\d{2}$/;
+            return fechaRegex.test(fecha);
+        };
+
+        // Validar fechas de alergias
+        if (alergias?.some(a => (a.fechaDesde && !validarFecha(a.fechaDesde)) || 
+                                (a.fechaHasta && !validarFecha(a.fechaHasta)))) {
+            return res.status(400).json({
+                mensaje: 'Formato de fecha inválido en alergias'
+            });
+        }
+
+        await Atencion.actualizarAtencion(id, medicoId, req.body);
+
+        res.json({ mensaje: 'Atención actualizada correctamente' });
+
+    } catch (error) {
+        console.error('Error en actualizarAtencion:', error);
+        res.status(500).json({ 
+            mensaje: 'Error al actualizar la atención',
+            error: error.message 
+        });
+    }
+};
+
 // Exporta los controladores
 export {
     formularioNuevaAtencion,
-    guardarAtencion
+    guardarAtencion,
+    formularioEditarAtencion,
+    actualizarAtencion
 };

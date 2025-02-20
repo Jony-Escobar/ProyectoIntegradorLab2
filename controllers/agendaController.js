@@ -1,4 +1,5 @@
 import Agenda from '../models/Agenda.js';
+import Atencion from '../models/Atencion.js';
 
 class AgendaController {
     //Metodos estaticas para poder exportar todo
@@ -64,10 +65,18 @@ class AgendaController {
     static async obtenerHistorialMedico(req, res) {
         try {
             const { pacienteId } = req.params;
-            const medicoId = req.usuario.id;
+            const medicoId = await Atencion.obtenerMedicoIdPorUsuario(req.usuario.id);
             
-            const historial = await Agenda.obtenerHistorialMedico(pacienteId, medicoId);
-            res.json(historial);
+            const [historial, ultimaAtencion] = await Promise.all([
+                Agenda.obtenerHistorialMedico(pacienteId, medicoId),
+                Agenda.obtenerUltimaAtencion(pacienteId, medicoId)
+            ]);
+
+            res.json({
+                historial,
+                medicoActualId: medicoId,
+                ultimaAtencion
+            });
         } catch (error) {
             console.error('Error al obtener historial médico:', error);
             res.status(500).json({ error: 'Error al obtener el historial médico' });

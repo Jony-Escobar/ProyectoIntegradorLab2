@@ -10,8 +10,18 @@ block contenido
     .container.py-4
         .row.justify-content-center
             .col-12.col-lg-10
-                form#formAtencion(method="POST").needs-validation
+                form#formAtencion(
+                    method="POST" 
+                    class="needs-validation"
+                    data-tipos=JSON.stringify(tipos)
+                    data-alergias=JSON.stringify(alergias)
+                    data-importancias=JSON.stringify(importancias)
+                    data-atencion-id=atencion.id
+                    data-atencion=JSON.stringify(atencion)
+                    data-plantillas=JSON.stringify(plantillas)
+                )
                     input(type="hidden" name="turnoId" id="turnoId" value=turnoId)
+                    input(type="hidden" name="atencionId" id="atencionId" value=atencion.id)
                     
                     //- Alergias
                     fieldset
@@ -113,9 +123,9 @@ block contenido
                         div(class="text-end mt-2")
                             button(type="button" class="btn btn-primary" id="btnAgregarDiagnostico") + Agregar Diagnóstico
 
-                    //- Notas Clinicas
+                    //- Notas Clínicas
                     fieldset(class="mt-4")
-                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4") 
+                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4")
                             div(class="d-flex justify-content-between align-items-center")
                                 span Notas Clínicas
                                 button(type="button" class="btn btn-outline-primary btn-sm" id="btnGestionPlantillas")
@@ -131,7 +141,7 @@ block contenido
                                                 each plantilla in plantillas
                                                     option(value=plantilla.id data-contenido=plantilla.contenido)= plantilla.titulo
                                     div(class="editor-container")
-                                        div(class="quill-editor" required)
+                                        div(class="quill-editor")
                                 div(class="col-md-1 d-flex align-items-center")
                                     button(type="button" class="btn btn-danger btn-eliminar-nota" disabled) X
                         
@@ -139,8 +149,11 @@ block contenido
                             button(type="button" class="btn btn-primary" id="btnAgregarNota") + Agregar Nota
 
                     .d-flex.flex-column.flex-md-row.justify-content-end.gap-2.mt-4
-                        button(type="submit").btn.btn-primary.px-4 Guardar Atención
+                        button(type="submit").btn.btn-primary.px-4 Guardar cambios
 
-    script(src="/js/atencion.js" type="module")
     //- Modal Plantillas
     include plantillasModal.pug
+
+    //- Agregar antes del final del archivo
+    script(src="/js/modules/editarAtencion.js" type="module")
+    script(src="/js/modules/richText.js" type="module")

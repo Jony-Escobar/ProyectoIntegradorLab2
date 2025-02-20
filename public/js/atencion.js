@@ -1,8 +1,11 @@
 import { initGestionPlantillas } from './modules/gestionPlantillas.js';
+import { initializeRichText } from './modules/richText.js';
 
 // Espera a que el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', function() {
     initGestionPlantillas();
+    initializeRichText();
+
     // Obtiene referencia al formulario de atención
     const formAtencion = document.getElementById('formAtencion');
     
@@ -371,14 +374,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="col-md-6">
                     <label for="medicamento_${contadorMedicamentos}" class="form-label">Descripción</label>
                     <textarea class="form-control medicamento-texto" id="medicamento_${contadorMedicamentos}" name="medicamentos[]" rows="3"></textarea>
-                </div>
-                <div class="col-md-2">
-                    <label for="medicamentoFechaDesde_${contadorMedicamentos}" class="form-label">Fecha Desde</label>
-                    <input type="date" class="form-control medicamento-fecha-desde" id="medicamentoFechaDesde_${contadorMedicamentos}" name="medicamentosFechaDesde[]" value="${new Date().toISOString().split('T')[0]}">
-                </div>
-                <div class="col-md-2">
-                    <label for="medicamentoFechaHasta_${contadorMedicamentos}" class="form-label">Fecha Hasta</label>
-                    <input type="date" class="form-control medicamento-fecha-hasta" id="medicamentoFechaHasta_${contadorMedicamentos}" name="medicamentosFechaHasta[]">
                 </div>
                 <div class="col-md-1 d-flex align-items-end">
                     <button type="button" class="btn btn-danger btn-eliminar-medicamento">X</button>
