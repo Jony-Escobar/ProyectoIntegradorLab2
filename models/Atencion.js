@@ -299,18 +299,49 @@ class Atencion {
         }
     }
 
+    static async eliminarRegistrosNoPresentes(atencionId, tabla, idsActuales) {
+        const query = `
+            DELETE FROM ${tabla} 
+            WHERE atencion_id = ? 
+            AND id NOT IN (?)
+        `;
+        try {
+            if (idsActuales && idsActuales.length > 0) {
+                await pool.query(query, [atencionId, idsActuales]);
+            } else {
+                await pool.query(`DELETE FROM ${tabla} WHERE atencion_id = ?`, [atencionId]);
+            }
+        } catch (error) {
+            console.error(`Error eliminando registros de ${tabla}:`, error);
+            throw error;
+        }
+    }
+
     static async actualizarAtencion(atencionId, medicoId, datos) {
         const connection = await pool.getConnection();
         try {
-            console.log('1. Iniciando transacción');
-            console.log('2. Datos recibidos:', { atencionId, medicoId, datos });
-
             await connection.beginTransaction();
 
-            // Agregar logs para cada operación
-            console.log('3. Actualizando notas clínicas');
+            // Obtener IDs actuales para cada tipo de registro
+            const idsNotasClinicas = datos.notasClinicas.filter(n => n.id).map(n => n.id);
+            const idsDiagnosticos = datos.diagnosticos.filter(d => d.id).map(d => d.id);
+            const idsAlergias = datos.alergias.filter(a => a.id).map(a => a.id);
+            const idsAntecedentes = datos.antecedentes.filter(a => a.id).map(a => a.id);
+            const idsHabitos = datos.habitos.filter(h => h.id).map(h => h.id);
+            const idsMedicamentos = datos.medicamentos.filter(m => m.id).map(m => m.id);
+
+            // Eliminar registros que ya no están presentes
+            await Promise.all([
+                this.eliminarRegistrosNoPresentes(atencionId, 'notas_clinicas', idsNotasClinicas),
+                this.eliminarRegistrosNoPresentes(atencionId, 'diagnosticos', idsDiagnosticos),
+                this.eliminarRegistrosNoPresentes(atencionId, 'atencion_alergia', idsAlergias),
+                this.eliminarRegistrosNoPresentes(atencionId, 'antecedentes_patologicos', idsAntecedentes),
+                this.eliminarRegistrosNoPresentes(atencionId, 'habitos', idsHabitos),
+                this.eliminarRegistrosNoPresentes(atencionId, 'medicamentos_en_uso', idsMedicamentos)
+            ]);
+
+            // Actualizar o insertar registros
             for (const nota of datos.notasClinicas) {
-                console.log('Procesando nota:', nota);
                 if (nota.id) {
                     await connection.query(
                         'UPDATE notas_clinicas SET nota = ? WHERE id = ? AND atencion_id = ?',
@@ -325,7 +356,6 @@ class Atencion {
             }
 
             // 4. Actualizar diagnósticos
-            console.log('5. Actualizando diagnósticos');
             for (const diagnostico of datos.diagnosticos) {
                 if (diagnostico.id) {
                     await connection.query(
@@ -341,7 +371,6 @@ class Atencion {
             }
 
             // 5. Actualizar alergias
-            console.log('7. Actualizando alergias');
             for (const alergia of datos.alergias) {
                 if (alergia.id) {
                     await connection.query(
@@ -357,7 +386,6 @@ class Atencion {
             }
 
             // 6. Actualizar antecedentes
-            console.log('9. Actualizando antecedentes');
             for (const antecedente of datos.antecedentes) {
                 if (antecedente.id) {
                     await connection.query(
@@ -373,7 +401,6 @@ class Atencion {
             }
 
             // 7. Actualizar hábitos
-            console.log('11. Actualizando hábitos');
             for (const habito of datos.habitos) {
                 if (habito.id) {
                     await connection.query(
@@ -389,7 +416,6 @@ class Atencion {
             }
 
             // 8. Actualizar medicamentos
-            console.log('13. Actualizando medicamentos');
             for (const medicamento of datos.medicamentos) {
                 if (medicamento.id) {
                     await connection.query(
@@ -405,12 +431,9 @@ class Atencion {
             }
 
             await connection.commit();
-            console.log('4. Transacción completada');
             return true;
 
         } catch (error) {
-            console.error('5. Error en la transacción:', error);
-            console.error('6. Stack trace:', error.stack);
             await connection.rollback();
             throw error;
         } finally {

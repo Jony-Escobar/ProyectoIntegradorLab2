@@ -41,27 +41,55 @@ document.addEventListener('DOMContentLoaded', function() {
                 const atencionId = window.location.pathname.split('/').pop();
                 
                 const formData = {
-                    notasClinicas: [{
-                        id: document.querySelector('.quill-editor').dataset.notaId,
-                        contenido: document.querySelector('.ql-editor').innerHTML.trim()
-                    }],
-                    diagnosticos: Array.from(document.querySelectorAll('.diagnostico-grupo'))
-                        .map(grupo => ({
-                            id: grupo.dataset.diagnosticoId,
-                            descripcion: grupo.querySelector('.diagnostico-texto').value.trim(),
-                            tipoId: grupo.querySelector('.tipo-diagnostico').value
-                        }))
-                        .filter(d => d.descripcion && d.tipoId),
-                    alergias: Array.from(document.querySelectorAll('.alergia-grupo'))
-                        .map(grupo => ({
-                            id: grupo.dataset.alergiaId,
-                            alergiaId: grupo.querySelector('.alergia-select').value,
-                            importanciaId: grupo.querySelector('.importancia-select').value,
-                            fechaDesde: grupo.querySelector('.alergia-fecha-desde').value || new Date().toISOString().split('T')[0],
-                            fechaHasta: grupo.querySelector('.alergia-fecha-hasta').value || null
-                        }))
-                        .filter(a => a.alergiaId && a.importanciaId)
+                    notasClinicas: Array.from(document.querySelectorAll('.nota-grupo')).map(grupo => ({
+                        id: grupo.querySelector('.quill-editor')?.dataset?.notaId || null,
+                        contenido: grupo.querySelector('.ql-editor')?.innerHTML?.trim()
+                    })).filter(n => n.contenido && n.contenido !== '<p></p>' && n.contenido !== '<p><br></p>'),
+
+                    diagnosticos: Array.from(document.querySelectorAll('.diagnostico-grupo')).map(grupo => ({
+                        id: grupo.dataset.diagnosticoId || null,
+                        descripcion: grupo.querySelector('.diagnostico-texto')?.value?.trim(),
+                        tipoId: grupo.querySelector('.tipo-diagnostico')?.value
+                    })).filter(d => d.descripcion && d.tipoId),
+
+                    alergias: Array.from(document.querySelectorAll('.alergia-grupo')).map(grupo => ({
+                        id: grupo.dataset.alergiaId || null,
+                        alergiaId: grupo.querySelector('.alergia-select')?.value,
+                        importanciaId: grupo.querySelector('.importancia-select')?.value,
+                        fechaDesde: grupo.querySelector('.alergia-fecha-desde')?.value || null,
+                        fechaHasta: grupo.querySelector('.alergia-fecha-hasta')?.value || null
+                    })).filter(a => a.alergiaId && a.importanciaId),
+
+                    antecedentes: Array.from(document.querySelectorAll('.antecedente-grupo')).map(grupo => ({
+                        id: grupo.dataset.antecedenteId || null,
+                        descripcion: grupo.querySelector('.antecedente-texto')?.value?.trim(),
+                        fechaDesde: grupo.querySelector('.antecedente-fecha-desde')?.value || null,
+                        fechaHasta: grupo.querySelector('.antecedente-fecha-hasta')?.value || null
+                    })).filter(a => a.descripcion),
+
+                    habitos: Array.from(document.querySelectorAll('.habito-grupo')).map(grupo => ({
+                        id: grupo.dataset.habitoId || null,
+                        descripcion: grupo.querySelector('.habito-texto')?.value?.trim(),
+                        fechaDesde: grupo.querySelector('.habito-fecha-desde')?.value || null,
+                        fechaHasta: grupo.querySelector('.habito-fecha-hasta')?.value || null
+                    })).filter(h => h.descripcion),
+
+                    medicamentos: Array.from(document.querySelectorAll('.medicamento-grupo')).map(grupo => ({
+                        id: grupo.dataset.medicamentoId || null,
+                        descripcion: grupo.querySelector('.medicamento-texto')?.value?.trim(),
+                        fechaDesde: grupo.querySelector('.medicamento-fecha-desde')?.value || null,
+                        fechaHasta: grupo.querySelector('.medicamento-fecha-hasta')?.value || null
+                    })).filter(m => m.descripcion)
                 };
+
+                // Validaciones del lado del cliente
+                if (!formData.notasClinicas.length) {
+                    throw new Error('Debe incluir al menos una nota clínica');
+                }
+
+                if (!formData.diagnosticos.length) {
+                    throw new Error('Debe incluir al menos un diagnóstico');
+                }
 
                 const response = await fetch(`/atencion/editar/${atencionId}`, {
                     method: 'PATCH',
@@ -69,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
                     },
-                    credentials: 'same-origin',
                     body: JSON.stringify(formData)
                 });
 
@@ -79,14 +106,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 alert('Atención actualizada correctamente');
-                window.location.href = '/api/agenda'; // Cambiado a la ruta correcta
+                window.location.href = '/agenda';
 
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error al guardar los cambios: ' + error.message);
+                alert(error.message || 'Error al guardar los cambios');
             }
         });
     }
+
+    // Agregar event listeners para los botones de eliminar
+    const containers = {
+        'diagnostico': document.getElementById('diagnosticosContainer'),
+        'alergia': document.getElementById('alergiasContainer'),
+        'antecedente': document.getElementById('antecedentesContainer'),
+        'habito': document.getElementById('habitosContainer'),
+        'medicamento': document.getElementById('medicamentosContainer')
+    };
+
+    // Agregar delegación de eventos para cada contenedor
+    Object.entries(containers).forEach(([tipo, container]) => {
+        if (container) {
+            container.addEventListener('click', function(e) {
+                if (e.target.classList.contains(`btn-eliminar-${tipo}`)) {
+                    const grupo = e.target.closest(`.${tipo}-grupo`);
+                    if (grupo) {
+                        grupo.remove();
+                        actualizarBotonesEliminar(tipo);
+                    }
+                }
+            });
+        }
+    });
 });
 
 // Función genérica para actualizar botones de eliminar
@@ -97,7 +148,9 @@ function actualizarBotonesEliminar(tipo) {
     const grupos = container.querySelectorAll(`.${tipo}-grupo`);
     grupos.forEach(grupo => {
         const btnEliminar = grupo.querySelector(`.btn-eliminar-${tipo}`);
-        btnEliminar.disabled = grupos.length === 1;
+        if (btnEliminar) {
+            btnEliminar.disabled = grupos.length === 1;
+        }
     });
 }
 
@@ -248,68 +301,20 @@ function cargarDatosExistentes() {
         window.importancias = importancias;
         window.plantillas = plantillas;
 
+        // Función auxiliar para validar y formatear fechas
+        const formatearFecha = (fecha) => {
+            if (!fecha || fecha === '0000-00-00' || fecha === 'null') return '';
+            return fecha;
+        };
+
         // Cargar notas clínicas
         if (atencionData.notas_clinicas?.length) {
             const notasContainer = document.getElementById('notasClinicasContainer');
             notasContainer.innerHTML = '';
             
             atencionData.notas_clinicas.forEach(nota => {
-                const nuevoGrupo = document.createElement('div');
-                nuevoGrupo.className = 'row g-3 nota-grupo mb-2';
-                nuevoGrupo.innerHTML = `
-                    <div class="col-md-11">
-                        <div class="mb-3">
-                            <select class="form-select plantilla-select">
-                                <option value="">Seleccionar plantilla...</option>
-                                ${plantillas.map(plantilla => 
-                                    `<option value="${plantilla.id}" data-contenido="${plantilla.contenido}">
-                                        ${plantilla.titulo}
-                                    </option>`
-                                ).join('')}
-                            </select>
-                        </div>
-                        <div class="editor-container">
-                            <div class="quill-editor" data-nota-id="${nota.id}"></div>
-                        </div>
-                    </div>
-                    <div class="col-md-1 d-flex align-items-center">
-                        <button type="button" class="btn btn-danger btn-eliminar-nota">X</button>
-                    </div>
-                `;
-                notasContainer.appendChild(nuevoGrupo);
-
-                const quill = new Quill(nuevoGrupo.querySelector('.quill-editor'), {
-                    theme: 'snow',
-                    modules: {
-                        toolbar: [
-                            ['bold', 'italic', 'underline', 'strike'],
-                            ['blockquote', 'code-block'],
-                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                            [{ 'script': 'sub'}, { 'script': 'super' }],
-                            [{ 'indent': '-1'}, { 'indent': '+1' }],
-                            [{ 'size': ['small', false, 'large', 'huge'] }],
-                            [{ 'color': [] }, { 'background': [] }],
-                            [{ 'align': [] }]
-                        ]
-                    }
-                });
-
-                if (nota.nota) {
-                    quill.root.innerHTML = nota.nota;
-                }
-
-                const plantillaSelect = nuevoGrupo.querySelector('.plantilla-select');
-                if (plantillaSelect) {
-                    plantillaSelect.addEventListener('change', function() {
-                        const selectedOption = this.options[this.selectedIndex];
-                        if (selectedOption.dataset.contenido) {
-                            quill.root.innerHTML = selectedOption.dataset.contenido;
-                        }
-                    });
-                }
+                agregarNotaClinica(nota.nota);
             });
-
-            actualizarBotonesEliminar('nota');
         }
 
         // Cargar diagnósticos
@@ -331,8 +336,8 @@ function cargarDatosExistentes() {
                 agregarAlergia(
                     alergia.alergia_id,
                     alergia.importancia_id,
-                    alergia.fecha_desde,
-                    alergia.fecha_hasta
+                    formatearFecha(alergia.fecha_desde),
+                    formatearFecha(alergia.fecha_hasta)
                 );
             });
         }
@@ -355,8 +360,8 @@ function cargarDatosExistentes() {
             atencionData.antecedentes.forEach(antecedente => {
                 agregarAntecedente(
                     antecedente.descripcion,
-                    antecedente.fecha_desde,
-                    antecedente.fecha_hasta
+                    formatearFecha(antecedente.fecha_desde),
+                    formatearFecha(antecedente.fecha_hasta)
                 );
             });
         }
@@ -369,8 +374,8 @@ function cargarDatosExistentes() {
             atencionData.habitos.forEach(habito => {
                 agregarHabito(
                     habito.descripcion,
-                    habito.fecha_desde,
-                    habito.fecha_hasta
+                    formatearFecha(habito.fecha_desde),
+                    formatearFecha(habito.fecha_hasta)
                 );
             });
         }
@@ -378,4 +383,98 @@ function cargarDatosExistentes() {
     } catch (error) {
         console.error('Error al cargar datos existentes:', error);
     }
+
+    const notasContainer = document.getElementById('notasClinicasContainer');
+    
+    if (notasContainer) {
+        // Agregar event listener para eliminar notas
+        notasContainer.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-eliminar-nota')) {
+                const grupoNota = e.target.closest('.nota-grupo');
+                if (grupoNota) {
+                    grupoNota.remove();
+                    const grupos = notasContainer.querySelectorAll('.nota-grupo');
+                    grupos.forEach(grupo => {
+                        const btnEliminar = grupo.querySelector('.btn-eliminar-nota');
+                        if (btnEliminar) {
+                            btnEliminar.disabled = grupos.length === 1;
+                        }
+                    });
+                }
+            }
+        });
+    }
+}
+
+function agregarElemento(tipo, container, html) {
+    const nuevoGrupo = document.createElement('div');
+    nuevoGrupo.className = `row g-3 ${tipo}-grupo mb-2`;
+    nuevoGrupo.innerHTML = html;
+    container.appendChild(nuevoGrupo);
+    actualizarBotonesEliminar(tipo);
+}
+
+function agregarNotaClinica(contenido = '') {
+    const nuevoGrupo = document.createElement('div');
+    nuevoGrupo.className = 'row g-3 nota-grupo mb-2';
+    nuevoGrupo.innerHTML = `
+        <div class="col-md-11">
+            ${window.plantillas && window.plantillas.length ? `
+                <div class="mb-3">
+                    <select class="form-select plantilla-select">
+                        <option value="">Seleccionar plantilla...</option>
+                        ${window.plantillas.map(plantilla => 
+                            `<option value="${plantilla.id}" data-contenido="${plantilla.contenido}">
+                                ${plantilla.titulo}
+                            </option>`
+                        ).join('')}
+                    </select>
+                </div>
+            ` : ''}
+            <div class="editor-container">
+                <div class="quill-editor"></div>
+            </div>
+        </div>
+        <div class="col-md-1 d-flex align-items-center">
+            <button type="button" class="btn btn-danger btn-eliminar-nota">X</button>
+        </div>
+    `;
+
+    const notasContainer = document.getElementById('notasClinicasContainer');
+    notasContainer.appendChild(nuevoGrupo);
+
+    // Inicializar el nuevo editor Quill
+    const quillEditor = new Quill(nuevoGrupo.querySelector('.quill-editor'), {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                [{ 'script': 'sub'}, { 'script': 'super' }],
+                [{ 'indent': '-1'}, { 'indent': '+1' }],
+                [{ 'size': ['small', false, 'large', 'huge'] }],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'align': [] }]
+            ]
+        }
+    });
+
+    // Establecer el contenido si existe
+    if (contenido) {
+        quillEditor.root.innerHTML = contenido;
+    }
+
+    // Agregar event listener para la plantilla
+    const plantillaSelect = nuevoGrupo.querySelector('.plantilla-select');
+    if (plantillaSelect) {
+        plantillaSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.dataset.contenido) {
+                quillEditor.root.innerHTML = selectedOption.dataset.contenido;
+            }
+        });
+    }
+
+    actualizarBotonesEliminar('nota');
 }
