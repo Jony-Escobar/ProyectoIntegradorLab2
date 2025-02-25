@@ -24,24 +24,30 @@ app.set("view engine", "pug")
 app.set("views", "./views")
 
 // 2. Rutas públicas
-app.use('/', usuarioRoutes)
-
-// 3. Middleware de protección
-app.use(protegerRuta);
-
-// 4. Rutas protegidas
-app.use('/', agendaRoutes)
-app.use('/', atencionRoutes)
-app.use('/api/plantillas', plantillasRoutes);
-
-// 5. Archivos estáticos (al final)
 app.use(express.static('public', {
     setHeaders: (res, path) => {
         if (path.endsWith('.js')) {
-            res.setHeader('Content-Type', 'application/javascript');
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+        }
+        if (path.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        }
+        if (path.endsWith('.module.js')) {
+            res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
         }
     }
 }));
+
+// 3. Rutas públicas
+app.use('/', usuarioRoutes)
+
+// 4. Middleware de protección
+app.use(protegerRuta);
+
+// 5. Rutas protegidas
+app.use('/', agendaRoutes)
+app.use('/', atencionRoutes)
+app.use('/api/plantillas', plantillasRoutes);
 
 //Definir puerto y arrancar el proyecto
 app.listen(port, () => {
