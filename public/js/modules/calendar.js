@@ -92,7 +92,7 @@ export function initializeCalendar(calendarEl, userId) {
                                 </div>
                                 <div style="display: flex; flex-direction: column; justify-content: center; gap: 4px;">
                                     <button 
-                                        class="btn btn-sm btn-secondary"
+                                        class="btn btn-sm btn-secondary border-white"
                                         data-bs-toggle="modal" 
                                         data-bs-target="#modalPrincipal"
                                         data-id="${arg.event.extendedProps.idPaciente}"
@@ -100,7 +100,7 @@ export function initializeCalendar(calendarEl, userId) {
                                     >Ver HC</button>
                                     ${esTurnoHoy && estado !== 'Finalizado' ? `
                                         <button 
-                                            class="btn btn-sm btn-success"
+                                            class="btn btn-sm btn-success border-white"
                                             onclick="if(confirm('¿Desea ${estado === 'En atencion' ? 'continuar' : 'iniciar'} la atención?')) window.location.href='/atencion/${arg.event.extendedProps.turnoId}'"
                                             style="white-space: nowrap;"
                                         >${estado === 'En atencion' ? 'Continuar atención' : 'Atender'}</button>
@@ -147,10 +147,11 @@ export function initializeCalendar(calendarEl, userId) {
 
 function getEventColor(estado) {
     const colors = {
-        'Pendiente': '#ffc107',
+        'Pendiente': '#FFA500',
         'En atencion': '#0d6efd',
-        'Finalizado': '#28a745'
+        'Atendido': '#28a745',
+        'No atendido': '#dc3545'
     };
-    return colors[estado] || '#ffc107';
+    return colors[estado] || '#FFA500';
 }
 

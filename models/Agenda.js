@@ -173,7 +173,7 @@ class Agenda {
     static async actualizarTurnosAntiguos() {
         const query = `
             UPDATE turnos 
-            SET estado_id = 3 
+            SET estado_id = 4
             WHERE fecha < CURDATE() 
             AND estado_id != 3
         `;
