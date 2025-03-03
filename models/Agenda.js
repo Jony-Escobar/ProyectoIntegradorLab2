@@ -57,7 +57,7 @@ class Agenda {
                 personas.apellido AS 'Apellido',
                 personas.nombre AS 'Nombre',
                 turnos.motivo_consulta AS 'Motivo Consulta',
-                DATE_FORMAT(atenciones.fecha_atencion, '%Y-%m-%d') as "Fecha"
+                DATE_FORMAT(atenciones.fecha_atencion, '%d-%m-%Y') as "Fecha"
             FROM turnos
                 JOIN atenciones ON turnos.id = atenciones.turno_id
                 JOIN pacientes ON turnos.paciente_id = pacientes.id
@@ -105,32 +105,32 @@ class Agenda {
         const query = `
             SELECT 
                 a.id,
-                DATE_FORMAT(a.fecha_atencion, '%Y-%m-%d') as fecha,
+                DATE_FORMAT(a.fecha_atencion, '%d-%m-%Y') as fecha,
                 CONCAT(pm.nombre, ' ', pm.apellido) as medico,
                 t.motivo_consulta as motivo,
                 GROUP_CONCAT(DISTINCT d.descripcion SEPARATOR '; ') as diagnosticos,
                 CASE 
-                    WHEN m.id = ? THEN nc.nota 
+                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT nc.nota SEPARATOR '; ')
                     ELSE NULL 
                 END as evolucion,
                 CASE 
-                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT al.alergia)
+                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT al.alergia SEPARATOR '; ')
                     ELSE NULL 
                 END as alergias,
                 CASE 
-                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT i.importancia)
+                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT i.importancia SEPARATOR '; ')
                     ELSE NULL 
                 END as importancia_alergia,
                 CASE 
-                    WHEN m.id = ? THEN ap.descripcion
+                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT ap.descripcion SEPARATOR '; ')
                     ELSE NULL 
                 END as antecedentes,
                 CASE 
-                    WHEN m.id = ? THEN h.descripcion
+                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT h.descripcion SEPARATOR '; ')
                     ELSE NULL 
                 END as habitos,
                 CASE 
-                    WHEN m.id = ? THEN mu.descripcion
+                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT mu.descripcion SEPARATOR '; ')
                     ELSE NULL 
                 END as medicamentos,
                 m.id as medico_id
@@ -149,14 +149,19 @@ class Agenda {
             LEFT JOIN habitos h ON h.atencion_id = a.id
             LEFT JOIN medicamentos_en_uso mu ON mu.atencion_id = a.id
             WHERE t.paciente_id = ?
-            GROUP BY a.id, fecha, medico, motivo, evolucion, antecedentes, habitos, medicamentos, medico_id
+            GROUP BY 
+                a.id, 
+                fecha, 
+                medico, 
+                motivo,
+                medico_id
             ORDER BY a.fecha_atencion DESC
         `;
 
         try {
             const [historial] = await pool.query(query, [
                 medicoActualId, 
-                medicoActualId,
+                medicoActualId, 
                 medicoActualId,
                 medicoActualId,
                 medicoActualId,
@@ -166,7 +171,7 @@ class Agenda {
             return historial;
         } catch (error) {
             console.error('Error al obtener historial médico:', error);
-            throw new Error('Error al obtener historial médico');
+            throw error;
         }
     }
 

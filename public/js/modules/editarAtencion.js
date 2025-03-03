@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnAgregarAntecedente = document.getElementById('btnAgregarAntecedente');
     const btnAgregarHabito = document.getElementById('btnAgregarHabito');
     const btnAgregarNota = document.getElementById('btnAgregarNota');
+    const btnAgregarAlergia = document.getElementById('btnAgregarAlergia');
+    const btnAgregarMedicamento = document.getElementById('btnAgregarMedicamento');
+    const btnAgregarDiagnostico = document.getElementById('btnAgregarDiagnostico');
 
     if (btnAgregarAntecedente) {
         btnAgregarAntecedente.addEventListener('click', () => agregarAntecedente());
@@ -15,8 +18,21 @@ document.addEventListener('DOMContentLoaded', function() {
         btnAgregarHabito.addEventListener('click', () => agregarHabito());
     }
 
-    if (btnAgregarNota) {
+    if (btnAgregarNota && !btnAgregarNota._listenerAdded) {
         btnAgregarNota.addEventListener('click', () => agregarNotaClinica());
+        btnAgregarNota._listenerAdded = true;
+    }
+
+    if (btnAgregarAlergia) {
+        btnAgregarAlergia.addEventListener('click', () => agregarAlergia());
+    }
+
+    if (btnAgregarMedicamento) {
+        btnAgregarMedicamento.addEventListener('click', () => agregarMedicamento());
+    }
+
+    if (btnAgregarDiagnostico) {
+        btnAgregarDiagnostico.addEventListener('click', () => agregarDiagnostico());
     }
 
     // Primero cargar los datos existentes
@@ -25,6 +41,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Verificar si el botón existe antes de inicializar
     const btnGestionPlantillas = document.getElementById('btnGestionPlantillas');
     if (btnGestionPlantillas) {
+        btnGestionPlantillas.addEventListener('click', function() {
+            // Abrir el modal de gestión de plantillas
+            const plantillasModal = new bootstrap.Modal(document.getElementById('plantillasModal'));
+            plantillasModal.show();
+        });
+        
+        // Inicializar la gestión de plantillas
         initGestionPlantillas();
     }
     
@@ -36,6 +59,99 @@ document.addEventListener('DOMContentLoaded', function() {
     if (formAtencion) {
         formAtencion.addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            // Validar que todos los campos abiertos estén completos
+            let formValido = true;
+            
+            // Validar alergias
+            const alergiasGroups = document.querySelectorAll('.alergia-grupo');
+            alergiasGroups.forEach(grupo => {
+                const alergiaSelect = grupo.querySelector('.alergia-select');
+                const importanciaSelect = grupo.querySelector('.importancia-select');
+                const fechaDesde = grupo.querySelector('.alergia-fecha-desde');
+                
+                if (alergiaSelect && !alergiaSelect.value) {
+                    alergiaSelect.classList.add('is-invalid');
+                    formValido = false;
+                } else if (alergiaSelect) {
+                    alergiaSelect.classList.remove('is-invalid');
+                }
+                
+                if (importanciaSelect && !importanciaSelect.value) {
+                    importanciaSelect.classList.add('is-invalid');
+                    formValido = false;
+                } else if (importanciaSelect) {
+                    importanciaSelect.classList.remove('is-invalid');
+                }
+                
+                if (fechaDesde && !fechaDesde.value) {
+                    fechaDesde.classList.add('is-invalid');
+                    formValido = false;
+                } else if (fechaDesde) {
+                    fechaDesde.classList.remove('is-invalid');
+                }
+            });
+            
+            // Validar antecedentes
+            const antecedentesGroups = document.querySelectorAll('.antecedente-grupo');
+            antecedentesGroups.forEach(grupo => {
+                const descripcion = grupo.querySelector('.antecedente-texto');
+                const fechaDesde = grupo.querySelector('.antecedente-fecha-desde');
+                
+                if (descripcion && !descripcion.value.trim()) {
+                    descripcion.classList.add('is-invalid');
+                    formValido = false;
+                } else if (descripcion) {
+                    descripcion.classList.remove('is-invalid');
+                }
+                
+                if (fechaDesde && !fechaDesde.value) {
+                    fechaDesde.classList.add('is-invalid');
+                    formValido = false;
+                } else if (fechaDesde) {
+                    fechaDesde.classList.remove('is-invalid');
+                }
+            });
+            
+            // Validar hábitos
+            const habitosGroups = document.querySelectorAll('.habito-grupo');
+            habitosGroups.forEach(grupo => {
+                const descripcion = grupo.querySelector('.habito-texto');
+                const fechaDesde = grupo.querySelector('.habito-fecha-desde');
+                
+                if (descripcion && !descripcion.value.trim()) {
+                    descripcion.classList.add('is-invalid');
+                    formValido = false;
+                } else if (descripcion) {
+                    descripcion.classList.remove('is-invalid');
+                }
+                
+                if (fechaDesde && !fechaDesde.value) {
+                    fechaDesde.classList.add('is-invalid');
+                    formValido = false;
+                } else if (fechaDesde) {
+                    fechaDesde.classList.remove('is-invalid');
+                }
+            });
+            
+            // Validar medicamentos
+            const medicamentosGroups = document.querySelectorAll('.medicamento-grupo');
+            medicamentosGroups.forEach(grupo => {
+                const descripcion = grupo.querySelector('.medicamento-texto');
+                
+                if (descripcion && !descripcion.value.trim()) {
+                    descripcion.classList.add('is-invalid');
+                    formValido = false;
+                } else if (descripcion) {
+                    descripcion.classList.remove('is-invalid');
+                }
+            });
+            
+            // Si hay campos inválidos, mostrar mensaje y detener el envío
+            if (!formValido) {
+                alert("Por favor, complete todos los campos obligatorios o elimine los registros incompletos usando el botón X.");
+                return;
+            }
             
             try {
                 const atencionId = window.location.pathname.split('/').pop();
@@ -121,7 +237,8 @@ document.addEventListener('DOMContentLoaded', function() {
         'alergia': document.getElementById('alergiasContainer'),
         'antecedente': document.getElementById('antecedentesContainer'),
         'habito': document.getElementById('habitosContainer'),
-        'medicamento': document.getElementById('medicamentosContainer')
+        'medicamento': document.getElementById('medicamentosContainer'),
+        'nota': document.getElementById('notasClinicasContainer')
     };
 
     // Agregar delegación de eventos para cada contenedor
@@ -132,158 +249,102 @@ document.addEventListener('DOMContentLoaded', function() {
                     const grupo = e.target.closest(`.${tipo}-grupo`);
                     if (grupo) {
                         grupo.remove();
+                        
+                        // Contar cuántos grupos quedan de este tipo
+                        const gruposRestantes = container.querySelectorAll(`.${tipo}-grupo`).length;
+                        
+                        // Si no quedan grupos y no es un tipo obligatorio, mostrar "No registrado"
+                        const tiposNoObligatorios = ['alergia', 'antecedente', 'habito', 'medicamento'];
+                        if (tiposNoObligatorios.includes(tipo) && gruposRestantes === 0) {
+                            // Verificar si ya existe el mensaje "No registrado"
+                            const mensajeNoRegistrado = container.querySelector('.mensaje-no-registrado');
+                            if (!mensajeNoRegistrado) {
+                                container.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+                            }
+                        }
+                        
                         actualizarBotonesEliminar(tipo);
                     }
                 }
             });
         }
     });
+
+    // Agregar event listener para el botón Cancelar
+    const btnCancelar = document.getElementById('btnCancelar');
+    if (btnCancelar) {
+        btnCancelar.addEventListener('click', function() {
+            // Mostrar mensaje de confirmación
+            const confirmar = confirm("¿Está seguro que desea cancelar? Se perderán todos los cambios no guardados.");
+            
+            // Si el usuario confirma, redirigir a la página de agenda
+            if (confirmar) {
+                window.location.href = '/agenda';
+            }
+            // Si el usuario cancela la confirmación, no hacer nada y permanecer en la página
+        });
+    }
 });
 
 // Función genérica para actualizar botones de eliminar
 function actualizarBotonesEliminar(tipo) {
-    const container = document.getElementById(`${tipo}sContainer`);
+    // Obtener el contenedor según el tipo
+    let container;
+    switch (tipo) {
+        case 'nota':
+            container = document.getElementById('notasClinicasContainer');
+            break;
+        case 'diagnostico':
+            container = document.getElementById('diagnosticosContainer');
+            break;
+        case 'alergia':
+            container = document.getElementById('alergiasContainer');
+            break;
+        case 'antecedente':
+            container = document.getElementById('antecedentesContainer');
+            break;
+        case 'habito':
+            container = document.getElementById('habitosContainer');
+            break;
+        case 'medicamento':
+            container = document.getElementById('medicamentosContainer');
+            break;
+        default:
+            return;
+    }
+
     if (!container) return;
-    
+
+    // Obtener todos los grupos del tipo específico
     const grupos = container.querySelectorAll(`.${tipo}-grupo`);
+    
+    // Los botones de eliminar solo deben estar deshabilitados para notas y diagnósticos
+    // cuando hay solo uno, para el resto siempre deben estar habilitados
+    const tiposObligatorios = ['nota', 'diagnostico'];
+    const esObligatorio = tiposObligatorios.includes(tipo);
+    
+    // Para los tipos no obligatorios, si no quedan grupos, mostrar el mensaje "No registrado"
+    const tiposNoObligatorios = ['alergia', 'antecedente', 'habito', 'medicamento'];
+    if (tiposNoObligatorios.includes(tipo) && grupos.length === 0) {
+        // Verificar si ya existe el mensaje "No registrado"
+        const mensajeNoRegistrado = container.querySelector('.mensaje-no-registrado');
+        if (!mensajeNoRegistrado) {
+            container.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+        }
+        return;
+    }
+    
     grupos.forEach(grupo => {
         const btnEliminar = grupo.querySelector(`.btn-eliminar-${tipo}`);
         if (btnEliminar) {
-            btnEliminar.disabled = grupos.length === 1;
+            // Si es de tipo obligatorio y solo hay uno, deshabilitar el botón
+            // Si no, siempre habilitar el botón
+            btnEliminar.disabled = esObligatorio && grupos.length === 1;
         }
     });
 }
 
-// Definir las funciones primero
-function agregarDiagnostico(descripcion = '', tipoId = '') {
-    const nuevoGrupo = document.createElement('div');
-    nuevoGrupo.className = 'row g-3 diagnostico-grupo mb-2';
-    nuevoGrupo.innerHTML = `
-        <div class="col-md-6">
-            <label class="form-label">Tipo</label>
-            <select class="form-select tipo-diagnostico">
-                <option value="">Seleccionar tipo</option>
-                ${window.tiposDiagnostico.map(tipo => 
-                    `<option value="${tipo.id}" ${tipo.id === tipoId ? 'selected' : ''}>${tipo.tipo}</option>`
-                ).join('')}
-            </select>
-        </div>
-        <div class="col-md-11">
-            <label class="form-label">Descripción</label>
-            <textarea class="form-control diagnostico-texto" rows="3">${descripcion}</textarea>
-        </div>
-        <div class="col-md-1 d-flex align-items-end">
-            <button type="button" class="btn btn-danger btn-eliminar-diagnostico">X</button>
-        </div>
-    `;
-    diagnosticosContainer.appendChild(nuevoGrupo);
-    actualizarBotonesEliminar('diagnostico');
-}
-
-function agregarAlergia(alergiaId = '', importanciaId = '', fechaDesde = '', fechaHasta = '') {
-    const nuevoGrupo = document.createElement('div');
-    nuevoGrupo.className = 'row g-3 alergia-grupo mb-2';
-    nuevoGrupo.innerHTML = `
-        <div class="col-md-3">
-            <label class="form-label">Alergia</label>
-            <select class="form-select alergia-select" required>
-                <option value="">Seleccionar Alergia</option>
-                ${window.alergias.map(alergia => 
-                    `<option value="${alergia.id}" ${alergia.id.toString() === alergiaId.toString() ? 'selected' : ''}>
-                        ${alergia.alergia}
-                    </option>`
-                ).join('')}
-            </select>
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Importancia</label>
-            <select class="form-select importancia-select" required>
-                <option value="">Seleccionar Importancia</option>
-                ${window.importancias.map(importancia => 
-                    `<option value="${importancia.id}" ${importancia.id.toString() === importanciaId.toString() ? 'selected' : ''}>
-                        ${importancia.importancia}
-                    </option>`
-                ).join('')}
-            </select>
-        </div>
-        <div class="col-md-2">
-            <label class="form-label">Fecha Desde</label>
-            <input type="date" class="form-control alergia-fecha-desde" value="${fechaDesde || ''}" required>
-        </div>
-        <div class="col-md-2">
-            <label class="form-label">Fecha Hasta</label>
-            <input type="date" class="form-control alergia-fecha-hasta" value="${fechaHasta || ''}">
-        </div>
-        <div class="col-md-1 d-flex align-items-end">
-            <button type="button" class="btn btn-danger btn-eliminar-alergia">X</button>
-        </div>
-    `;
-    alergiasContainer.appendChild(nuevoGrupo);
-    actualizarBotonesEliminar('alergia');
-}
-
-function agregarMedicamento(descripcion = '') {
-    const nuevoGrupo = document.createElement('div');
-    nuevoGrupo.className = 'row g-3 medicamento-grupo mb-2';
-    nuevoGrupo.innerHTML = `
-        <div class="col-md-11">
-            <label class="form-label">Descripción</label>
-            <textarea class="form-control medicamento-texto" rows="3">${descripcion}</textarea>
-        </div>
-        <div class="col-md-1 d-flex align-items-end">
-            <button type="button" class="btn btn-danger btn-eliminar-medicamento">X</button>
-        </div>
-    `;
-    medicamentosContainer.appendChild(nuevoGrupo);
-    actualizarBotonesEliminar('medicamento');
-}
-
-function agregarAntecedente(descripcion = '', fechaDesde = '', fechaHasta = '') {
-    const nuevoGrupo = document.createElement('div');
-    nuevoGrupo.className = 'row g-3 antecedente-grupo mb-2';
-    nuevoGrupo.innerHTML = `
-        <div class="col-md-6">
-            <textarea class="form-control antecedente-texto" rows="3">${descripcion}</textarea>
-        </div>
-        <div class="col-md-2">
-            <label class="form-label">Fecha Desde</label>
-            <input type="date" class="form-control antecedente-fecha-desde" value="${fechaDesde || ''}">
-        </div>
-        <div class="col-md-2">
-            <label class="form-label">Fecha Hasta</label>
-            <input type="date" class="form-control antecedente-fecha-hasta" value="${fechaHasta || ''}">
-        </div>
-        <div class="col-md-1 d-flex align-items-end">
-            <button type="button" class="btn btn-danger btn-eliminar-antecedente">X</button>
-        </div>
-    `;
-    antecedentesContainer.appendChild(nuevoGrupo);
-    actualizarBotonesEliminar('antecedente');
-}
-
-function agregarHabito(descripcion = '', fechaDesde = '', fechaHasta = '') {
-    const nuevoGrupo = document.createElement('div');
-    nuevoGrupo.className = 'row g-3 habito-grupo mb-2';
-    nuevoGrupo.innerHTML = `
-        <div class="col-md-6">
-            <textarea class="form-control habito-texto" rows="3">${descripcion}</textarea>
-        </div>
-        <div class="col-md-2">
-            <label class="form-label">Fecha Desde</label>
-            <input type="date" class="form-control habito-fecha-desde" value="${fechaDesde || ''}">
-        </div>
-        <div class="col-md-2">
-            <label class="form-label">Fecha Hasta</label>
-            <input type="date" class="form-control habito-fecha-hasta" value="${fechaHasta || ''}">
-        </div>
-        <div class="col-md-1 d-flex align-items-end">
-            <button type="button" class="btn btn-danger btn-eliminar-habito">X</button>
-        </div>
-    `;
-    habitosContainer.appendChild(nuevoGrupo);
-    actualizarBotonesEliminar('habito');
-}
-
+// Función para cargar diagnósticos existentes
 function cargarDatosExistentes() {
     const formAtencion = document.getElementById('formAtencion');
     if (!formAtencion) return;
@@ -327,9 +388,9 @@ function cargarDatosExistentes() {
             });
         }
 
-        // Cargar alergias
+        // Cargar alergias y mostrar mensaje si no hay
+        const alergiasContainer = document.getElementById('alergiasContainer');
         if (atencionData.alergias?.length) {
-            const alergiasContainer = document.getElementById('alergiasContainer');
             alergiasContainer.innerHTML = '';
             
             atencionData.alergias.forEach(alergia => {
@@ -340,21 +401,35 @@ function cargarDatosExistentes() {
                     formatearFecha(alergia.fecha_hasta)
                 );
             });
+            alergiasContainer.querySelector('.mensaje-no-registrado')?.remove();
+        } else if (alergiasContainer) {
+            // Vaciar el contenedor existente pero mantener el mensaje "No registrado" si existe
+            const mensajeNoRegistrado = alergiasContainer.querySelector('.mensaje-no-registrado');
+            if (!mensajeNoRegistrado) {
+                alergiasContainer.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+            }
         }
 
-        // Cargar medicamentos
+        // Cargar medicamentos y mostrar mensaje si no hay
+        const medicamentosContainer = document.getElementById('medicamentosContainer');
         if (atencionData.medicamentos?.length) {
-            const medicamentosContainer = document.getElementById('medicamentosContainer');
             medicamentosContainer.innerHTML = '';
             
             atencionData.medicamentos.forEach(medicamento => {
                 agregarMedicamento(medicamento.descripcion);
             });
+            medicamentosContainer.querySelector('.mensaje-no-registrado')?.remove();
+        } else if (medicamentosContainer) {
+            // Vaciar el contenedor existente pero mantener el mensaje "No registrado" si existe
+            const mensajeNoRegistrado = medicamentosContainer.querySelector('.mensaje-no-registrado');
+            if (!mensajeNoRegistrado) {
+                medicamentosContainer.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+            }
         }
 
-        // Cargar antecedentes
+        // Cargar antecedentes y mostrar mensaje si no hay
+        const antecedentesContainer = document.getElementById('antecedentesContainer');
         if (atencionData.antecedentes?.length) {
-            const antecedentesContainer = document.getElementById('antecedentesContainer');
             antecedentesContainer.innerHTML = '';
             
             atencionData.antecedentes.forEach(antecedente => {
@@ -364,11 +439,18 @@ function cargarDatosExistentes() {
                     formatearFecha(antecedente.fecha_hasta)
                 );
             });
+            antecedentesContainer.querySelector('.mensaje-no-registrado')?.remove();
+        } else if (antecedentesContainer) {
+            // Vaciar el contenedor existente pero mantener el mensaje "No registrado" si existe
+            const mensajeNoRegistrado = antecedentesContainer.querySelector('.mensaje-no-registrado');
+            if (!mensajeNoRegistrado) {
+                antecedentesContainer.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+            }
         }
 
-        // Cargar hábitos
+        // Cargar hábitos y mostrar mensaje si no hay
+        const habitosContainer = document.getElementById('habitosContainer');
         if (atencionData.habitos?.length) {
-            const habitosContainer = document.getElementById('habitosContainer');
             habitosContainer.innerHTML = '';
             
             atencionData.habitos.forEach(habito => {
@@ -378,6 +460,13 @@ function cargarDatosExistentes() {
                     formatearFecha(habito.fecha_hasta)
                 );
             });
+            habitosContainer.querySelector('.mensaje-no-registrado')?.remove();
+        } else if (habitosContainer) {
+            // Vaciar el contenedor existente pero mantener el mensaje "No registrado" si existe
+            const mensajeNoRegistrado = habitosContainer.querySelector('.mensaje-no-registrado');
+            if (!mensajeNoRegistrado) {
+                habitosContainer.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+            }
         }
 
     } catch (error) {
@@ -406,6 +495,179 @@ function cargarDatosExistentes() {
     }
 }
 
+// Función para agregar diagnóstico
+function agregarDiagnostico(descripcion = '', tipoId = '') {
+    const diagnosticosContainer = document.getElementById('diagnosticosContainer');
+    if (!diagnosticosContainer) {
+        console.error('No se encontró el contenedor de diagnósticos');
+        return;
+    }
+    
+    const nuevoGrupo = document.createElement('div');
+    nuevoGrupo.className = 'row g-3 diagnostico-grupo mb-2';
+    nuevoGrupo.innerHTML = `
+        <div class="col-md-6">
+            <label class="form-label">Tipo</label>
+            <select class="form-select tipo-diagnostico">
+                <option value="">Seleccionar tipo</option>
+                ${window.tiposDiagnostico.map(tipo => 
+                    `<option value="${tipo.id}" ${tipo.id.toString() === tipoId.toString() ? 'selected' : ''}>${tipo.tipo}</option>`
+                ).join('')}
+            </select>
+        </div>
+        <div class="col-md-11">
+            <textarea class="form-control diagnostico-texto" rows="3">${descripcion}</textarea>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="button" class="btn btn-danger btn-eliminar-diagnostico">X</button>
+        </div>
+    `;
+    diagnosticosContainer.appendChild(nuevoGrupo);
+    actualizarBotonesEliminar('diagnostico');
+}
+
+function agregarAlergia(alergiaId = '', importanciaId = '', fechaDesde = '', fechaHasta = '') {
+    const alergiasContainer = document.getElementById('alergiasContainer');
+    if (!alergiasContainer) return;
+    
+    // Remover el mensaje "No registrado" si existe
+    const mensajeNoRegistrado = alergiasContainer.querySelector('.mensaje-no-registrado');
+    if (mensajeNoRegistrado) {
+        mensajeNoRegistrado.remove();
+    }
+    
+    const nuevoGrupo = document.createElement('div');
+    nuevoGrupo.className = 'row g-3 alergia-grupo mb-2';
+    nuevoGrupo.innerHTML = `
+        <div class="col-md-3">
+            <label class="form-label">Alergia <span class="text-danger">*</span></label>
+            <select class="form-select alergia-select" required>
+                <option value="">Seleccionar Alergia</option>
+                ${window.alergias.map(alergia => 
+                    `<option value="${alergia.id}" ${alergia.id.toString() === alergiaId.toString() ? 'selected' : ''}>
+                        ${alergia.alergia}
+                    </option>`
+                ).join('')}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Importancia <span class="text-danger">*</span></label>
+            <select class="form-select importancia-select" required>
+                <option value="">Seleccionar Importancia</option>
+                ${window.importancias.map(importancia => 
+                    `<option value="${importancia.id}" ${importancia.id.toString() === importanciaId.toString() ? 'selected' : ''}>
+                        ${importancia.importancia}
+                    </option>`
+                ).join('')}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Fecha Desde <span class="text-danger">*</span></label>
+            <input type="date" class="form-control alergia-fecha-desde" value="${fechaDesde || new Date().toISOString().split('T')[0]}" required>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Fecha Hasta</label>
+            <input type="date" class="form-control alergia-fecha-hasta" value="${fechaHasta || ''}">
+        </div>
+        <div class="col-md-1 btn-group-bottom">
+            <button type="button" class="btn btn-danger btn-eliminar-alergia">X</button>
+        </div>
+    `;
+    alergiasContainer.appendChild(nuevoGrupo);
+    actualizarBotonesEliminar('alergia');
+}
+
+function agregarMedicamento(descripcion = '') {
+    const medicamentosContainer = document.getElementById('medicamentosContainer');
+    if (!medicamentosContainer) return;
+    
+    // Remover el mensaje "No registrado" si existe
+    const mensajeNoRegistrado = medicamentosContainer.querySelector('.mensaje-no-registrado');
+    if (mensajeNoRegistrado) {
+        mensajeNoRegistrado.remove();
+    }
+    
+    const nuevoGrupo = document.createElement('div');
+    nuevoGrupo.className = 'row g-3 medicamento-grupo mb-2';
+    nuevoGrupo.innerHTML = `
+        <div class="col-md-11">
+            <label class="form-label">Descripción <span class="text-danger">*</span></label>
+            <textarea class="form-control medicamento-texto" rows="3" required>${descripcion}</textarea>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="button" class="btn btn-danger btn-eliminar-medicamento">X</button>
+        </div>
+    `;
+    medicamentosContainer.appendChild(nuevoGrupo);
+    actualizarBotonesEliminar('medicamento');
+}
+
+function agregarAntecedente(descripcion = '', fechaDesde = '', fechaHasta = '') {
+    const antecedentesContainer = document.getElementById('antecedentesContainer');
+    if (!antecedentesContainer) return;
+    
+    // Remover el mensaje "No registrado" si existe
+    const mensajeNoRegistrado = antecedentesContainer.querySelector('.mensaje-no-registrado');
+    if (mensajeNoRegistrado) {
+        mensajeNoRegistrado.remove();
+    }
+    
+    const nuevoGrupo = document.createElement('div');
+    nuevoGrupo.className = 'row g-3 antecedente-grupo mb-2';
+    nuevoGrupo.innerHTML = `
+        <div class="col-md-6">
+            <label class="form-label">Descripción <span class="text-danger">*</span></label>
+            <textarea class="form-control antecedente-texto" rows="3" required>${descripcion}</textarea>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Fecha Desde <span class="text-danger">*</span></label>
+            <input type="date" class="form-control antecedente-fecha-desde" value="${fechaDesde || new Date().toISOString().split('T')[0]}" required>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Fecha Hasta</label>
+            <input type="date" class="form-control antecedente-fecha-hasta" value="${fechaHasta || ''}">
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="button" class="btn btn-danger btn-eliminar-antecedente">X</button>
+        </div>
+    `;
+    antecedentesContainer.appendChild(nuevoGrupo);
+    actualizarBotonesEliminar('antecedente');
+}
+
+function agregarHabito(descripcion = '', fechaDesde = '', fechaHasta = '') {
+    const habitosContainer = document.getElementById('habitosContainer');
+    if (!habitosContainer) return;
+    
+    // Remover el mensaje "No registrado" si existe
+    const mensajeNoRegistrado = habitosContainer.querySelector('.mensaje-no-registrado');
+    if (mensajeNoRegistrado) {
+        mensajeNoRegistrado.remove();
+    }
+    
+    const nuevoGrupo = document.createElement('div');
+    nuevoGrupo.className = 'row g-3 habito-grupo mb-2';
+    nuevoGrupo.innerHTML = `
+        <div class="col-md-6">
+            <label class="form-label">Descripción <span class="text-danger">*</span></label>
+            <textarea class="form-control habito-texto" rows="3" required>${descripcion}</textarea>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Fecha Desde <span class="text-danger">*</span></label>
+            <input type="date" class="form-control habito-fecha-desde" value="${fechaDesde || new Date().toISOString().split('T')[0]}" required>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Fecha Hasta</label>
+            <input type="date" class="form-control habito-fecha-hasta" value="${fechaHasta || ''}">
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="button" class="btn btn-danger btn-eliminar-habito">X</button>
+        </div>
+    `;
+    habitosContainer.appendChild(nuevoGrupo);
+    actualizarBotonesEliminar('habito');
+}
+
 function agregarElemento(tipo, container, html) {
     const nuevoGrupo = document.createElement('div');
     nuevoGrupo.className = `row g-3 ${tipo}-grupo mb-2`;
@@ -414,23 +676,46 @@ function agregarElemento(tipo, container, html) {
     actualizarBotonesEliminar(tipo);
 }
 
-function agregarNotaClinica(contenido = '') {
+async function agregarNotaClinica(contenido = '') {
+    // Refrescar la lista de plantillas antes de crear la nueva nota
+    try {
+        const response = await fetch('/api/plantillas');
+        if (response.ok) {
+            window.plantillas = await response.json();
+        }
+    } catch (error) {
+        console.error('Error al actualizar plantillas:', error);
+    }
+    
     const nuevoGrupo = document.createElement('div');
     nuevoGrupo.className = 'row g-3 nota-grupo mb-2';
+    
+    // Crear el HTML para las plantillas con escape apropiado
+    let plantillasHTML = '';
+    if (window.plantillas && window.plantillas.length) {
+        plantillasHTML = `
+            <div class="mb-3">
+                <select class="form-select plantilla-select">
+                    <option value="">Seleccionar plantilla...</option>
+                    ${window.plantillas.map(plantilla => {
+                        // Escapar el contenido HTML para el atributo data
+                        const contenidoEscapado = plantilla.contenido
+                            .replace(/&/g, '&amp;')
+                            .replace(/"/g, '&quot;')
+                            .replace(/'/g, '&#39;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;');
+                        
+                        return `<option value="${plantilla.id}" data-contenido="${contenidoEscapado}">${plantilla.titulo}</option>`;
+                    }).join('')}
+                </select>
+            </div>
+        `;
+    }
+    
     nuevoGrupo.innerHTML = `
         <div class="col-md-11">
-            ${window.plantillas && window.plantillas.length ? `
-                <div class="mb-3">
-                    <select class="form-select plantilla-select">
-                        <option value="">Seleccionar plantilla...</option>
-                        ${window.plantillas.map(plantilla => 
-                            `<option value="${plantilla.id}" data-contenido="${plantilla.contenido}">
-                                ${plantilla.titulo}
-                            </option>`
-                        ).join('')}
-                    </select>
-                </div>
-            ` : ''}
+            ${plantillasHTML}
             <div class="editor-container">
                 <div class="quill-editor"></div>
             </div>
@@ -442,8 +727,8 @@ function agregarNotaClinica(contenido = '') {
 
     const notasContainer = document.getElementById('notasClinicasContainer');
     notasContainer.appendChild(nuevoGrupo);
-
-    // Inicializar el nuevo editor Quill
+    
+    // Inicializar el editor de texto enriquecido
     const quillEditor = new Quill(nuevoGrupo.querySelector('.quill-editor'), {
         theme: 'snow',
         modules: {
@@ -459,22 +744,30 @@ function agregarNotaClinica(contenido = '') {
             ]
         }
     });
-
-    // Establecer el contenido si existe
+    
+    // Establecer contenido si existe
     if (contenido) {
         quillEditor.root.innerHTML = contenido;
     }
-
+    
     // Agregar event listener para la plantilla
     const plantillaSelect = nuevoGrupo.querySelector('.plantilla-select');
     if (plantillaSelect) {
         plantillaSelect.addEventListener('change', function() {
             const selectedOption = this.options[this.selectedIndex];
             if (selectedOption.dataset.contenido) {
-                quillEditor.root.innerHTML = selectedOption.dataset.contenido;
+                // Desescapar el contenido antes de insertarlo en el editor
+                const contenidoReal = selectedOption.dataset.contenido
+                    .replace(/&amp;/g, '&')
+                    .replace(/&quot;/g, '"')
+                    .replace(/&#39;/g, "'")
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>');
+                
+                quillEditor.root.innerHTML = contenidoReal;
             }
         });
     }
-
+    
     actualizarBotonesEliminar('nota');
 }

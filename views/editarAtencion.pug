@@ -8,6 +8,15 @@ block estilos
 
 block contenido
     .container.py-4
+        //- Título principal
+        .row.mb-4
+            .col-12.text-center
+                h1.display-4.text-success.fw-bold
+                    i.fas.fa-notes-medical.me-3
+                    | Editar Atención
+                .border-bottom.border-success.w-50.mx-auto.my-2(style="height: 3px;")
+                p.text-muted Edite la ultima atención del paciente
+
         .row.justify-content-center
             .col-12.col-lg-10
                 form#formAtencion(
@@ -22,134 +31,104 @@ block contenido
                 )
                     input(type="hidden" name="turnoId" id="turnoId" value=turnoId)
                     input(type="hidden" name="atencionId" id="atencionId" value=atencion.id)
-                    
                     //- Alergias
-                    fieldset
-                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Alergias
-                        div#alergiasContainer
-                            div(class="row g-3 alergia-grupo mb-2")
-                                div(class="col-md-3")
-                                    label(for="selectAlergia_0" class="form-label") Alergia
-                                    select(class="form-select alergia-select" id="selectAlergia_0" name="alergias[]")
-                                        option(value="") Seleccionar Alergia
-                                        each alergia in alergias
-                                            option(value=alergia.id)= alergia.alergia
-                                div(class="col-md-3")
-                                    label(for="selectImportancia_0" class="form-label") Importancia
-                                    select(class="form-select importancia-select" id="selectImportancia_0" name="importancias[]")
-                                        option(value="") Seleccionar Importancia
-                                        each importancia in importancias
-                                            option(value=importancia.id)= importancia.importancia
-                                div(class="col-md-2")
-                                    label(for="alergiaFechaDesde_0" class="form-label") Fecha Desde
-                                    input(type="date" class="form-control alergia-fecha-desde" id="alergiaFechaDesde_0" name="alergiasFechaDesde[]" value=new Date().toISOString().split('T')[0])
-                                div(class="col-md-2")
-                                    label(for="alergiaFechaHasta_0" class="form-label") Fecha Hasta
-                                    input(type="date" class="form-control alergia-fecha-hasta" id="alergiaFechaHasta_0" name="alergiasFechaHasta[]")
-                                div(class="col-md-1 d-flex align-items-end")
-                                    button(type="button" class="btn btn-danger btn-eliminar-alergia" disabled) X
-                        
-                        div(class="text-end mt-2")
-                            button(type="button" class="btn btn-primary" id="btnAgregarAlergia") + Agregar Alergia
+                    .card.mb-4
+                        .card-header.bg-light
+                            h5.mb-0 Alergias
+                        .card-body
+                            div#alergiasContainer
+                                //- Aquí se mostrarán las alergias o el mensaje "No registrado"
+                            
+                            .d-grid.gap-2.d-md-flex.justify-content-md-end.mt-3
+                                button(type="button" class="btn btn-success btn-action" id="btnAgregarAlergia") + Agregar Alergia
 
                     //- Antecedentes Patológicos
-                    fieldset(class="mt-4")
-                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Antecedentes Patológicos
-                        div#antecedentesContainer
-                            div(class="row g-3 antecedente-grupo mb-2")
-                                div(class="col-md-6")
-                                    textarea(class="form-control antecedente-texto" id="antecedente_0" name="antecedentes[]" rows="3")
-                                div(class="col-md-2")
-                                    label(for="antecedenteFechaDesde_0" class="form-label") Fecha Desde
-                                    input(type="date" class="form-control antecedente-fecha-desde" id="antecedenteFechaDesde_0" name="antecedentesFechaDesde[]" value=new Date().toISOString().split('T')[0])
-                                div(class="col-md-2")
-                                    label(for="antecedenteFechaHasta_0" class="form-label") Fecha Hasta
-                                    input(type="date" class="form-control antecedente-fecha-hasta" id="antecedenteFechaHasta_0" name="antecedentesFechaHasta[]")
-                                div(class="col-md-1 d-flex align-items-end")
-                                    button(type="button" class="btn btn-danger btn-eliminar-antecedente" disabled) X
-                        
-                        div(class="text-end mt-2")
-                            button(type="button" class="btn btn-primary" id="btnAgregarAntecedente") + Agregar Antecedente
+                    .card.mb-4
+                        .card-header.bg-light
+                            h5.mb-0 Antecedentes Patológicos
+                        .card-body
+                            div#antecedentesContainer
+                                //- Aquí se mostrarán los antecedentes o el mensaje "No registrado"
+                            
+                            .d-grid.gap-2.d-md-flex.justify-content-md-end.mt-3
+                                button(type="button" class="btn btn-success btn-action" id="btnAgregarAntecedente") + Agregar Antecedente
 
-                    //- Habitos
-                    fieldset(class="mt-4")
-                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Hábitos
-                        div#habitosContainer
-                            div(class="row g-3 habito-grupo mb-2")
-                                div(class="col-md-6")
-                                    textarea(class="form-control habito-texto" id="habito_0" name="habitos[]" rows="3")
-                                div(class="col-md-2")
-                                    label(for="habitoFechaDesde_0" class="form-label") Fecha Desde
-                                    input(type="date" class="form-control habito-fecha-desde" id="habitoFechaDesde_0" name="habitosFechaDesde[]" value=new Date().toISOString().split('T')[0])
-                                div(class="col-md-2")
-                                    label(for="habitoFechaHasta_0" class="form-label") Fecha Hasta
-                                    input(type="date" class="form-control habito-fecha-hasta" id="habitoFechaHasta_0" name="habitosFechaHasta[]")
-                                div(class="col-md-1 d-flex align-items-end")
-                                    button(type="button" class="btn btn-danger btn-eliminar-habito" disabled) X
-                        
-                        div(class="text-end mt-2")
-                            button(type="button" class="btn btn-primary" id="btnAgregarHabito") + Agregar Hábito
+                    //- Hábitos
+                    .card.mb-4
+                        .card-header.bg-light
+                            h5.mb-0 Hábitos
+                        .card-body
+                            div#habitosContainer
+                                //- Aquí se mostrarán los hábitos o el mensaje "No registrado"
+                            
+                            .d-grid.gap-2.d-md-flex.justify-content-md-end.mt-3
+                                button(type="button" class="btn btn-success btn-action" id="btnAgregarHabito") + Agregar Hábito
 
                     //- Medicamentos en uso
-                    fieldset(class="mt-4")
-                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Medicamentos en uso
-                        div#medicamentosContainer
-                            div(class="row g-3 medicamento-grupo mb-2")
-                                div(class="col-md-11")
-                                    textarea(class="form-control medicamento-texto" rows="3" required)
-                                div(class="col-md-1 d-flex align-items-end")
-                                    button(type="button" class="btn btn-danger btn-eliminar-medicamento" disabled) X
-                        
-                        div(class="text-end mt-2")
-                            button(type="button" class="btn btn-primary" id="btnAgregarMedicamento") + Agregar Medicamento
+                    .card.mb-4
+                        .card-header.bg-light
+                            h5.mb-0 Medicamentos en uso
+                        .card-body
+                            div#medicamentosContainer
+                                //- Aquí se mostrarán los medicamentos o el mensaje "No registrado"
+                            
+                            .d-grid.gap-2.d-md-flex.justify-content-md-end.mt-3
+                                button(type="button" class="btn btn-success btn-action" id="btnAgregarMedicamento") + Agregar Medicamento
 
                     //- Diagnósticos
-                    fieldset(class="mt-4")
-                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4") Diagnósticos
-                        div#diagnosticosContainer
-                            div(class="row g-3 diagnostico-grupo mb-2")
-                                div(class="col-md-6")
-                                    label(for="selectTipo_0" class="form-label") Tipo
-                                    select(class="form-select tipo-diagnostico" id="selectTipo_0" name="tipos[]" required)
-                                        option(value="") Seleccione tipo
-                                        if tipos && tipos.length
-                                            each tipo in tipos
-                                                option(value=tipo.id)= tipo.tipo
-                                div(class="col-md-11")
-                                    textarea(class="form-control diagnostico-texto" id="diagnostico_0" name="diagnosticos[]" rows="3" required)
-                                div(class="col-md-1 d-flex align-items-center")
-                                    button(type="button" class="btn btn-danger btn-eliminar-diagnostico" disabled) X
-                        
-                        div(class="text-end mt-2")
-                            button(type="button" class="btn btn-primary" id="btnAgregarDiagnostico") + Agregar Diagnóstico
+                    .card.mb-4
+                        .card-header.bg-light
+                            h5.mb-0 Diagnósticos
+                        .card-body
+                            div#diagnosticosContainer
+                                div(class="row g-3 diagnostico-grupo mb-2")
+                                    div(class="col-md-6")
+                                        label(for="selectTipo_0" class="form-label") Tipo
+                                        select(class="form-select tipo-diagnostico" id="selectTipo_0" name="tipos[]" required)
+                                            option(value="") Seleccione tipo
+                                            if tipos && tipos.length
+                                                each tipo in tipos
+                                                    option(value=tipo.id)= tipo.tipo
+                                    div(class="col-md-11")
+                                        textarea(class="form-control diagnostico-texto" id="diagnostico_0" name="diagnosticos[]" rows="3" required)
+                                    div(class="col-md-1 d-flex align-items-end")
+                                        button(type="button" class="btn btn-danger btn-eliminar-diagnostico" disabled) X
+                            
+                            div(class="text-end mt-2")
+                                button(type="button" class="btn btn-success btn-action" id="btnAgregarDiagnostico") + Agregar Diagnóstico
 
                     //- Notas Clínicas
-                    fieldset(class="mt-4")
-                        legend(class="fs-6 mb-4 text-primary text-wrap fs-4")
-                            div(class="d-flex justify-content-between align-items-center")
-                                span Notas Clínicas
+                    .card.mb-4
+                        .card-header.bg-light
+                            .d-flex.justify-content-between.align-items-center
+                                h5.mb-0 Notas Clínicas
                                 button(type="button" class="btn btn-outline-primary btn-sm" id="btnGestionPlantillas")
                                     i(class="fas fa-cog me-1")
                                     span Gestionar Plantillas
-                        div#notasClinicasContainer
-                            div(class="row g-3 nota-grupo mb-2")
-                                div(class="col-md-11")
-                                    if plantillas && plantillas.length
-                                        div(class="mb-3")
-                                            select(class="form-select plantilla-select")
-                                                option(value="") Seleccionar plantilla...
-                                                each plantilla in plantillas
-                                                    option(value=plantilla.id data-contenido=plantilla.contenido)= plantilla.titulo
-                                    div(class="editor-container")
-                                        div(class="quill-editor")
-                                div(class="col-md-1 d-flex align-items-center")
-                                    button(type="button" class="btn btn-danger btn-eliminar-nota" disabled) X
-                        
-                        div(class="text-end mt-2")
-                            button(type="button" class="btn btn-primary" id="btnAgregarNota") + Agregar Nota
+                        .card-body
+                            div#notasClinicasContainer
+                                div(class="row g-3 nota-grupo mb-2")
+                                    div(class="col-md-11")
+                                        if plantillas && plantillas.length
+                                            div(class="mb-3")
+                                                select(class="form-select plantilla-select")
+                                                    option(value="") Seleccionar plantilla...
+                                                    each plantilla in plantillas
+                                                        - var contenidoEscapado = plantilla.contenido.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                                                        option(value=plantilla.id data-contenido=contenidoEscapado)= plantilla.titulo
+                                        div(class="editor-container")
+                                            div(class="quill-editor" required)
+                                    div(class="col-md-1 d-flex align-items-center")
+                                        button(type="button" class="btn btn-danger btn-eliminar-nota" disabled) X
+                            
+                            //- Asegurar que el botón de agregar nota sea visible
+                            .d-flex.justify-content-end.mt-3
+                                button(type="button" class="btn btn-success btn-action" id="btnAgregarNota") + Agregar Nota
 
-                    .d-flex.flex-column.flex-md-row.justify-content-end.gap-2.mt-4
-                        button(type="submit").btn.btn-primary.px-4 Guardar cambios
+                    //- Botones de acción
+                    .d-flex.flex-column.flex-md-row.justify-content-center.gap-2.mt-4
+                        button(type="button" class="btn btn-secondary btn-action" id="btnCancelar") Cancelar
+                        button(type="submit" class="btn btn-success btn-action") Guardar cambios
 
     //- Modal Plantillas
     include plantillasModal.pug

@@ -1,0 +1,41 @@
+/* Estilos personalizados para el calendario */
+
+/* Capitalizar y cambiar a verde el texto de los días de la semana en el encabezado del calendario */
+.fc-col-header-cell-cushion {
+    text-transform: capitalize;
+    color: #198754 !important; /* Color verde */
+    font-weight: bold;
+}
+
+/* Efecto hover para mejorar la experiencia de usuario */
+.fc-col-header-cell-cushion:hover {
+    /*color: #218838 !important; /* Verde más oscuro al pasar el mouse */
+    /*text-decoration: none;*/
+    color: #ffffff !important; /* Texto blanco al pasar el mouse */
+    background-color: #198754 !important; /* Fondo verde al pasar el mouse */
+    text-decoration: none !important;
+}
+
+/* Estilo para los números de día en la vista de mes */
+.fc-daygrid-day-number {
+    color: #198754 !important; /* Color verde */
+    font-weight: bold;
+    text-decoration: none !important;
+    padding: 5px 8px !important; /* Añadir padding para mejor apariencia */
+    border-radius: 50%; /* Forma circular */
+    transition: all 0.2s ease; /* Transición suave */
+    display: inline-block; /* Para que el padding y border-radius funcionen correctamente */
+}
+
+/* Efecto hover para los números de día */
+.fc-daygrid-day-number:hover {
+    color: #ffffff !important; /* Texto blanco al pasar el mouse */
+    background-color: #198754 !important; /* Fondo verde al pasar el mouse */
+    text-decoration: none !important;
+}
+
+/* Estilo para el día actual */
+.fc-day-today .fc-daygrid-day-number {
+    background-color: #198754 !important; /* Fondo verde para el día actual */
+    color: #ffffff !important; /* Texto blanco para el día actual */
+} 

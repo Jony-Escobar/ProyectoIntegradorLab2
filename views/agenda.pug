@@ -5,6 +5,8 @@ extends layout
 block estilos
     //- Enlace al archivo CSS de la agenda
     link(rel="stylesheet" href="/css/agenda.css")
+    //- Enlace al archivo CSS personalizado del calendario
+    link(rel="stylesheet" href="/css/calendar.css")
 
 //- Bloque de contenido principal
 block contenido
@@ -30,7 +32,7 @@ block contenido
                                     option(value=especialidad.id selected=index === 0) #{especialidad.especialidad} - Mat: #{especialidad.matricula}
                 //- Lista de navegacion con un enlace para cerrar sesion
                 ul.nav.nav-pills
-                    a.nav-link(href='/logout') Cerrar sesión
+                    a.nav-link.text-success.fw-bold(href='/logout') Cerrar sesión
 
     //- Verificar que el userId existe
     if userId

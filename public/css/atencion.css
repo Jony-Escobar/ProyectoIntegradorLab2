@@ -113,3 +113,29 @@ textarea {
     border-color: #ced4da;
     height: calc(100% - 42px);
 }
+
+/* Estilos para botones uniformes en página de editar atención */
+.btn-action {
+    min-width: 120px;  /* Ancho mínimo para todos los botones de acción */
+}
+
+.btn-eliminar-nota,
+.btn-eliminar-diagnostico,
+.btn-eliminar-alergia,
+.btn-eliminar-antecedente,
+.btn-eliminar-habito,
+.btn-eliminar-medicamento {
+    width: 40px;       /* Ancho fijo para botones de eliminar */
+    height: 40px;      /* Altura fija para botones de eliminar */
+    padding: 0;        /* Quitar padding para centrarlo mejor */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Alinear botones en la parte inferior de los grupos */
+.btn-group-bottom {
+    display: flex;
+    align-items: flex-end;
+    height: 100%;
+}

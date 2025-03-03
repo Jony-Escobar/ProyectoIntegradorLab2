@@ -6,7 +6,7 @@ block estilos
 block contenido
     .container.d-flex.align-items-center.justify-content-center(style="min-height: calc(100vh - 100px)")
         .col-11.col-sm-8.col-md-6.col-lg-5.col-xl-4
-            h1.text-center.mb-3
+            h1.text-center.mb-3.text-success
                 | Agenda
                 span.ms-2 Médica
             .card.shadow
@@ -30,7 +30,6 @@ block contenido
                                 input#pass.form-control(type='password', name='pass', placeholder='Contraseña', required)
                         
                         .d-flex.flex-column.flex-sm-row.justify-content-center.align-items-center.gap-2
-                            //-a.text-muted(href='#') Contactar al administrador
-                            button.btn.btn-primary(type='submit') Ingresar
+                            button.btn.btn-success(type='submit') Ingresar
     
     block footer

@@ -47,34 +47,61 @@ const guardarAtencion = async (req, res) => {
         // Extrae todos los campos necesarios del body de la peticion
         const {
             turnoId,
-            alergia,
-            importancia,
-            antecedentesPatologicos,
+            alergias,
+            antecedentes,
             habitos,
-            medicamentosUso,
+            medicamentos,
             diagnosticos,
-            tipos,
             notasClinicas
         } = req.body;
 
+        console.log('Datos recibidos en guardarAtencion:', JSON.stringify({
+            turnoId,
+            alergias: alergias?.length,
+            antecedentes: antecedentes?.length,
+            habitos: habitos?.length,
+            medicamentos: medicamentos?.length,
+            diagnosticos: diagnosticos?.length,
+            notasClinicas: notasClinicas?.length
+        }, null, 2));
+
         // Validación de notas clínicas
-        if (!notasClinicas || !notasClinicas.length || 
-            notasClinicas.every(nota => nota.trim() === '' || nota.trim() === '<p></p>')) {
+        if (!notasClinicas?.length || notasClinicas.every(nota => !nota?.contenido?.trim() || nota.contenido.trim() === '<p></p>')) {
             return res.status(400).json({ 
                 mensaje: 'Debe incluir al menos una nota clínica' 
+            });
+        }
+
+        // Validación de diagnósticos
+        if (!diagnosticos?.length || diagnosticos.every(d => !d?.descripcion?.trim())) {
+            return res.status(400).json({ 
+                mensaje: 'Debe incluir al menos un diagnóstico' 
+            });
+        }
+
+        // Validar formato de fechas
+        const validarFecha = (fecha) => {
+            if (!fecha) return true;
+            const fechaRegex = /^\d{4}-\d{2}-\d{2}$/;
+            return fechaRegex.test(fecha);
+        };
+
+        // Validar fechas de alergias
+        if (alergias?.some(a => (a.fechaDesde && !validarFecha(a.fechaDesde)) || 
+                                (a.fechaHasta && !validarFecha(a.fechaHasta)))) {
+            return res.status(400).json({
+                mensaje: 'Formato de fecha inválido en alergias'
             });
         }
 
         // Guarda la atencion en la base de datos
         const atencionId = await Atencion.guardarAtencion({
             turnoId,
-            alergia,
-            importancia,
-            antecedentesPatologicos,
+            alergias,
+            antecedentes,
             habitos,
-            medicamentosUso,
+            medicamentos,
             diagnosticos,
-            tipos,
             notasClinicas
         });
 
@@ -85,8 +112,12 @@ const guardarAtencion = async (req, res) => {
         });
     } catch (error) {
         // Si hay error, lo registra y envia respuesta de error
-        console.error(error);
-        res.status(500).json({ mensaje: 'Error al guardar la atención' });
+        console.error('Error detallado al guardar la atención:', error);
+        res.status(500).json({ 
+            mensaje: 'Error al guardar la atención', 
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 };
 

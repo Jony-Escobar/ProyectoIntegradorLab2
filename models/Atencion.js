@@ -40,140 +40,210 @@ class Atencion {
         try {
             await connection.beginTransaction();
 
+            console.log('Iniciando guardarAtencion con datos:', JSON.stringify({
+                turnoId: datos.turnoId,
+                alergias: datos.alergias?.length,
+                antecedentes: datos.antecedentes?.length,
+                habitos: datos.habitos?.length,
+                medicamentos: datos.medicamentos?.length,
+                diagnosticos: datos.diagnosticos?.length,
+                notasClinicas: datos.notasClinicas?.length
+            }, null, 2));
+
             // 1. Insertar atencion principal
-            const [resultadoAtencion] = await connection.query(
-                `INSERT INTO atenciones (fecha_atencion, turno_id) 
-                 VALUES (NOW(), ?)`,
-                [datos.turnoId]
-            );
-            const atencionId = resultadoAtencion.insertId;
+            try {
+                const [resultadoAtencion] = await connection.query(
+                    `INSERT INTO atenciones (fecha_atencion, turno_id) 
+                     VALUES (NOW(), ?)`,
+                    [datos.turnoId]
+                );
+                var atencionId = resultadoAtencion.insertId;
+                console.log('Atención principal insertada con ID:', atencionId);
+            } catch (error) {
+                console.error('Error al insertar atención principal:', error);
+                throw error;
+            }
 
             // 2. Actualizar estado del turno a "Finalizado" (ID 3)
-            await connection.query(
-                `UPDATE turnos SET estado_id = 3 WHERE id = ?`,
-                [datos.turnoId]
-            );
+            try {
+                await connection.query(
+                    `UPDATE turnos SET estado_id = 3 WHERE id = ?`,
+                    [datos.turnoId]
+                );
+                console.log('Estado del turno actualizado a Finalizado');
+            } catch (error) {
+                console.error('Error al actualizar estado del turno:', error);
+                throw error;
+            }
 
             // 2. Guardar alergias (múltiples)
             if (datos.alergias && datos.alergias.length > 0) {
-                const insertAlergia = `
-                    INSERT INTO atencion_alergia 
-                    (importancia_id, fecha_desde, fecha_hasta, atencion_id, alergia_id) 
-                    VALUES (?, ?, ?, ?, ?)
-                `;
+                try {
+                    const insertAlergia = `
+                        INSERT INTO atencion_alergia 
+                        (importancia_id, fecha_desde, fecha_hasta, atencion_id, alergia_id) 
+                        VALUES (?, ?, ?, ?, ?)
+                    `;
 
-                for (let i = 0; i < datos.alergias.length; i++) {
-                    if (datos.alergias[i] && datos.importancias[i]) {
-                        await connection.query(
-                            insertAlergia,
-                            [
-                                datos.importancias[i],
-                                datos.alergiasFechaDesde[i] || new Date().toISOString().split('T')[0],
-                                datos.alergiasFechaHasta[i] || null,
-                                atencionId,
-                                datos.alergias[i]
-                            ]
-                        );
+                    for (const alergia of datos.alergias) {
+                        if (alergia.alergiaId && alergia.importanciaId) {
+                            await connection.query(
+                                insertAlergia,
+                                [
+                                    alergia.importanciaId,
+                                    alergia.fechaDesde || new Date().toISOString().split('T')[0],
+                                    alergia.fechaHasta || null,
+                                    atencionId,
+                                    alergia.alergiaId
+                                ]
+                            );
+                        }
                     }
+                    console.log('Alergias guardadas correctamente');
+                } catch (error) {
+                    console.error('Error al guardar alergias:', error);
+                    throw error;
                 }
             }
 
             // 3. Guardar antecedentes patológicos (múltiples)
             if (datos.antecedentes && datos.antecedentes.length > 0) {
-                const insertAntecedente = `
-                    INSERT INTO antecedentes_patologicos 
-                    (descripcion, fecha_desde, fecha_hasta, atencion_id) 
-                    VALUES (?, ?, ?, ?)
-                `;
+                try {
+                    const insertAntecedente = `
+                        INSERT INTO antecedentes_patologicos 
+                        (descripcion, fecha_desde, fecha_hasta, atencion_id) 
+                        VALUES (?, ?, ?, ?)
+                    `;
 
-                for (const antecedente of datos.antecedentes) {
-                    if (antecedente.descripcion.trim() !== '') {
-                        await connection.query(
-                            insertAntecedente,
-                            [
-                                antecedente.descripcion,
-                                antecedente.fechaDesde,
-                                antecedente.fechaHasta,
-                                atencionId
-                            ]
-                        );
+                    for (const antecedente of datos.antecedentes) {
+                        if (antecedente.descripcion.trim() !== '') {
+                            await connection.query(
+                                insertAntecedente,
+                                [
+                                    antecedente.descripcion,
+                                    antecedente.fechaDesde,
+                                    antecedente.fechaHasta,
+                                    atencionId
+                                ]
+                            );
+                        }
                     }
+                    console.log('Antecedentes guardados correctamente');
+                } catch (error) {
+                    console.error('Error al guardar antecedentes:', error);
+                    throw error;
                 }
             }
 
             // 4. Guardar hábitos (múltiples)
             if (datos.habitos && datos.habitos.length > 0) {
-                const insertHabito = `
-                    INSERT INTO habitos 
-                    (descripcion, fecha_desde, fecha_hasta, atencion_id) 
-                    VALUES (?, ?, ?, ?)
-                `;
+                try {
+                    const insertHabito = `
+                        INSERT INTO habitos 
+                        (descripcion, fecha_desde, fecha_hasta, atencion_id) 
+                        VALUES (?, ?, ?, ?)
+                    `;
 
-                for (const habito of datos.habitos) {
-                    if (habito.descripcion.trim() !== '') {
-                        await connection.query(
-                            insertHabito,
-                            [
-                                habito.descripcion,
-                                habito.fechaDesde,
-                                habito.fechaHasta,
-                                atencionId
-                            ]
-                        );
+                    for (const habito of datos.habitos) {
+                        if (habito.descripcion.trim() !== '') {
+                            await connection.query(
+                                insertHabito,
+                                [
+                                    habito.descripcion,
+                                    habito.fechaDesde,
+                                    habito.fechaHasta,
+                                    atencionId
+                                ]
+                            );
+                        }
                     }
+                    console.log('Hábitos guardados correctamente');
+                } catch (error) {
+                    console.error('Error al guardar hábitos:', error);
+                    throw error;
                 }
             }
 
             // 5. Guardar medicamentos en uso (múltiples)
             if (datos.medicamentos && datos.medicamentos.length > 0) {
-                const insertMedicamento = `
-                    INSERT INTO medicamentos_en_uso 
-                    (descripcion, atencion_id) 
-                    VALUES (?, ?)
-                `;
-                
-                for (const medicamento of datos.medicamentos) {
-                    if (medicamento.trim()) {
-                        await connection.query(insertMedicamento, [medicamento, atencionId]);
+                try {
+                    const insertMedicamento = `
+                        INSERT INTO medicamentos_en_uso 
+                        (descripcion, atencion_id) 
+                        VALUES (?, ?)
+                    `;
+                    
+                    console.log('Medicamentos a guardar:', JSON.stringify(datos.medicamentos));
+                    
+                    for (const medicamento of datos.medicamentos) {
+                        // Verificar si medicamento es un objeto o una cadena
+                        const descripcion = typeof medicamento === 'string' 
+                            ? medicamento 
+                            : (medicamento.descripcion || '');
+                            
+                        if (descripcion && descripcion.trim()) {
+                            console.log('Guardando medicamento:', descripcion);
+                            await connection.query(insertMedicamento, [descripcion, atencionId]);
+                        }
                     }
+                    console.log('Medicamentos guardados correctamente');
+                } catch (error) {
+                    console.error('Error al guardar medicamentos:', error);
+                    throw error;
                 }
             }
 
             // 6. Guardar diagnósticos (múltiples)
             if (datos.diagnosticos && datos.diagnosticos.length > 0) {
-                const insertDiagnostico = `
-                    INSERT INTO diagnosticos 
-                    (descripcion, tipo_id, atencion_id) 
-                    VALUES (?, ?, ?)
-                `;
+                try {
+                    const insertDiagnostico = `
+                        INSERT INTO diagnosticos 
+                        (descripcion, tipo_id, atencion_id) 
+                        VALUES (?, ?, ?)
+                    `;
 
-                for (const diagnostico of datos.diagnosticos) {
-                    await connection.query(
-                        insertDiagnostico,
-                        [diagnostico.descripcion, diagnostico.tipoId, atencionId]
-                    );
+                    for (const diagnostico of datos.diagnosticos) {
+                        await connection.query(
+                            insertDiagnostico,
+                            [diagnostico.descripcion, diagnostico.tipoId, atencionId]
+                        );
+                    }
+                    console.log('Diagnósticos guardados correctamente');
+                } catch (error) {
+                    console.error('Error al guardar diagnósticos:', error);
+                    throw error;
                 }
             }
 
             // 7. Guardar notas clinicas (múltiples)
             if (datos.notasClinicas && datos.notasClinicas.length > 0) {
-                const insertNotaClinica = `
-                    INSERT INTO notas_clinicas 
-                    (nota, atencion_id) 
-                    VALUES (?, ?)
-                `;
+                try {
+                    const insertNotaClinica = `
+                        INSERT INTO notas_clinicas 
+                        (nota, atencion_id) 
+                        VALUES (?, ?)
+                    `;
 
-                for (const nota of datos.notasClinicas) {
-                    if (nota.trim() !== '' && nota.trim() !== '<p></p>') {
-                        await connection.query(insertNotaClinica, [nota, atencionId]);
+                    for (const nota of datos.notasClinicas) {
+                        if (nota.contenido && nota.contenido.trim() !== '' && 
+                            nota.contenido.trim() !== '<p></p>' && 
+                            nota.contenido.trim() !== '<p><br></p>') {
+                            await connection.query(insertNotaClinica, [nota.contenido, atencionId]);
+                        }
                     }
+                    console.log('Notas clínicas guardadas correctamente');
+                } catch (error) {
+                    console.error('Error al guardar notas clínicas:', error);
+                    throw error;
                 }
             }
 
             await connection.commit();
+            console.log('Transacción completada exitosamente');
             return atencionId;
 
         } catch (error) {
+            console.error('Error general en guardarAtencion:', error);
             await connection.rollback();
             throw error;
         } finally {

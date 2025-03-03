@@ -98,7 +98,7 @@ export function initializeCalendar(calendarEl, userId) {
                                         data-id="${arg.event.extendedProps.idPaciente}"
                                         style="white-space: nowrap;"
                                     >Ver HC</button>
-                                    ${esTurnoHoy && estado !== 'Finalizado' ? `
+                                    ${esTurnoHoy && estado !== 'Atendido' ? `
                                         <button 
                                             class="btn btn-sm btn-success border-white"
                                             onclick="if(confirm('¿Desea ${estado === 'En atencion' ? 'continuar' : 'iniciar'} la atención?')) window.location.href='/atencion/${arg.event.extendedProps.turnoId}'"

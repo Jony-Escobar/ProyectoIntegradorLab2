@@ -86,7 +86,7 @@ async function cargarHistorialMedico(idPaciente) {
                             ${esUltimaAtencion ? `
                                 <button 
                                     class="btn btn-sm btn-warning editar-atencion"
-                                    onclick="window.location.href='/atencion/editar/${consulta.id}'"
+                                    onclick="if (confirm('¿Estás seguro de querer editar ésta atención?')) { window.location.href='/atencion/editar/${consulta.id}' }"
                                 >
                                     Editar
                                 </button>
@@ -119,44 +119,44 @@ function mostrarDetalleAtencion(e) {
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Detalle de Atención - ${atencion.fecha}</h5>
+                        <h5 class="modal-title">Detalle de Atención: ${atencion.fecha}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <h6 class="text-primary">Información General</h6>
+                            <h6 class="text-success">Información General</h6>
                             <p><strong>Médico:</strong> ${atencion.medico}</p>
                             <p><strong>Motivo:</strong> ${atencion.motivo}</p>
                         </div>
                         
                         <div class="mb-3">
-                            <h6 class="text-primary">Diagnósticos</h6>
+                            <h6 class="text-success">Diagnósticos</h6>
                             <p>${atencion.diagnosticos || 'No registrado'}</p>
                         </div>
                         
                         <div class="mb-3">
-                            <h6 class="text-primary">Evolución</h6>
+                            <h6 class="text-success">Evolución</h6>
                             <p>${atencion.evolucion || 'No registrado'}</p>
                         </div>
                         
                         <div class="mb-3">
-                            <h6 class="text-primary">Alergias</h6>
-                            <p>${atencion.alergias ? `${atencion.alergias} (${atencion.importancia_alergia})` : 'No registrado'}</p>
+                            <h6 class="text-success">Alergias</h6>
+                            <p>${atencion.alergias ? `${atencion.alergias} (${atencion.importancia_alergia})` : '<small>No registrado</small>'}</p>
                         </div>
                         
                         <div class="mb-3">
-                            <h6 class="text-primary">Antecedentes</h6>
-                            <p>${atencion.antecedentes || 'No registrado'}</p>
+                            <h6 class="text-success">Antecedentes</h6>
+                            <p>${atencion.antecedentes || '<small>No registrado</small>'}</p>
                         </div>
                         
                         <div class="mb-3">
-                            <h6 class="text-primary">Hábitos</h6>
-                            <p>${atencion.habitos || 'No registrado'}</p>
+                            <h6 class="text-success">Hábitos</h6>
+                            <p>${atencion.habitos || '<small>No registrado</small>'}</p>
                         </div>
                         
                         <div class="mb-3">
-                            <h6 class="text-primary">Medicamentos</h6>
-                            <p>${atencion.medicamentos || 'No registrado'}</p>
+                            <h6 class="text-success">Medicamentos</h6>
+                            <p>${atencion.medicamentos || '<small>No registrado</small>'}</p>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -192,7 +192,7 @@ function actualizarTablaHistorial(historial) {
     }
 
     const columnas = [
-        { titulo: 'Fecha', campo: 'fecha', formato: fecha => new Date(fecha).toLocaleDateString('es-ES') },
+        { titulo: 'Fecha', campo: 'fecha'},
         { titulo: 'Médico', campo: 'medico' },
         { titulo: 'Motivo', campo: 'motivo' },
         { titulo: 'Diagnósticos', campo: 'diagnosticos' },

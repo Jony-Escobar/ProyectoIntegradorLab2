@@ -34,9 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnAgregarDiagnostico) {
         btnAgregarDiagnostico.addEventListener('click', () => agregarDiagnostico());
     }
-
-    // Primero cargar los datos existentes
-    cargarDatosExistentes();
     
     // Verificar si el botón existe antes de inicializar
     const btnGestionPlantillas = document.getElementById('btnGestionPlantillas');
@@ -154,9 +151,11 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             try {
-                const atencionId = window.location.pathname.split('/').pop();
+                // Obtener el turnoId desde el campo oculto
+                const turnoId = document.getElementById('turnoId').value;
                 
                 const formData = {
+                    turnoId,
                     notasClinicas: Array.from(document.querySelectorAll('.nota-grupo')).map(grupo => ({
                         id: grupo.querySelector('.quill-editor')?.dataset?.notaId || null,
                         contenido: grupo.querySelector('.ql-editor')?.innerHTML?.trim()
@@ -206,9 +205,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!formData.diagnosticos.length) {
                     throw new Error('Debe incluir al menos un diagnóstico');
                 }
-
-                 // Realiza peticion POST al endpoint de atencion
-                 const response = await fetch('/atencion', {
+                // Realiza peticion POST al endpoint de atencion
+                const response = await fetch('/atencion', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -288,6 +286,33 @@ document.addEventListener('DOMContentLoaded', function() {
             // Si el usuario cancela la confirmación, no hacer nada y permanecer en la página
         });
     }
+
+    // Inicializar datos desde el formulario
+    if (document.getElementById('formAtencion')) {
+        try {
+            const form = document.getElementById('formAtencion');
+            window.tiposDiagnostico = JSON.parse(form.dataset.tipos || '[]');
+            window.alergias = JSON.parse(form.dataset.alergias || '[]');
+            window.importancias = JSON.parse(form.dataset.importancias || '[]');
+            window.plantillas = JSON.parse(form.dataset.plantillas || '[]');
+        } catch (e) {
+            console.error('Error al cargar datos iniciales:', e);
+        }
+    }
+
+    // Inicializar contenedores vacíos con "No registrado"
+    const inicializarContenedoresVacios = () => {
+        const tiposNoObligatorios = ['alergia', 'antecedente', 'habito', 'medicamento'];
+        
+        tiposNoObligatorios.forEach(tipo => {
+            const container = document.getElementById(`${tipo}sContainer`);
+            if (container && !container.querySelector(`.${tipo}-grupo`) && !container.querySelector('.mensaje-no-registrado')) {
+                container.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+            }
+        });
+    };
+
+    inicializarContenedoresVacios();
 });
 
 // Función genérica para actualizar botones de eliminar
@@ -346,157 +371,6 @@ function actualizarBotonesEliminar(tipo) {
             btnEliminar.disabled = esObligatorio && grupos.length === 1;
         }
     });
-}
-
-// Función para cargar diagnósticos existentes
-function cargarDatosExistentes() {
-    const formAtencion = document.getElementById('formAtencion');
-    if (!formAtencion) return;
-
-    try {
-        const atencionData = JSON.parse(formAtencion.dataset.atencion);
-        const plantillas = JSON.parse(formAtencion.dataset.plantillas || '[]');
-        const tipos = JSON.parse(formAtencion.dataset.tipos);
-        const alergias = JSON.parse(formAtencion.dataset.alergias);
-        const importancias = JSON.parse(formAtencion.dataset.importancias);
-        
-        // Guardar datos en variables globales para uso en otras funciones
-        window.tiposDiagnostico = tipos;
-        window.alergias = alergias;
-        window.importancias = importancias;
-        window.plantillas = plantillas;
-
-        // Función auxiliar para validar y formatear fechas
-        const formatearFecha = (fecha) => {
-            if (!fecha || fecha === '0000-00-00' || fecha === 'null') return '';
-            return fecha;
-        };
-
-        // Cargar notas clínicas
-        if (atencionData.notas_clinicas?.length) {
-            const notasContainer = document.getElementById('notasClinicasContainer');
-            notasContainer.innerHTML = '';
-            
-            atencionData.notas_clinicas.forEach(nota => {
-                agregarNotaClinica(nota.nota);
-            });
-        }
-
-        // Cargar diagnósticos
-        if (atencionData.diagnosticos?.length) {
-            const diagnosticosContainer = document.getElementById('diagnosticosContainer');
-            diagnosticosContainer.innerHTML = '';
-            
-            atencionData.diagnosticos.forEach(diagnostico => {
-                agregarDiagnostico(diagnostico.descripcion, diagnostico.tipo_id);
-            });
-        }
-
-        // Cargar alergias y mostrar mensaje si no hay
-        const alergiasContainer = document.getElementById('alergiasContainer');
-        if (atencionData.alergias?.length) {
-            alergiasContainer.innerHTML = '';
-            
-            atencionData.alergias.forEach(alergia => {
-                agregarAlergia(
-                    alergia.alergia_id,
-                    alergia.importancia_id,
-                    formatearFecha(alergia.fecha_desde),
-                    formatearFecha(alergia.fecha_hasta)
-                );
-            });
-            alergiasContainer.querySelector('.mensaje-no-registrado')?.remove();
-        } else if (alergiasContainer) {
-            // Vaciar el contenedor existente pero mantener el mensaje "No registrado" si existe
-            const mensajeNoRegistrado = alergiasContainer.querySelector('.mensaje-no-registrado');
-            if (!mensajeNoRegistrado) {
-                alergiasContainer.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
-            }
-        }
-
-        // Cargar medicamentos y mostrar mensaje si no hay
-        const medicamentosContainer = document.getElementById('medicamentosContainer');
-        if (atencionData.medicamentos?.length) {
-            medicamentosContainer.innerHTML = '';
-            
-            atencionData.medicamentos.forEach(medicamento => {
-                agregarMedicamento(medicamento.descripcion);
-            });
-            medicamentosContainer.querySelector('.mensaje-no-registrado')?.remove();
-        } else if (medicamentosContainer) {
-            // Vaciar el contenedor existente pero mantener el mensaje "No registrado" si existe
-            const mensajeNoRegistrado = medicamentosContainer.querySelector('.mensaje-no-registrado');
-            if (!mensajeNoRegistrado) {
-                medicamentosContainer.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
-            }
-        }
-
-        // Cargar antecedentes y mostrar mensaje si no hay
-        const antecedentesContainer = document.getElementById('antecedentesContainer');
-        if (atencionData.antecedentes?.length) {
-            antecedentesContainer.innerHTML = '';
-            
-            atencionData.antecedentes.forEach(antecedente => {
-                agregarAntecedente(
-                    antecedente.descripcion,
-                    formatearFecha(antecedente.fecha_desde),
-                    formatearFecha(antecedente.fecha_hasta)
-                );
-            });
-            antecedentesContainer.querySelector('.mensaje-no-registrado')?.remove();
-        } else if (antecedentesContainer) {
-            // Vaciar el contenedor existente pero mantener el mensaje "No registrado" si existe
-            const mensajeNoRegistrado = antecedentesContainer.querySelector('.mensaje-no-registrado');
-            if (!mensajeNoRegistrado) {
-                antecedentesContainer.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
-            }
-        }
-
-        // Cargar hábitos y mostrar mensaje si no hay
-        const habitosContainer = document.getElementById('habitosContainer');
-        if (atencionData.habitos?.length) {
-            habitosContainer.innerHTML = '';
-            
-            atencionData.habitos.forEach(habito => {
-                agregarHabito(
-                    habito.descripcion,
-                    formatearFecha(habito.fecha_desde),
-                    formatearFecha(habito.fecha_hasta)
-                );
-            });
-            habitosContainer.querySelector('.mensaje-no-registrado')?.remove();
-        } else if (habitosContainer) {
-            // Vaciar el contenedor existente pero mantener el mensaje "No registrado" si existe
-            const mensajeNoRegistrado = habitosContainer.querySelector('.mensaje-no-registrado');
-            if (!mensajeNoRegistrado) {
-                habitosContainer.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
-            }
-        }
-
-    } catch (error) {
-        console.error('Error al cargar datos existentes:', error);
-    }
-
-    const notasContainer = document.getElementById('notasClinicasContainer');
-    
-    if (notasContainer) {
-        // Agregar event listener para eliminar notas
-        notasContainer.addEventListener('click', function(e) {
-            if (e.target.classList.contains('btn-eliminar-nota')) {
-                const grupoNota = e.target.closest('.nota-grupo');
-                if (grupoNota) {
-                    grupoNota.remove();
-                    const grupos = notasContainer.querySelectorAll('.nota-grupo');
-                    grupos.forEach(grupo => {
-                        const btnEliminar = grupo.querySelector('.btn-eliminar-nota');
-                        if (btnEliminar) {
-                            btnEliminar.disabled = grupos.length === 1;
-                        }
-                    });
-                }
-            }
-        });
-    }
 }
 
 // Función para agregar diagnóstico

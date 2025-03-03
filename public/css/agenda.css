@@ -102,3 +102,11 @@ body {
     line-clamp: 2;
     -webkit-box-orient: vertical;
 }
+
+.nav-pills a.nav-link.text-success.fw-bold:hover {
+    color: #ffffff !important;
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+}
+
+
