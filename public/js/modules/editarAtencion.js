@@ -43,8 +43,36 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnGestionPlantillas) {
         btnGestionPlantillas.addEventListener('click', function() {
             // Abrir el modal de gestión de plantillas
-            const plantillasModal = new bootstrap.Modal(document.getElementById('plantillasModal'));
-            plantillasModal.show();
+            const modalElement = document.getElementById('modalGestionPlantillas');
+            if (modalElement) {
+                const plantillasModal = new bootstrap.Modal(modalElement, {
+                    backdrop: true,
+                    keyboard: true,
+                    focus: true
+                });
+                
+                // Agregar manejador para el evento de cierre
+                modalElement.addEventListener('hidden.bs.modal', function() {
+                    // Limpiar cualquier estado o recurso que pueda estar causando problemas
+                    document.body.classList.remove('modal-open');
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) {
+                        backdrop.remove();
+                    }
+                });
+                
+                // Asegurarse de que el botón de cerrar funcione correctamente
+                const closeButton = modalElement.querySelector('[data-bs-dismiss="modal"]');
+                if (closeButton) {
+                    closeButton.addEventListener('click', function() {
+                        plantillasModal.hide();
+                    });
+                }
+                
+                plantillasModal.show();
+            } else {
+                console.error('No se encontró el elemento del modal: modalGestionPlantillas');
+            }
         });
         
         // Inicializar la gestión de plantillas

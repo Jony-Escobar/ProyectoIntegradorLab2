@@ -3,6 +3,7 @@ import { initializeRichText } from '/js/modules/richText.js';
 
 // Esperar a que el DOM esté cargado
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM cargado en atencion.js');
     const btnAgregarAntecedente = document.getElementById('btnAgregarAntecedente');
     const btnAgregarHabito = document.getElementById('btnAgregarHabito');
     const btnAgregarNota = document.getElementById('btnAgregarNota');
@@ -40,8 +41,36 @@ document.addEventListener('DOMContentLoaded', function() {
     if (btnGestionPlantillas) {
         btnGestionPlantillas.addEventListener('click', function() {
             // Abrir el modal de gestión de plantillas
-            const plantillasModal = new bootstrap.Modal(document.getElementById('plantillasModal'));
-            plantillasModal.show();
+            const modalElement = document.getElementById('modalGestionPlantillas');
+            if (modalElement) {
+                const plantillasModal = new bootstrap.Modal(modalElement, {
+                    backdrop: true,
+                    keyboard: true,
+                    focus: true
+                });
+                
+                // Agregar manejador para el evento de cierre
+                modalElement.addEventListener('hidden.bs.modal', function() {
+                    // Limpiar cualquier estado o recurso que pueda estar causando problemas
+                    document.body.classList.remove('modal-open');
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) {
+                        backdrop.remove();
+                    }
+                });
+                
+                // Asegurarse de que el botón de cerrar funcione correctamente
+                const closeButton = modalElement.querySelector('[data-bs-dismiss="modal"]');
+                if (closeButton) {
+                    closeButton.addEventListener('click', function() {
+                        plantillasModal.hide();
+                    });
+                }
+                
+                plantillasModal.show();
+            } else {
+                console.error('No se encontró el elemento del modal: modalGestionPlantillas');
+            }
         });
         
         // Inicializar la gestión de plantillas
@@ -49,7 +78,44 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Inicializar el editor de texto enriquecido después de cargar los datos
-    initializeRichText();
+    // Asegurarse de que Quill esté disponible antes de inicializar
+    if (typeof window.Quill !== 'undefined') {
+        console.log('Quill está disponible, inicializando editor de texto enriquecido');
+        // Esperar un momento para asegurarse de que el DOM esté completamente cargado
+        setTimeout(() => {
+            initializeRichText();
+            
+            // Inicializar manualmente el primer editor si existe
+            const primerEditor = document.querySelector('.quill-editor');
+            if (primerEditor && !primerEditor.classList.contains('ql-container')) {
+                console.log('Inicializando manualmente el primer editor');
+                try {
+                    new Quill(primerEditor, {
+                        theme: 'snow',
+                        modules: {
+                            toolbar: [
+                                ['bold', 'italic', 'underline', 'strike'],
+                                ['blockquote', 'code-block'],
+                                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                [{ 'script': 'sub'}, { 'script': 'super' }],
+                                [{ 'indent': '-1'}, { 'indent': '+1' }],
+                                [{ 'size': ['small', false, 'large', 'huge'] }],
+                                [{ 'color': [] }, { 'background': [] }],
+                                [{ 'align': [] }]
+                            ]
+                        }
+                    });
+                    console.log('Primer editor inicializado manualmente con éxito');
+                } catch (error) {
+                    console.error('Error al inicializar manualmente el primer editor:', error);
+                }
+            } else {
+                console.log('El primer editor ya está inicializado o no existe');
+            }
+        }, 100);
+    } else {
+        console.error('Quill no está disponible globalmente');
+    }
 
     const formAtencion = document.getElementById('formAtencion');
     
@@ -70,86 +136,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (alergiaSelect && !alergiaSelect.value) {
                     alergiaSelect.classList.add('is-invalid');
                     formValido = false;
-                } else if (alergiaSelect) {
-                    alergiaSelect.classList.remove('is-invalid');
                 }
                 
                 if (importanciaSelect && !importanciaSelect.value) {
                     importanciaSelect.classList.add('is-invalid');
                     formValido = false;
-                } else if (importanciaSelect) {
-                    importanciaSelect.classList.remove('is-invalid');
-                }
-                
-                if (fechaDesde && !fechaDesde.value) {
-                    fechaDesde.classList.add('is-invalid');
-                    formValido = false;
-                } else if (fechaDesde) {
-                    fechaDesde.classList.remove('is-invalid');
                 }
             });
             
-            // Validar antecedentes
-            const antecedentesGroups = document.querySelectorAll('.antecedente-grupo');
-            antecedentesGroups.forEach(grupo => {
-                const descripcion = grupo.querySelector('.antecedente-texto');
-                const fechaDesde = grupo.querySelector('.antecedente-fecha-desde');
+            // Validar diagnósticos
+            const diagnosticosGroups = document.querySelectorAll('.diagnostico-grupo');
+            diagnosticosGroups.forEach(grupo => {
+                const tipoSelect = grupo.querySelector('.tipo-diagnostico');
+                const descripcionTextarea = grupo.querySelector('.diagnostico-texto');
                 
-                if (descripcion && !descripcion.value.trim()) {
-                    descripcion.classList.add('is-invalid');
+                if (tipoSelect && !tipoSelect.value) {
+                    tipoSelect.classList.add('is-invalid');
                     formValido = false;
-                } else if (descripcion) {
-                    descripcion.classList.remove('is-invalid');
                 }
                 
-                if (fechaDesde && !fechaDesde.value) {
-                    fechaDesde.classList.add('is-invalid');
+                if (descripcionTextarea && !descripcionTextarea.value.trim()) {
+                    descripcionTextarea.classList.add('is-invalid');
                     formValido = false;
-                } else if (fechaDesde) {
-                    fechaDesde.classList.remove('is-invalid');
                 }
             });
             
-            // Validar hábitos
-            const habitosGroups = document.querySelectorAll('.habito-grupo');
-            habitosGroups.forEach(grupo => {
-                const descripcion = grupo.querySelector('.habito-texto');
-                const fechaDesde = grupo.querySelector('.habito-fecha-desde');
-                
-                if (descripcion && !descripcion.value.trim()) {
-                    descripcion.classList.add('is-invalid');
-                    formValido = false;
-                } else if (descripcion) {
-                    descripcion.classList.remove('is-invalid');
-                }
-                
-                if (fechaDesde && !fechaDesde.value) {
-                    fechaDesde.classList.add('is-invalid');
-                    formValido = false;
-                } else if (fechaDesde) {
-                    fechaDesde.classList.remove('is-invalid');
-                }
-            });
-            
-            // Validar medicamentos
-            const medicamentosGroups = document.querySelectorAll('.medicamento-grupo');
-            medicamentosGroups.forEach(grupo => {
-                const descripcion = grupo.querySelector('.medicamento-texto');
-                
-                if (descripcion && !descripcion.value.trim()) {
-                    descripcion.classList.add('is-invalid');
-                    formValido = false;
-                } else if (descripcion) {
-                    descripcion.classList.remove('is-invalid');
-                }
-            });
-            
-            // Si hay campos inválidos, mostrar mensaje y detener el envío
+            // Si el formulario no es válido, detener el envío
             if (!formValido) {
-                alert("Por favor, complete todos los campos obligatorios o elimine los registros incompletos usando el botón X.");
+                alert('Por favor, complete todos los campos requeridos.');
                 return;
             }
             
+            // Continuar con el envío del formulario si es válido
             try {
                 // Obtener el turnoId desde el campo oculto
                 const turnoId = document.getElementById('turnoId').value;
