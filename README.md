@@ -1,5 +1,5 @@
 # ProyectoIntegradorLabll
- ULP-Soria-Escobar
+ ULP
 
 Práctico Integrador Laboratorio 2
 

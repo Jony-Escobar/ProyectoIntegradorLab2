@@ -39,17 +39,6 @@ class Atencion {
         
         try {
             await connection.beginTransaction();
-
-            console.log('Iniciando guardarAtencion con datos:', JSON.stringify({
-                turnoId: datos.turnoId,
-                alergias: datos.alergias?.length,
-                antecedentes: datos.antecedentes?.length,
-                habitos: datos.habitos?.length,
-                medicamentos: datos.medicamentos?.length,
-                diagnosticos: datos.diagnosticos?.length,
-                notasClinicas: datos.notasClinicas?.length
-            }, null, 2));
-
             // 1. Insertar atencion principal
             try {
                 const [resultadoAtencion] = await connection.query(
@@ -58,7 +47,6 @@ class Atencion {
                     [datos.turnoId]
                 );
                 var atencionId = resultadoAtencion.insertId;
-                console.log('Atención principal insertada con ID:', atencionId);
             } catch (error) {
                 console.error('Error al insertar atención principal:', error);
                 throw error;
@@ -70,7 +58,6 @@ class Atencion {
                     `UPDATE turnos SET estado_id = 3 WHERE id = ?`,
                     [datos.turnoId]
                 );
-                console.log('Estado del turno actualizado a Finalizado');
             } catch (error) {
                 console.error('Error al actualizar estado del turno:', error);
                 throw error;
@@ -99,7 +86,6 @@ class Atencion {
                             );
                         }
                     }
-                    console.log('Alergias guardadas correctamente');
                 } catch (error) {
                     console.error('Error al guardar alergias:', error);
                     throw error;
@@ -128,7 +114,6 @@ class Atencion {
                             );
                         }
                     }
-                    console.log('Antecedentes guardados correctamente');
                 } catch (error) {
                     console.error('Error al guardar antecedentes:', error);
                     throw error;
@@ -157,7 +142,6 @@ class Atencion {
                             );
                         }
                     }
-                    console.log('Hábitos guardados correctamente');
                 } catch (error) {
                     console.error('Error al guardar hábitos:', error);
                     throw error;
@@ -169,24 +153,23 @@ class Atencion {
                 try {
                     const insertMedicamento = `
                         INSERT INTO medicamentos_en_uso 
-                        (descripcion, atencion_id) 
-                        VALUES (?, ?)
-                    `;
-                    
-                    console.log('Medicamentos a guardar:', JSON.stringify(datos.medicamentos));
+                        (descripcion, fecha_desde, fecha_hasta, atencion_id) 
+                        VALUES (?, ?, ?, ?)
+                    `;                    
                     
                     for (const medicamento of datos.medicamentos) {
-                        // Verificar si medicamento es un objeto o una cadena
-                        const descripcion = typeof medicamento === 'string' 
-                            ? medicamento 
-                            : (medicamento.descripcion || '');
-                            
-                        if (descripcion && descripcion.trim()) {
-                            console.log('Guardando medicamento:', descripcion);
-                            await connection.query(insertMedicamento, [descripcion, atencionId]);
+                        if (medicamento.descripcion.trim() !== '') {
+                            await connection.query(
+                                insertMedicamento,
+                                [
+                                    medicamento.descripcion,
+                                    medicamento.fechaDesde,
+                                    medicamento.fechaHasta,
+                                    atencionId
+                                ]
+                            );
                         }
                     }
-                    console.log('Medicamentos guardados correctamente');
                 } catch (error) {
                     console.error('Error al guardar medicamentos:', error);
                     throw error;
@@ -208,7 +191,6 @@ class Atencion {
                             [diagnostico.descripcion, diagnostico.tipoId, atencionId]
                         );
                     }
-                    console.log('Diagnósticos guardados correctamente');
                 } catch (error) {
                     console.error('Error al guardar diagnósticos:', error);
                     throw error;
@@ -231,7 +213,6 @@ class Atencion {
                             await connection.query(insertNotaClinica, [nota.contenido, atencionId]);
                         }
                     }
-                    console.log('Notas clínicas guardadas correctamente');
                 } catch (error) {
                     console.error('Error al guardar notas clínicas:', error);
                     throw error;
@@ -239,7 +220,6 @@ class Atencion {
             }
 
             await connection.commit();
-            console.log('Transacción completada exitosamente');
             return atencionId;
 
         } catch (error) {
@@ -345,7 +325,9 @@ class Atencion {
 
             // Obtener medicamentos
             const [medicamentos] = await connection.query(`
-                SELECT id, descripcion
+                SELECT id, descripcion, 
+                       DATE_FORMAT(fecha_desde, '%Y-%m-%d') as fecha_desde,
+                       DATE_FORMAT(fecha_hasta, '%Y-%m-%d') as fecha_hasta
                 FROM medicamentos_en_uso 
                 WHERE atencion_id = ?
             `, [id]);
@@ -489,13 +471,13 @@ class Atencion {
             for (const medicamento of datos.medicamentos) {
                 if (medicamento.id) {
                     await connection.query(
-                        'UPDATE medicamentos_en_uso SET descripcion = ? WHERE id = ? AND atencion_id = ?',
-                        [medicamento.descripcion, medicamento.id, atencionId]
+                        'UPDATE medicamentos_en_uso SET descripcion = ?, fecha_desde = ?, fecha_hasta = ? WHERE id = ? AND atencion_id = ?',
+                        [medicamento.descripcion, medicamento.fechaDesde, medicamento.fechaHasta, medicamento.id, atencionId]
                     );
                 } else {
                     await connection.query(
-                        'INSERT INTO medicamentos_en_uso (descripcion, atencion_id) VALUES (?, ?)',
-                        [medicamento.descripcion, atencionId]
+                        'INSERT INTO medicamentos_en_uso (descripcion, fecha_desde, fecha_hasta, atencion_id) VALUES (?, ?, ?, ?)',
+                        [medicamento.descripcion, medicamento.fechaDesde, medicamento.fechaHasta, atencionId]
                     );
                 }
             }

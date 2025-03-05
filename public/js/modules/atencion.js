@@ -3,7 +3,6 @@ import { initializeRichText } from '/js/modules/richText.js';
 
 // Esperar a que el DOM esté cargado
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM cargado en atencion.js');
     const btnAgregarAntecedente = document.getElementById('btnAgregarAntecedente');
     const btnAgregarHabito = document.getElementById('btnAgregarHabito');
     const btnAgregarNota = document.getElementById('btnAgregarNota');
@@ -80,7 +79,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar el editor de texto enriquecido después de cargar los datos
     // Asegurarse de que Quill esté disponible antes de inicializar
     if (typeof window.Quill !== 'undefined') {
-        console.log('Quill está disponible, inicializando editor de texto enriquecido');
         // Esperar un momento para asegurarse de que el DOM esté completamente cargado
         setTimeout(() => {
             initializeRichText();
@@ -88,7 +86,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // Inicializar manualmente el primer editor si existe
             const primerEditor = document.querySelector('.quill-editor');
             if (primerEditor && !primerEditor.classList.contains('ql-container')) {
-                console.log('Inicializando manualmente el primer editor');
                 try {
                     new Quill(primerEditor, {
                         theme: 'snow',
@@ -105,12 +102,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             ]
                         }
                     });
-                    console.log('Primer editor inicializado manualmente con éxito');
                 } catch (error) {
                     console.error('Error al inicializar manualmente el primer editor:', error);
                 }
-            } else {
-                console.log('El primer editor ya está inicializado o no existe');
             }
         }, 100);
     } else {
@@ -158,6 +152,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (descripcionTextarea && !descripcionTextarea.value.trim()) {
                     descripcionTextarea.classList.add('is-invalid');
                     formValido = false;
+                }
+            });
+            
+            // Validar notas clínicas
+            const notasGroups = document.querySelectorAll('.nota-grupo');
+            notasGroups.forEach(grupo => {
+                const editorContainer = grupo.querySelector('.editor-container');
+                const qlEditor = grupo.querySelector('.ql-editor');
+                
+                // Verificar si el contenido está vacío (solo tiene <p><br></p> o similar)
+                const contenido = qlEditor?.innerHTML?.trim();
+                if (!contenido || contenido === '<p><br></p>' || contenido === '<p></p>') {
+                    if (editorContainer) {
+                        editorContainer.classList.add('is-invalid');
+                        editorContainer.style.border = '1px solid #dc3545';
+                    }
+                    formValido = false;
+                } else {
+                    if (editorContainer) {
+                        editorContainer.classList.remove('is-invalid');
+                        editorContainer.style.border = '';
+                    }
                 }
             });
             
@@ -404,7 +420,7 @@ function agregarDiagnostico(descripcion = '', tipoId = '') {
     nuevoGrupo.innerHTML = `
         <div class="col-md-6">
             <label class="form-label">Tipo</label>
-            <select class="form-select tipo-diagnostico">
+            <select class="form-select tipo-diagnostico" required>
                 <option value="">Seleccionar tipo</option>
                 ${window.tiposDiagnostico.map(tipo => 
                     `<option value="${tipo.id}" ${tipo.id.toString() === tipoId.toString() ? 'selected' : ''}>${tipo.tipo}</option>`
@@ -412,7 +428,7 @@ function agregarDiagnostico(descripcion = '', tipoId = '') {
             </select>
         </div>
         <div class="col-md-11">
-            <textarea class="form-control diagnostico-texto" rows="3">${descripcion}</textarea>
+            <textarea class="form-control diagnostico-texto" rows="3" required>${descripcion}</textarea>
         </div>
         <div class="col-md-1 d-flex align-items-end">
             <button type="button" class="btn btn-danger btn-eliminar-diagnostico">X</button>
@@ -437,7 +453,7 @@ function agregarAlergia(alergiaId = '', importanciaId = '', fechaDesde = '', fec
     nuevoGrupo.innerHTML = `
         <div class="col-md-3">
             <label class="form-label">Alergia <span class="text-danger">*</span></label>
-            <select class="form-select alergia-select" required>
+                <select class="form-select alergia-select" required>
                 <option value="">Seleccionar Alergia</option>
                 ${window.alergias.map(alergia => 
                     `<option value="${alergia.id}" ${alergia.id.toString() === alergiaId.toString() ? 'selected' : ''}>
@@ -459,7 +475,7 @@ function agregarAlergia(alergiaId = '', importanciaId = '', fechaDesde = '', fec
         </div>
         <div class="col-md-2">
             <label class="form-label">Fecha Desde <span class="text-danger">*</span></label>
-            <input type="date" class="form-control alergia-fecha-desde" value="${fechaDesde || new Date().toISOString().split('T')[0]}" required>
+            <input type="date" class="form-control alergia-fecha-desde" required value="${fechaDesde}">
         </div>
         <div class="col-md-2">
             <label class="form-label">Fecha Hasta</label>
@@ -473,7 +489,7 @@ function agregarAlergia(alergiaId = '', importanciaId = '', fechaDesde = '', fec
     actualizarBotonesEliminar('alergia');
 }
 
-function agregarMedicamento(descripcion = '') {
+function agregarMedicamento(descripcion = '', fechaDesde = '', fechaHasta = '') {
     const medicamentosContainer = document.getElementById('medicamentosContainer');
     if (!medicamentosContainer) return;
     
@@ -486,9 +502,17 @@ function agregarMedicamento(descripcion = '') {
     const nuevoGrupo = document.createElement('div');
     nuevoGrupo.className = 'row g-3 medicamento-grupo mb-2';
     nuevoGrupo.innerHTML = `
-        <div class="col-md-11">
+        <div class="col-md-6">
             <label class="form-label">Descripción <span class="text-danger">*</span></label>
             <textarea class="form-control medicamento-texto" rows="3" required>${descripcion}</textarea>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Fecha desde <span class="text-danger">*</span></label>
+            <input type="date" class="form-control medicamento-fecha-desde" required value="${fechaDesde}">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Fecha hasta</label>
+            <input type="date" class="form-control medicamento-fecha-hasta" value="${fechaHasta}">
         </div>
         <div class="col-md-1 d-flex align-items-end">
             <button type="button" class="btn btn-danger btn-eliminar-medicamento">X</button>
@@ -517,7 +541,7 @@ function agregarAntecedente(descripcion = '', fechaDesde = '', fechaHasta = '') 
         </div>
         <div class="col-md-2">
             <label class="form-label">Fecha Desde <span class="text-danger">*</span></label>
-            <input type="date" class="form-control antecedente-fecha-desde" value="${fechaDesde || new Date().toISOString().split('T')[0]}" required>
+            <input type="date" class="form-control antecedente-fecha-desde" required value="${fechaDesde}">
         </div>
         <div class="col-md-2">
             <label class="form-label">Fecha Hasta</label>
@@ -550,7 +574,7 @@ function agregarHabito(descripcion = '', fechaDesde = '', fechaHasta = '') {
         </div>
         <div class="col-md-2">
             <label class="form-label">Fecha Desde <span class="text-danger">*</span></label>
-            <input type="date" class="form-control habito-fecha-desde" value="${fechaDesde || new Date().toISOString().split('T')[0]}" required>
+            <input type="date" class="form-control habito-fecha-desde" required value="${fechaDesde}">
         </div>
         <div class="col-md-2">
             <label class="form-label">Fecha Hasta</label>
@@ -613,7 +637,7 @@ async function agregarNotaClinica(contenido = '') {
         <div class="col-md-11">
             ${plantillasHTML}
             <div class="editor-container">
-                <div class="quill-editor"></div>
+                <div class="quill-editor" required></div>
             </div>
         </div>
         <div class="col-md-1 d-flex align-items-center">

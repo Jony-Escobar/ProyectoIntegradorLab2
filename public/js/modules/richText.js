@@ -57,26 +57,22 @@ export function initializeRichText() {
 
     // Inicializar el editor Quill para el primer editor que viene por defecto en la vista
     const inicializarEditorInicial = () => {
-        console.log('Inicializando editor inicial');
         // Buscar todos los editores Quill que aún no han sido inicializados
         const editoresNoInicializados = notasContainer.querySelectorAll('.quill-editor:not(.ql-container)');
-        console.log('Editores no inicializados encontrados:', editoresNoInicializados.length);
         
         // Inicializar cada editor encontrado
         editoresNoInicializados.forEach((editor, index) => {
-            console.log(`Inicializando editor #${index + 1}:`, editor);
             // Verificar si el editor ya tiene una instancia de Quill
             if (!editor.classList.contains('ql-container')) {
                 try {
-                    console.log(`Creando instancia de Quill para editor #${index + 1}`);
                     // Inicializar el editor de texto enriquecido
                     const quillEditor = new Quill(editor, {
                         theme: 'snow',
                         modules: {
                             toolbar: toolbarOptions
-                        }
+                        },
+                        required: true
                     });
-                    console.log(`Editor #${index + 1} inicializado correctamente`);
                     
                     // Agregar event listener para la plantilla si existe
                     const grupo = editor.closest('.nota-grupo');
@@ -102,8 +98,6 @@ export function initializeRichText() {
                 } catch (error) {
                     console.error(`Error al inicializar el editor #${index + 1}:`, error);
                 }
-            } else {
-                console.log(`Editor #${index + 1} ya está inicializado`);
             }
         });
     };

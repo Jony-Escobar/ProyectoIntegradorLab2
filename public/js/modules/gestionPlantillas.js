@@ -45,7 +45,41 @@ export function initGestionPlantillas() {
             if (backdrop) {
                 backdrop.remove();
             }
+            
+            // Asegurarse de que el foco se devuelva a un elemento visible
+            const btnGestionPlantillas = document.getElementById('btnGestionPlantillas');
+            if (btnGestionPlantillas) {
+                setTimeout(() => {
+                    btnGestionPlantillas.focus();
+                }, 10);
+            }
         });
+        
+        // Asegurarse de que los botones de cerrar funcionen correctamente
+        const closeButton = modalPlantillaElement.querySelector('[data-bs-dismiss="modal"]');
+        if (closeButton) {
+            closeButton.addEventListener('click', function() {
+                // Devolver el foco a un elemento visible antes de cerrar el modal
+                const btnGestionPlantillas = document.getElementById('btnGestionPlantillas');
+                if (btnGestionPlantillas) {
+                    btnGestionPlantillas.focus();
+                }
+                modalPlantilla.hide();
+            });
+        }
+        
+        // Agregar manejador para el botón "Cancelar" en el pie del modal
+        const cancelButton = modalPlantillaElement.querySelector('.modal-footer [data-bs-dismiss="modal"]');
+        if (cancelButton) {
+            cancelButton.addEventListener('click', function() {
+                // Devolver el foco a un elemento visible antes de cerrar el modal
+                const btnGestionPlantillas = document.getElementById('btnGestionPlantillas');
+                if (btnGestionPlantillas) {
+                    btnGestionPlantillas.focus();
+                }
+                modalPlantilla.hide();
+            });
+        }
     } catch (error) {
         console.error('Error al inicializar el modal de plantilla:', error);
         return;
