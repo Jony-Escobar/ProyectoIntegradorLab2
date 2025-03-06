@@ -295,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             // Verificar si ya existe el mensaje "No registrado"
                             const mensajeNoRegistrado = container.querySelector('.mensaje-no-registrado');
                             if (!mensajeNoRegistrado) {
-                                container.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+                                container.innerHTML = '<div class="mensaje-no-registrado no-registrado"><i class="fas fa-info-circle me-2"></i>No registrado</div>';
                             }
                         }
                         
@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function() {
         tiposNoObligatorios.forEach(tipo => {
             const container = document.getElementById(`${tipo}sContainer`);
             if (container && !container.querySelector(`.${tipo}-grupo`) && !container.querySelector('.mensaje-no-registrado')) {
-                container.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+                container.innerHTML = '<div class="mensaje-no-registrado no-registrado"><i class="fas fa-info-circle me-2"></i>No registrado</div>';
             }
         });
     };
@@ -392,7 +392,7 @@ function actualizarBotonesEliminar(tipo) {
         // Verificar si ya existe el mensaje "No registrado"
         const mensajeNoRegistrado = container.querySelector('.mensaje-no-registrado');
         if (!mensajeNoRegistrado) {
-            container.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+            container.innerHTML = '<div class="mensaje-no-registrado no-registrado"><i class="fas fa-info-circle me-2"></i>No registrado</div>';
         }
         return;
     }

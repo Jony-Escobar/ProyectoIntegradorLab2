@@ -6,6 +6,7 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 0;
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
 }
 
 .container {
@@ -14,24 +15,82 @@ body {
     padding: 2rem 1rem;
 }
 
-/* Mejoras responsivas para formularios */
-fieldset {
-    background-color: rgba(255, 255, 255, 0.95);
+/* Estilos mejorados para las cards */
+.card {
     border-radius: 10px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(40, 167, 69, 0.2);
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
 }
 
-legend {
-    padding: 0 1rem;
-    margin-bottom: 1rem;
+.card:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    background-color: rgba(40, 167, 69, 0.1);
+    border-bottom: 1px solid rgba(40, 167, 69, 0.2);
+    padding: 1rem 1.25rem;
+}
+
+.card-header h5 {
+    margin: 0;
+    color: #198754;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.card-header h5:before {
+    font-family: "Font Awesome 5 Free";
+    margin-right: 0.75rem;
+    font-weight: 900;
+}
+
+.card-header h5:contains('Alergias'):before {
+    content: "\f0fa"; /* Icono de alergia */
+}
+
+.card-header h5:contains('Antecedentes'):before {
+    content: "\f1da"; /* Icono de historia */
+}
+
+.card-header h5:contains('Hábitos'):before {
+    content: "\f0f8"; /* Icono de hábitos */
+}
+
+.card-header h5:contains('Medicamentos'):before {
+    content: "\f484"; /* Icono de medicamentos */
+}
+
+.card-header h5:contains('Diagnósticos'):before {
+    content: "\f0f1"; /* Icono de diagnóstico */
+}
+
+.card-header h5:contains('Notas'):before {
+    content: "\f249"; /* Icono de notas */
+}
+
+.card-body {
+    padding: 1.5rem;
+    background-color: #fff;
 }
 
 /* Mejoras para inputs y textareas */
 .form-control, .form-select {
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    border: 1px solid #ced4da;
+    transition: all 0.2s ease;
     margin-bottom: 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
 }
 
 textarea {
@@ -40,83 +99,29 @@ textarea {
     resize: vertical;
 }
 
-/* Mejoras responsivas para botones */
+/* Mejoras para botones */
 .btn {
-    padding: 0.5rem 1.5rem;
-    border-radius: 5px;
+    padding: 0.6rem 1.5rem;
+    border-radius: 6px;
     transition: all 0.3s ease;
+    font-weight: 500;
 }
 
-/* Media queries para responsividad */
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-    
-    fieldset {
-        padding: 1rem;
-    }
-    
-    .row {
-        margin: 0;
-    }
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
 }
 
-@media (max-width: 576px) {
-    legend {
-        font-size: 1.2rem;
-    }
-    
-    .btn {
-        width: 100%;
-        margin-bottom: 0.5rem;
-    }
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-#editor-container {
-    height: 300px;
-    margin-bottom: 1rem;
-}
-
-.ql-editor {
-    min-height: 250px;
-    font-size: 16px;
-    line-height: 1.5;
-}
-
-.ql-toolbar.ql-snow {
-    border-radius: 5px 5px 0 0;
-    border-color: #ced4da;
-}
-
-.ql-container.ql-snow {
-    border-radius: 0 0 5px 5px;
-    border-color: #ced4da;
-}
-
-.editor-container {
-    margin-bottom: 1rem;
-}
-
-.quill-editor {
-    height: 200px;
-    margin-bottom: 1rem;
-}
-
-.ql-toolbar.ql-snow {
-    border-radius: 5px 5px 0 0;
-    border-color: #ced4da;
-}
-
-.ql-container.ql-snow {
-    border-radius: 0 0 5px 5px;
-    border-color: #ced4da;
-    height: calc(100% - 42px);
-}
-
-/* Estilos para botones uniformes en página de editar atención */
 .btn-action {
-    min-width: 120px;  /* Ancho mínimo para todos los botones de acción */
+    min-width: 120px;
+    letter-spacing: 0.5px;
 }
 
 .btn-eliminar-nota,
@@ -125,17 +130,130 @@ textarea {
 .btn-eliminar-antecedente,
 .btn-eliminar-habito,
 .btn-eliminar-medicamento {
-    width: 40px;       /* Ancho fijo para botones de eliminar */
-    height: 40px;      /* Altura fija para botones de eliminar */
-    padding: 0;        /* Quitar padding para centrarlo mejor */
+    width: 40px;
+    height: 40px;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 50%;
+    font-size: 1rem;
+    transition: all 0.2s ease;
 }
 
-/* Alinear botones en la parte inferior de los grupos */
-.btn-group-bottom {
-    display: flex;
-    align-items: flex-end;
-    height: 100%;
+.btn-eliminar-nota:hover,
+.btn-eliminar-diagnostico:hover,
+.btn-eliminar-alergia:hover,
+.btn-eliminar-antecedente:hover,
+.btn-eliminar-habito:hover,
+.btn-eliminar-medicamento:hover {
+    transform: scale(1.05);
+}
+
+/* Estilos para el título principal */
+.display-4 {
+    font-weight: 700;
+    color: #198754;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.border-bottom.border-success {
+    opacity: 0.7;
+}
+
+/* Estilos para el editor de texto enriquecido */
+.editor-container {
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.quill-editor {
+    height: 200px;
+    margin-bottom: 1rem;
+}
+
+.ql-toolbar.ql-snow {
+    border-radius: 6px 6px 0 0;
+    border-color: #ced4da;
+    background-color: #f8f9fa;
+}
+
+.ql-container.ql-snow {
+    border-radius: 0 0 6px 6px;
+    border-color: #ced4da;
+    height: calc(100% - 42px);
+}
+
+.ql-editor {
+    min-height: 250px;
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 1rem;
+}
+
+/* Estilos para mensajes "No registrado" */
+.no-registrado {
+    color: #6c757d;
+    font-style: italic;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    text-align: center;
+}
+
+/* Estilos para grupos de elementos */
+.diagnostico-grupo,
+.nota-grupo,
+.alergia-grupo,
+.antecedente-grupo,
+.habito-grupo,
+.medicamento-grupo {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.diagnostico-grupo:hover,
+.nota-grupo:hover,
+.alergia-grupo:hover,
+.antecedente-grupo:hover,
+.habito-grupo:hover,
+.medicamento-grupo:hover {
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .row {
+        margin: 0;
+    }
+}
+
+@media (max-width: 576px) {
+    .card-header h5 {
+        font-size: 1.1rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
 }

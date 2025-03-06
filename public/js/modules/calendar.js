@@ -58,6 +58,11 @@ export function initializeCalendar(calendarEl, userId) {
             startTime: '08:00',
             endTime: '20:00'
         },
+        eventClick: function(info) {
+            if (info.view.type === 'dayGridMonth' || info.view.type === 'timeGridWeek') {
+                calendar.changeView('timeGridDay', info.event.start);
+            }
+        },
         eventContent: function(arg) {
             let paciente = arg.event.extendedProps.nombre_paciente;
             let motivo = arg.event.extendedProps.motivo_consulta;

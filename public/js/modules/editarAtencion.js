@@ -353,7 +353,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             // Verificar si ya existe el mensaje "No registrado"
                             const mensajeNoRegistrado = container.querySelector('.mensaje-no-registrado');
                             if (!mensajeNoRegistrado) {
-                                container.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+                                container.innerHTML = '<div class="mensaje-no-registrado no-registrado"><i class="fas fa-info-circle me-2"></i>No registrado</div>';
                             }
                         }
                         
@@ -423,7 +423,7 @@ function actualizarBotonesEliminar(tipo) {
         // Verificar si ya existe el mensaje "No registrado"
         const mensajeNoRegistrado = container.querySelector('.mensaje-no-registrado');
         if (!mensajeNoRegistrado) {
-            container.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+            container.innerHTML = '<div class="mensaje-no-registrado no-registrado"><i class="fas fa-info-circle me-2"></i>No registrado</div>';
         }
         return;
     }
@@ -500,7 +500,7 @@ function cargarDatosExistentes() {
             // Vaciar el contenedor existente pero mantener el mensaje "No registrado" si existe
             const mensajeNoRegistrado = alergiasContainer.querySelector('.mensaje-no-registrado');
             if (!mensajeNoRegistrado) {
-                alergiasContainer.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+                alergiasContainer.innerHTML = '<div class="mensaje-no-registrado no-registrado"><i class="fas fa-info-circle me-2"></i>No registrado</div>';
             }
         }
 
@@ -524,7 +524,7 @@ function cargarDatosExistentes() {
             // Si no hay medicamentos, mostrar mensaje
             const mensajeNoRegistrado = medicamentosContainer.querySelector('.mensaje-no-registrado');
             if (!mensajeNoRegistrado) {
-                medicamentosContainer.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+                medicamentosContainer.innerHTML = '<div class="mensaje-no-registrado no-registrado"><i class="fas fa-info-circle me-2"></i>No registrado</div>';
             }
         }
 
@@ -545,7 +545,7 @@ function cargarDatosExistentes() {
             // Vaciar el contenedor existente pero mantener el mensaje "No registrado" si existe
             const mensajeNoRegistrado = antecedentesContainer.querySelector('.mensaje-no-registrado');
             if (!mensajeNoRegistrado) {
-                antecedentesContainer.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+                antecedentesContainer.innerHTML = '<div class="mensaje-no-registrado no-registrado"><i class="fas fa-info-circle me-2"></i>No registrado</div>';
             }
         }
 
@@ -566,7 +566,7 @@ function cargarDatosExistentes() {
             // Vaciar el contenedor existente pero mantener el mensaje "No registrado" si existe
             const mensajeNoRegistrado = habitosContainer.querySelector('.mensaje-no-registrado');
             if (!mensajeNoRegistrado) {
-                habitosContainer.innerHTML = '<div class="mensaje-no-registrado"><span class="text-muted fst-italic">No registrado</span></div>';
+                habitosContainer.innerHTML = '<div class="mensaje-no-registrado no-registrado"><i class="fas fa-info-circle me-2"></i>No registrado</div>';
             }
         }
 
