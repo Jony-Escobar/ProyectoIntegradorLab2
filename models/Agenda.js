@@ -108,31 +108,54 @@ class Agenda {
                 DATE_FORMAT(a.fecha_atencion, '%d-%m-%Y') as fecha,
                 CONCAT(pm.nombre, ' ', pm.apellido) as medico,
                 t.motivo_consulta as motivo,
-                GROUP_CONCAT(DISTINCT d.descripcion SEPARATOR '; ') as diagnosticos,
+                -- Diagnósticos
+                GROUP_CONCAT(DISTINCT CONCAT(d.descripcion, ':::', td.tipo) SEPARATOR '|||') as diagnosticos_info,
+                -- Alergias
                 CASE 
-                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT nc.nota SEPARATOR '; ')
+                    WHEN m.id = ? THEN 
+                        GROUP_CONCAT(DISTINCT CONCAT(
+                            al.alergia, ':::', 
+                            i.importancia, ':::', 
+                            IFNULL(DATE_FORMAT(aa.fecha_desde, '%Y-%m-%d'), ''), ':::', 
+                            IFNULL(DATE_FORMAT(aa.fecha_hasta, '%Y-%m-%d'), '')
+                        ) SEPARATOR '|||')
+                    ELSE NULL 
+                END as alergias_info,
+                -- Antecedentes
+                CASE 
+                    WHEN m.id = ? THEN 
+                        GROUP_CONCAT(DISTINCT CONCAT(
+                            ap.descripcion, ':::', 
+                            IFNULL(DATE_FORMAT(ap.fecha_desde, '%Y-%m-%d'), ''), ':::', 
+                            IFNULL(DATE_FORMAT(ap.fecha_hasta, '%Y-%m-%d'), '')
+                        ) SEPARATOR '|||')
+                    ELSE NULL 
+                END as antecedentes_info,
+                -- Hábitos
+                CASE 
+                    WHEN m.id = ? THEN 
+                        GROUP_CONCAT(DISTINCT CONCAT(
+                            h.descripcion, ':::', 
+                            IFNULL(DATE_FORMAT(h.fecha_desde, '%Y-%m-%d'), ''), ':::', 
+                            IFNULL(DATE_FORMAT(h.fecha_hasta, '%Y-%m-%d'), '')
+                        ) SEPARATOR '|||')
+                    ELSE NULL 
+                END as habitos_info,
+                -- Medicamentos
+                CASE 
+                    WHEN m.id = ? THEN 
+                        GROUP_CONCAT(DISTINCT CONCAT(
+                            mu.descripcion, ':::', 
+                            IFNULL(DATE_FORMAT(mu.fecha_desde, '%Y-%m-%d'), ''), ':::', 
+                            IFNULL(DATE_FORMAT(mu.fecha_hasta, '%Y-%m-%d'), '')
+                        ) SEPARATOR '|||')
+                    ELSE NULL 
+                END as medicamentos_info,
+                -- Evolución (notas)
+                CASE 
+                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT nc.nota SEPARATOR '|||')
                     ELSE NULL 
                 END as evolucion,
-                CASE 
-                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT al.alergia SEPARATOR '; ')
-                    ELSE NULL 
-                END as alergias,
-                CASE 
-                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT i.importancia SEPARATOR '; ')
-                    ELSE NULL 
-                END as importancia_alergia,
-                CASE 
-                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT ap.descripcion SEPARATOR '; ')
-                    ELSE NULL 
-                END as antecedentes,
-                CASE 
-                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT h.descripcion SEPARATOR '; ')
-                    ELSE NULL 
-                END as habitos,
-                CASE 
-                    WHEN m.id = ? THEN GROUP_CONCAT(DISTINCT mu.descripcion SEPARATOR '; ')
-                    ELSE NULL 
-                END as medicamentos,
                 m.id as medico_id
             FROM atenciones a
             JOIN turnos t ON t.id = a.turno_id
@@ -141,6 +164,7 @@ class Agenda {
             JOIN medicos m ON m.id = em.medico_id
             JOIN personas pm ON pm.id = m.persona_id
             LEFT JOIN diagnosticos d ON d.atencion_id = a.id
+            LEFT JOIN tipos td ON td.id = d.tipo_id
             LEFT JOIN notas_clinicas nc ON nc.atencion_id = a.id
             LEFT JOIN atencion_alergia aa ON aa.atencion_id = a.id
             LEFT JOIN alergias al ON al.id = aa.alergia_id
@@ -160,15 +184,114 @@ class Agenda {
 
         try {
             const [historial] = await pool.query(query, [
-                medicoActualId, 
-                medicoActualId, 
-                medicoActualId,
-                medicoActualId,
-                medicoActualId,
-                medicoActualId,
+                medicoActualId, // Para alergias
+                medicoActualId, // Para antecedentes
+                medicoActualId, // Para hábitos
+                medicoActualId, // Para medicamentos
+                medicoActualId, // Para evolución
                 pacienteId
             ]);
-            return historial;
+            
+            // Procesar los datos recibidos para mantener la compatibilidad
+            return historial.map(consulta => {
+                // Procesar diagnósticos
+                const diagnosticosInfo = consulta.diagnosticos_info ? consulta.diagnosticos_info.split('|||') : [];
+                const diagnosticos = [];
+                const tiposDiagnostico = [];
+                
+                diagnosticosInfo.forEach(info => {
+                    const [diag, tipo] = info.split(':::');
+                    if (diag) {
+                        diagnosticos.push(diag);
+                        tiposDiagnostico.push(tipo || 'No especificado');
+                    }
+                });
+                
+                // Procesar alergias
+                const alergiasInfo = consulta.alergias_info ? consulta.alergias_info.split('|||') : [];
+                const alergias = [];
+                const importanciasAlergia = [];
+                const alergiasFechaDesde = [];
+                const alergiasFechaHasta = [];
+                
+                alergiasInfo.forEach(info => {
+                    const [alergia, importancia, fechaDesde, fechaHasta] = info.split(':::');
+                    if (alergia) {
+                        alergias.push(alergia);
+                        importanciasAlergia.push(importancia || 'No especificada');
+                        alergiasFechaDesde.push(fechaDesde || '');
+                        alergiasFechaHasta.push(fechaHasta || '');
+                    }
+                });
+                
+                // Procesar antecedentes
+                const antecedentesInfo = consulta.antecedentes_info ? consulta.antecedentes_info.split('|||') : [];
+                const antecedentes = [];
+                const antecedentesFechaDesde = [];
+                const antecedentesFechaHasta = [];
+                
+                antecedentesInfo.forEach(info => {
+                    const [antecedente, fechaDesde, fechaHasta] = info.split(':::');
+                    if (antecedente) {
+                        antecedentes.push(antecedente);
+                        antecedentesFechaDesde.push(fechaDesde || '');
+                        antecedentesFechaHasta.push(fechaHasta || '');
+                    }
+                });
+                
+                // Procesar hábitos
+                const habitosInfo = consulta.habitos_info ? consulta.habitos_info.split('|||') : [];
+                const habitos = [];
+                const habitosFechaDesde = [];
+                const habitosFechaHasta = [];
+                
+                habitosInfo.forEach(info => {
+                    const [habito, fechaDesde, fechaHasta] = info.split(':::');
+                    if (habito) {
+                        habitos.push(habito);
+                        habitosFechaDesde.push(fechaDesde || '');
+                        habitosFechaHasta.push(fechaHasta || '');
+                    }
+                });
+                
+                // Procesar medicamentos
+                const medicamentosInfo = consulta.medicamentos_info ? consulta.medicamentos_info.split('|||') : [];
+                const medicamentos = [];
+                const medicamentosFechaDesde = [];
+                const medicamentosFechaHasta = [];
+                
+                medicamentosInfo.forEach(info => {
+                    const [medicamento, fechaDesde, fechaHasta] = info.split(':::');
+                    if (medicamento) {
+                        medicamentos.push(medicamento);
+                        medicamentosFechaDesde.push(fechaDesde || '');
+                        medicamentosFechaHasta.push(fechaHasta || '');
+                    }
+                });
+                
+                // Convertir evolución al formato esperado
+                const evolucion = consulta.evolucion ? consulta.evolucion.split('|||').join('; ') : null;
+                
+                return {
+                    ...consulta,
+                    diagnosticos: diagnosticos.join('; '),
+                    tipos_diagnostico: tiposDiagnostico.join('; '),
+                    alergias: alergias.join('; '),
+                    importancia_alergia: importanciasAlergia.join('; '),
+                    alergias_fecha_desde: alergiasFechaDesde.join('; '),
+                    alergias_fecha_hasta: alergiasFechaHasta.join('; '),
+                    antecedentes: antecedentes.join('; '),
+                    antecedentes_fecha_desde: antecedentesFechaDesde.join('; '),
+                    antecedentes_fecha_hasta: antecedentesFechaHasta.join('; '),
+                    habitos: habitos.join('; '),
+                    habitos_fecha_desde: habitosFechaDesde.join('; '),
+                    habitos_fecha_hasta: habitosFechaHasta.join('; '),
+                    medicamentos: medicamentos.join('; '),
+                    medicamentos_fecha_desde: medicamentosFechaDesde.join('; '),
+                    medicamentos_fecha_hasta: medicamentosFechaHasta.join('; '),
+                    evolucion
+                };
+            });
         } catch (error) {
             console.error('Error al obtener historial médico:', error);
             throw error;

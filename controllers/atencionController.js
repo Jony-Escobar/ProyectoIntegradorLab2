@@ -8,8 +8,6 @@ const formularioNuevaAtencion = async (req, res) => {
         
         // Obtener el ID del médico usando el ID del usuario en sesión
         const medicoId = await Atencion.obtenerMedicoIdPorUsuario(req.usuario.id);
-        console.log('ID del usuario en sesión:', req.usuario.id);
-        console.log('ID del médico encontrado:', medicoId);
 
         if (!medicoId) {
             throw new Error('No se encontró el médico asociado al usuario');
@@ -54,16 +52,6 @@ const guardarAtencion = async (req, res) => {
             diagnosticos,
             notasClinicas
         } = req.body;
-
-        console.log('Datos recibidos en guardarAtencion:', JSON.stringify({
-            turnoId,
-            alergias: alergias?.length,
-            antecedentes: antecedentes?.length,
-            habitos: habitos?.length,
-            medicamentos: medicamentos?.length,
-            diagnosticos: diagnosticos?.length,
-            notasClinicas: notasClinicas?.length
-        }, null, 2));
 
         // Validación de notas clínicas
         if (!notasClinicas?.length || notasClinicas.every(nota => !nota?.contenido?.trim() || nota.contenido.trim() === '<p></p>')) {

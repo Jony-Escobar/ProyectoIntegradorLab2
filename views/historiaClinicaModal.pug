@@ -1,11 +1,14 @@
 div.modal.fade#modalPrincipal(tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true")
-  div.modal-dialog.modal-lg
+  div.modal-dialog.modal-xl
     div.modal-content
-      div.modal-header.text-center
-        h3.modal-title.w-100#modalLabel Historia Clínica
-        button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+      div.modal-header.bg-success.text-white
+        h3.modal-title.w-100.text-center#modalLabel Historia Clínica
+        button.btn-close.btn-close-white(type="button" data-bs-dismiss="modal" aria-label="Close")
       div.modal-body
-        h5.modal-title.text-success Información Personal
+        h5.modal-title.text-success
+          i.fas.fa-user.me-2
+          | Información Personal
+        //-div.border-bottom.border-success.w-100.my-2(style="height: 2px;")
         div.row
           div.col-md-4
             p
@@ -19,7 +22,10 @@ div.modal.fade#modalPrincipal(tabindex="-1" aria-labelledby="modalLabel" aria-hi
             p
               strong Género: 
               span#sexoPaciente
-        h5.modal-title.text-success Datos de Contacto
+        h5.modal-title.text-success.mt-4
+          i.fas.fa-address-card.me-2
+          | Datos de Contacto
+        //-div.border-bottom.border-success.w-100.my-2(style="height: 2px;")
         div.row
           div.col-md-6
             p
@@ -30,17 +36,11 @@ div.modal.fade#modalPrincipal(tabindex="-1" aria-labelledby="modalLabel" aria-hi
               strong Email: 
               span#emailPaciente
 
-        h5.modal-title.text-success Historial de Atenciones
-        div#contenedorTablaConsultas
-          table.table
-            thead
-              tr
-                th Fecha
-                th Médico
-                th Motivo
-                th Diagnósticos
-                th Acciones
-            tbody#tablaHistorialBody
+        h5.modal-title.text-success.mt-4.mb-2
+          i.fas.fa-history.me-2
+          | Historial de Atenciones
+        //-div.border-bottom.border-success.w-100.my-2(style="height: 2px;")
+        div#contenedorHistorial
 
       div.modal-footer
-        button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Cerrar
+        button.btn.btn-outline-success(type="button" data-bs-dismiss="modal") Cerrar

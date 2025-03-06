@@ -61,46 +61,81 @@ async function cargarHistorialMedico(idPaciente) {
         const historial = data.historial;
         const ultimaAtencion = data.ultimaAtencion;
         
-        const tbody = document.getElementById('tablaHistorialBody');
-        tbody.innerHTML = '';
+        const contenedor = document.getElementById('contenedorHistorial');
+        contenedor.innerHTML = '';
 
+        // Crear contenedor de cards con grid
+        const cardContainer = document.createElement('div');
+        cardContainer.className = 'row row-cols-1 row-cols-md-2 g-4';
+        
         historial.forEach(consulta => {
-            const row = document.createElement('tr');
             const tieneInformacionDetallada = consulta.evolucion !== null;
             const esUltimaAtencion = ultimaAtencion && consulta.id === ultimaAtencion.id;
             
-            row.innerHTML = `
-                <td>${consulta.fecha}</td>
-                <td>${consulta.medico}</td>
-                <td>${consulta.motivo}</td>
-                <td>${consulta.diagnosticos || '-'}</td>
-                <td>
-                    ${tieneInformacionDetallada ? `
-                        <div class="btn-group">
-                            <button 
-                                class="btn btn-sm btn-info ver-detalle-atencion"
-                                data-atencion='${JSON.stringify(consulta)}'
-                            >
-                                Ver Más
-                            </button>
-                            ${esUltimaAtencion ? `
-                                <button 
-                                    class="btn btn-sm btn-warning editar-atencion"
-                                    onclick="if (confirm('¿Estás seguro de querer editar ésta atención?')) { window.location.href='/atencion/editar/${consulta.id}' }"
-                                >
-                                    Editar
-                                </button>
-                            ` : ''}
+            // Mostrar diagnósticos en formato de lista en lugar de badges
+            let diagnosticosHTML = '<p class="text-muted">No hay diagnósticos registrados</p>';
+            if (consulta.diagnosticos) {
+                const diagnosticosList = consulta.diagnosticos.split('; ');
+                diagnosticosHTML = `
+                    <ul class="list-group list-group-flush">
+                        ${diagnosticosList.map(diagnostico => 
+                            `<li class="list-group-item py-1">• ${diagnostico}</li>`
+                        ).join('')}
+                    </ul>
+                `;
+            }
+            
+            const cardCol = document.createElement('div');
+            cardCol.className = 'col';
+            cardCol.innerHTML = `
+                <div class="card h-100 border-success">
+                    <div class="card-header bg-success bg-opacity-10 d-flex justify-content-between align-items-center">
+                        <span class="fw-bold">${consulta.fecha}</span>
+                        <span class="badge bg-success bg-opacity-75">${consulta.medico}</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title text-success">
+                            <i class="fas fa-clipboard-list me-2"></i>Motivo: <span class="text-dark">${consulta.motivo}</span>
+                        </h5>
+                        <div class="card-text mt-3">
+                            <h6 class="text-success">
+                                <i class="fas fa-stethoscope me-2"></i>Diagnósticos:
+                            </h6>
+                            ${diagnosticosHTML}
                         </div>
-                    ` : `
-                        <span class="text-muted">
-                            <small>No disponible</small>
-                        </span>
-                    `}
-                </td>
+                    </div>
+                    <div class="card-footer bg-light">
+                        ${tieneInformacionDetallada ? `
+                            <div class="d-flex justify-content-end">
+                                <button 
+                                    class="btn btn-sm btn-outline-success me-2 ver-detalle-atencion"
+                                    data-atencion='${JSON.stringify(consulta)}'
+                                >
+                                    <i class="fas fa-eye me-1"></i>Ver Detalle
+                                </button>
+                                ${esUltimaAtencion ? `
+                                    <button 
+                                        class="btn btn-sm btn-outline-warning editar-atencion"
+                                        onclick="if (confirm('¿Estás seguro de querer editar ésta atención?')) { window.location.href='/atencion/editar/${consulta.id}' }"
+                                    >
+                                        <i class="fas fa-edit me-1"></i>Editar
+                                    </button>
+                                ` : ''}
+                            </div>
+                        ` : `
+                            <div class="text-center">
+                                <span class="text-muted">
+                                    <small><i class="fas fa-lock me-1"></i>Información no disponible</small>
+                                </span>
+                            </div>
+                        `}
+                    </div>
+                </div>
             `;
-            tbody.appendChild(row);
+            cardContainer.appendChild(cardCol);
         });
+        
+        contenedor.appendChild(cardContainer);
 
         document.querySelectorAll('.ver-detalle-atencion').forEach(btn => {
             btn.addEventListener('click', mostrarDetalleAtencion);
@@ -114,49 +149,250 @@ async function cargarHistorialMedico(idPaciente) {
 function mostrarDetalleAtencion(e) {
     const atencion = JSON.parse(e.currentTarget.dataset.atencion);
     
+    // Función auxiliar para formatear fechas
+    const formatearFecha = (fecha) => {
+        if (!fecha || fecha === '0000-00-00' || fecha === 'null') return null;
+        // Asumimos que la fecha viene en formato YYYY-MM-DD
+        const partes = fecha.split('-');
+        if (partes.length === 3) {
+            return `${partes[2]}/${partes[1]}/${partes[0]}`;
+        }
+        return fecha;
+    };
+    
+    // Función para mostrar rango de fechas
+    const mostrarRangoFechas = (fechaDesde, fechaHasta) => {
+        const desde = formatearFecha(fechaDesde);
+        const hasta = formatearFecha(fechaHasta);
+        
+        if (desde && hasta) {
+            return `<span class="text-muted">(${desde} - ${hasta})</span>`;
+        } else if (desde) {
+            return `<span class="text-muted">(Desde: ${desde})</span>`;
+        } else if (hasta) {
+            return `<span class="text-muted">(Hasta: ${hasta})</span>`;
+        }
+        return '';
+    };
+    
     const modalContent = `
         <div class="modal fade" id="modalDetalleAtencion" tabindex="-1">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header bg-success text-white">
                         <h5 class="modal-title">Detalle de Atención: ${atencion.fecha}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <h6 class="text-success">Información General</h6>
-                            <p><strong>Médico:</strong> ${atencion.medico}</p>
-                            <p><strong>Motivo:</strong> ${atencion.motivo}</p>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <h6 class="text-success">Diagnósticos</h6>
-                            <p>${atencion.diagnosticos || 'No registrado'}</p>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <h6 class="text-success">Evolución</h6>
-                            <p>${atencion.evolucion || 'No registrado'}</p>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <h6 class="text-success">Alergias</h6>
-                            <p>${atencion.alergias ? `${atencion.alergias} (${atencion.importancia_alergia})` : '<small>No registrado</small>'}</p>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <h6 class="text-success">Antecedentes</h6>
-                            <p>${atencion.antecedentes || '<small>No registrado</small>'}</p>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <h6 class="text-success">Hábitos</h6>
-                            <p>${atencion.habitos || '<small>No registrado</small>'}</p>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <h6 class="text-success">Medicamentos</h6>
-                            <p>${atencion.medicamentos || '<small>No registrado</small>'}</p>
+                        <div class="row">
+                            <!-- Información General -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100 border-success">
+                                    <div class="card-header bg-success bg-opacity-10">
+                                        <h6 class="text-success mb-0"><i class="fas fa-info-circle me-2"></i>Información General</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <p><strong>Médico:</strong> ${atencion.medico}</p>
+                                        <p><strong>Motivo:</strong> ${atencion.motivo}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Diagnósticos -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100 border-success">
+                                    <div class="card-header bg-success bg-opacity-10">
+                                        <h6 class="text-success mb-0"><i class="fas fa-stethoscope me-2"></i>Diagnósticos</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        ${atencion.diagnosticos ? 
+                                            (() => {
+                                                const diagnosticosList = atencion.diagnosticos.split('; ');
+                                                const tiposList = atencion.tipos_diagnostico ? atencion.tipos_diagnostico.split('; ') : [];
+                                                
+                                                return `<ul class="list-group list-group-flush">
+                                                    ${diagnosticosList.map((diagnostico, index) => {
+                                                        const tipo = tiposList[index] || 'No especificado';
+                                                        let badgeClass = 'bg-secondary';
+                                                        
+                                                        if (tipo.toLowerCase().includes('confirmado')) {
+                                                            badgeClass = 'bg-success';
+                                                        } else if (tipo.toLowerCase().includes('preliminar')) {
+                                                            badgeClass = 'bg-warning text-dark';
+                                                        }
+                                                        
+                                                        return `<li class="list-group-item">
+                                                            • ${diagnostico} 
+                                                            <span class="badge ${badgeClass} ms-2">${tipo}</span>
+                                                        </li>`;
+                                                    }).join('')}
+                                                </ul>`;
+                                            })() : 
+                                            '<span class="text-muted">No registrado</span>'
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Evolución -->
+                            <div class="col-md-12 mb-3">
+                                <div class="card border-success">
+                                    <div class="card-header bg-success bg-opacity-10">
+                                        <h6 class="text-success mb-0"><i class="fas fa-notes-medical me-2"></i>Notas</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        ${atencion.evolucion ? 
+                                            atencion.evolucion.split('; ').map(nota => 
+                                                `<div class="mb-2 p-2 border-bottom">${nota}</div>`
+                                            ).join('') : 
+                                            '<span class="text-muted">No registrado</span>'
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Alergias -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100 border-success">
+                                    <div class="card-header bg-success bg-opacity-10">
+                                        <h6 class="text-success mb-0"><i class="fas fa-allergies me-2"></i>Alergias</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        ${atencion.alergias ? 
+                                            (() => {
+                                                const alergiasArray = atencion.alergias.split('; ');
+                                                const importanciasArray = atencion.importancia_alergia ? atencion.importancia_alergia.split('; ') : [];
+                                                const fechasDesdeArray = atencion.alergias_fecha_desde ? atencion.alergias_fecha_desde.split('; ') : [];
+                                                const fechasHastaArray = atencion.alergias_fecha_hasta ? atencion.alergias_fecha_hasta.split('; ') : [];
+                                                
+                                                return `<ul class="list-group list-group-flush">
+                                                    ${alergiasArray.map((alergia, index) => {
+                                                        const importancia = importanciasArray[index] || 'No especificada';
+                                                        const fechaDesde = fechasDesdeArray[index] || '';
+                                                        const fechaHasta = fechasHastaArray[index] || '';
+                                                        let textClass = '';
+                                                        
+                                                        if (importancia.toLowerCase().includes('alta')) {
+                                                            textClass = 'text-danger';
+                                                        } else if (importancia.toLowerCase().includes('media')) {
+                                                            textClass = 'text-warning';
+                                                        } else if (importancia.toLowerCase().includes('baja')) {
+                                                            textClass = 'text-info';
+                                                        }
+                                                        
+                                                        return `<li class="list-group-item">
+                                                            • ${alergia} <span class="${textClass}">(${importancia})</span>
+                                                            <div class="small mt-1">
+                                                                ${mostrarRangoFechas(fechaDesde, fechaHasta)}
+                                                            </div>
+                                                        </li>`;
+                                                    }).join('')}
+                                                </ul>`;
+                                            })() : 
+                                            '<span class="text-muted">No registrado</span>'
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Antecedentes -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100 border-success">
+                                    <div class="card-header bg-success bg-opacity-10">
+                                        <h6 class="text-success mb-0"><i class="fas fa-history me-2"></i>Antecedentes Patológicos</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        ${atencion.antecedentes ? 
+                                            (() => {
+                                                const antecedentesArray = atencion.antecedentes.split('; ');
+                                                const fechasDesdeArray = atencion.antecedentes_fecha_desde ? atencion.antecedentes_fecha_desde.split('; ') : [];
+                                                const fechasHastaArray = atencion.antecedentes_fecha_hasta ? atencion.antecedentes_fecha_hasta.split('; ') : [];
+                                                
+                                                return `<ul class="list-group list-group-flush">
+                                                    ${antecedentesArray.map((antecedente, index) => {
+                                                        const fechaDesde = fechasDesdeArray[index] || '';
+                                                        const fechaHasta = fechasHastaArray[index] || '';
+                                                        
+                                                        return `<li class="list-group-item">
+                                                            • ${antecedente}
+                                                            <div class="small mt-1">
+                                                                ${mostrarRangoFechas(fechaDesde, fechaHasta)}
+                                                            </div>
+                                                        </li>`;
+                                                    }).join('')}
+                                                </ul>`;
+                                            })() : 
+                                            '<span class="text-muted">No registrado</span>'
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Hábitos -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100 border-success">
+                                    <div class="card-header bg-success bg-opacity-10">
+                                        <h6 class="text-success mb-0"><i class="fas fa-walking me-2"></i>Hábitos</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        ${atencion.habitos ? 
+                                            (() => {
+                                                const habitosArray = atencion.habitos.split('; ');
+                                                const fechasDesdeArray = atencion.habitos_fecha_desde ? atencion.habitos_fecha_desde.split('; ') : [];
+                                                const fechasHastaArray = atencion.habitos_fecha_hasta ? atencion.habitos_fecha_hasta.split('; ') : [];
+                                                
+                                                return `<ul class="list-group list-group-flush">
+                                                    ${habitosArray.map((habito, index) => {
+                                                        const fechaDesde = fechasDesdeArray[index] || '';
+                                                        const fechaHasta = fechasHastaArray[index] || '';
+                                                        
+                                                        return `<li class="list-group-item">
+                                                            • ${habito}
+                                                            <div class="small mt-1">
+                                                                ${mostrarRangoFechas(fechaDesde, fechaHasta)}
+                                                            </div>
+                                                        </li>`;
+                                                    }).join('')}
+                                                </ul>`;
+                                            })() : 
+                                            '<span class="text-muted">No registrado</span>'
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Medicamentos -->
+                            <div class="col-md-6 mb-3">
+                                <div class="card h-100 border-success">
+                                    <div class="card-header bg-success bg-opacity-10">
+                                        <h6 class="text-success mb-0"><i class="fas fa-pills me-2"></i>Medicamentos en uso</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        ${atencion.medicamentos ? 
+                                            (() => {
+                                                const medicamentosArray = atencion.medicamentos.split('; ');
+                                                const fechasDesdeArray = atencion.medicamentos_fecha_desde ? atencion.medicamentos_fecha_desde.split('; ') : [];
+                                                const fechasHastaArray = atencion.medicamentos_fecha_hasta ? atencion.medicamentos_fecha_hasta.split('; ') : [];
+                                                
+                                                return `<ul class="list-group list-group-flush">
+                                                    ${medicamentosArray.map((medicamento, index) => {
+                                                        const fechaDesde = fechasDesdeArray[index] || '';
+                                                        const fechaHasta = fechasHastaArray[index] || '';
+                                                        
+                                                        return `<li class="list-group-item">
+                                                            • ${medicamento}
+                                                            <div class="small mt-1">
+                                                                ${mostrarRangoFechas(fechaDesde, fechaHasta)}
+                                                            </div>
+                                                        </li>`;
+                                                    }).join('')}
+                                                </ul>`;
+                                            })() : 
+                                            '<span class="text-muted">No registrado</span>'
+                                        }
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
